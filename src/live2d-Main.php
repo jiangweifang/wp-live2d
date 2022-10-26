@@ -152,7 +152,7 @@ class live2D {
 				});
 
 				$("#btnLogin").on("click",function(){
-					let ref = encodeURIComponent(window.location.href);
+					let ref = encodeURIComponent(`<?php echo plugin_dir_url(dirname(__FILE__)) ?>`);
 					let width = 500;
 					let height  = 680;
 					let loginWin = window.open(`https://localhost:7051/SingleLogin?referer=${ref}`,"Login",`toolbar=no,location=no,resizable=no, height=${height}, width=${width}`);
