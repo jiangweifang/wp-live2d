@@ -1,0 +1,502 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Live 2D\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-28 07:42+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.4.0; wp-5.4.2"
+
+#: src/live2d-Main.php:34
+msgid "Live 2D 设置"
+msgstr ""
+
+#. id
+#: src/live2d-Main.php:52 src/waifu-Settings-Base.php:11
+msgid "基础设置"
+msgstr ""
+
+#. id
+#: src/live2d-Main.php:53 src/waifu-Settings-Toolbar.php:10
+msgid "工具栏设置"
+msgstr ""
+
+#: src/live2d-Main.php:54
+msgid "提示消息选项"
+msgstr ""
+
+#: src/live2d-Main.php:55
+msgid "看板娘样式设置"
+msgstr ""
+
+#. id
+#: src/live2d-Main.php:56 src/waifu-Advanced.php:20
+msgid "高级设置"
+msgstr ""
+
+#: src/live2d-Utils.php:29 src/live2d-Utils.php:54 src/live2d-Utils.php:66
+#: src/live2d-Utils.php:162
+msgid "点击此处增加一条"
+msgstr ""
+
+#: src/live2d-Utils.php:151
+msgid "基础设置帮助"
+msgstr ""
+
+#: src/live2d-Utils.php:161
+msgid "高级设置帮助"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:27
+msgid "打开控制台提示"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:35
+msgid "复制信息时的提示"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:43
+msgid "截图时的提示"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:51
+msgid "隐藏看板娘的提示"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:59
+msgid "更换服装时的提示"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:67
+msgid "每小时提示"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:75
+msgid "搜索引擎入站提示"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:83
+msgid "访问本站点的提示"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:91
+msgid "一言API的消息"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:99
+msgid "鼠标悬停时的消息提示"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:107
+msgid "鼠标点击选择器"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:115
+msgid "鼠标点击时的消息提示"
+msgstr ""
+
+#. id
+#: src/waifu-Advanced.php:123
+msgid "节日事件"
+msgstr ""
+
+#: src/waifu-Advanced.php:211
+msgid "请在第一个输入框输入没有服装时的默认提示，第二个输入框输入每次切换时的提示消息"
+msgstr ""
+
+#: src/waifu-Advanced.php:220
+msgid "时间按照t{开始小时}-{结束小时}的方式填写，例如：t5-7或t7-11（避免改错，目前此项无法更改）"
+msgstr ""
+
+#: src/waifu-Advanced.php:227
+msgid "请务必不要修改{}中的内容，{title}网站标题、{keyword}关键词、{website}站点名称"
+msgstr ""
+
+#: src/waifu-Advanced.php:237
+msgid "请务必不要修改{}中的内容，lwl12.com接口会有没有作者的情况语句中需要用“|”进行分割"
+msgstr ""
+
+#: src/waifu-Advanced.php:242
+msgid ""
+"鼠标悬停位置的<a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors."
+"asp\" target=\"_blank\">jQuery选择器</a>"
+msgstr ""
+
+#: src/waifu-Advanced.php:255
+msgid "点击看板娘会循环以上的每一行点击事件"
+msgstr ""
+
+#: src/waifu-Advanced.php:262
+msgid "在指定的日期说提示语，日期的规则为MM/dd，例如2月14日为 02/14，可填写一个时间区间，格式为11/05-11/12。"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Base.php:18
+msgid "模型 API"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Base.php:26
+msgid "一言 API"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Base.php:34
+msgid "默认模型 ID"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Base.php:42
+msgid "默认材质 ID"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Base.php:50
+msgid "模型缩放倍数"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Base.php:58
+msgid "关于页地址"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Base.php:66
+msgid "看板娘截图文件名"
+msgstr ""
+
+#: src/waifu-Settings-Base.php:105
+msgid "您可以在此处直接填写模型ID"
+msgstr ""
+
+#: src/waifu-Settings-Base.php:113
+msgid "您可以在此处直接填写皮肤ID"
+msgstr ""
+
+#: src/waifu-Settings-Base.php:119
+msgid "设置看板娘在画框中的缩放比例，最小1倍，最大10倍，可以有小数点"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Style.php:9
+msgid "这里可以设置看板娘的外观大小"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Style.php:16
+msgid "是否记录用户上次选择的样式"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Style.php:25
+msgid "模型切换方式"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Style.php:33
+msgid "材质切换方式"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Style.php:41
+msgid "看板娘大小"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Style.php:49
+msgid "面页小于指定宽度(px) <br/>隐藏看板娘"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Style.php:57
+msgid "看板娘贴边方向"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Style.php:65
+msgid "看板娘贴边距离(px)"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Style.php:73
+msgid "拖拽样式"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Style.php:81
+msgid "松开鼠标还原拖拽位置"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:94
+msgid "是"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:96
+msgid "否"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:102 src/waifu-Settings-Style.php:111
+msgid "随机"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:104 src/waifu-Settings-Style.php:113
+msgid "顺序"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:121
+msgid "由于看板娘大小不同，请自行设置：宽度 x 高度"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:130
+msgid "设置为 0 时禁用"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:137
+msgid "左"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:139
+msgid "右"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:152
+msgid "禁用"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:154
+msgid "只能水平拖拽"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:156
+msgid "自由拖拽"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:162
+msgid "还原"
+msgstr ""
+
+#: src/waifu-Settings-Style.php:164
+msgid "不还原"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:10
+msgid "提示框设置"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:17
+msgid "显示一言"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:25
+msgid "显示加载状态"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:33
+msgid "显示看板娘消息"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:41
+msgid "显示控制台打开提示"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:49
+msgid "显示“复制内容”提示"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:57
+msgid "显示进入面页欢迎词"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:65
+msgid "提示框大小"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:73
+msgid "提示框字号(px)"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:80
+msgid "提示框位置(px)"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:88
+msgid "提示框背景色"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:96
+msgid "边框颜色"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:104
+msgid "阴影颜色"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:112
+msgid "提示框文字颜色"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Tips.php:120
+msgid "高亮文字颜色"
+msgstr ""
+
+#: src/waifu-Settings-Tips.php:133 src/waifu-Settings-Tips.php:140
+#: src/waifu-Settings-Tips.php:147 src/waifu-Settings-Tips.php:154
+#: src/waifu-Settings-Tips.php:161 src/waifu-Settings-Tips.php:168
+#: src/waifu-Settings-Toolbar.php:126 src/waifu-Settings-Toolbar.php:140
+#: src/waifu-Settings-Toolbar.php:147 src/waifu-Settings-Toolbar.php:154
+#: src/waifu-Settings-Toolbar.php:161 src/waifu-Settings-Toolbar.php:168
+#: src/waifu-Settings-Toolbar.php:175
+msgid "显示"
+msgstr ""
+
+#: src/waifu-Settings-Tips.php:135 src/waifu-Settings-Tips.php:142
+#: src/waifu-Settings-Tips.php:149 src/waifu-Settings-Tips.php:156
+#: src/waifu-Settings-Tips.php:163 src/waifu-Settings-Tips.php:170
+#: src/waifu-Settings-Toolbar.php:128 src/waifu-Settings-Toolbar.php:142
+#: src/waifu-Settings-Toolbar.php:149 src/waifu-Settings-Toolbar.php:156
+#: src/waifu-Settings-Toolbar.php:163 src/waifu-Settings-Toolbar.php:170
+#: src/waifu-Settings-Toolbar.php:177
+msgid "隐藏"
+msgstr ""
+
+#: src/waifu-Settings-Tips.php:177
+msgid "由于提示大小不同，请自行设置：宽度 x 高度"
+msgstr ""
+
+#: src/waifu-Settings-Tips.php:193
+msgid "数字越大越靠上"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:17
+msgid "工具栏"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:25
+msgid "关闭看板娘按钮"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:33
+msgid "模型切换按钮"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:41
+msgid "材质切换按钮"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:49
+msgid "一言切换按钮"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:57
+msgid "看板娘截图按钮"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:65
+msgid "返回首页按钮"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:73
+msgid "跳转关于页按钮"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:81
+msgid "工具栏图标大小(px)"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:89
+msgid "工具栏行高(px)"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:97
+msgid "工具栏顶部边距(px)"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:105
+msgid "工具栏图标颜色"
+msgstr ""
+
+#. id
+#: src/waifu-Settings-Toolbar.php:113
+msgid "鼠标触碰时图标颜色"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:133
+msgid "开启"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:135
+msgid "关闭"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:197
+msgid "数字越大越靠下"
+msgstr ""
+
+#. Name of the plugin
+msgid "Live 2D"
+msgstr ""
+
+#. Description of the plugin
+msgid "看板娘插件"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://blog.csdn.net/jiangweifang"
+msgstr ""
+
+#. Author of the plugin
+msgid "Weifang Chiang"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://github.com/jiangweifang/wp-live2d"
+msgstr ""
+
+msgid "设置看板娘的位置，可以是负数"
