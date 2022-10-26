@@ -14,6 +14,14 @@ class live2D_Settings_Base {
         );
 
         add_settings_field(
+            'live2dLogin', // id
+            __('登录','live-2d'), // title
+            array( $this, 'live2dLogin_callback' ), // callback
+            'live-2d-settings-base', // page
+            'live_2d_setting_base_section' // section
+        );
+
+        add_settings_field(
             'live2dLayoutType', // id
             __('看板娘模式','live-2d'), // title
             array( $this, 'live2dLayoutType_callback' ), // callback
@@ -84,7 +92,12 @@ class live2D_Settings_Base {
             get_home_url()
         );
     }
-
+    
+    public function live2dLogin_callback() {
+        ?>
+        <buttom id="btnLogin" class="button button-primary">登录</buttom> 
+        <?php
+    }
     public function live2dLayoutType_callback() {
         ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['live2dLayoutType'] ) && $this->live_2d__options['live2dLayoutType'] === true ) ? 'checked' : '' ; ?>
         <label for="live2dLayoutType-0"><input type="radio" name="live_2d_settings_option_name[live2dLayoutType]" id="live2dLayoutType-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('页面','live-2d') ?></label><br>

@@ -46,7 +46,6 @@ class live2D {
 
 	public function live_2d__create_admin_page() {
 ?>
-
 		<div class="wrap">
 			<h2 class="nav-tab-wrapper">
 				<a id="settings_btn" href="#settings" class="nav-tab"><?php esc_html_e('基础设置','live-2d') ?></a>
@@ -150,6 +149,16 @@ class live2D {
 
 				$('input[type=range]').bind('input propertychange', function() {  
 					jQuery(this).next('.result').html(jQuery(this).val());
+				});
+
+				$("#btnLogin").on("click",function(){
+					let ref = encodeURIComponent(window.location.href);
+					let width = 500;
+					let height  = 680;
+					let loginWin = window.open(`https://localhost:7051/SingleLogin?referer=${ref}`,"Login",`toolbar=no,location=no,resizable=no, height=${height}, width=${width}`);
+					let x = window.screen.availWidth - width;
+					let y = window.screen.availHeight - height;
+					loginWin.moveTo(x/2,y/2);
 				});
 			});
 			
