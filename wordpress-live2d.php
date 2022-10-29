@@ -19,7 +19,7 @@ require(dirname(__FILE__)  . '/src/live2d-Main.php');
 // 加载小工具
 require(dirname(__FILE__)  . '/src/live2d-Widget.php');
 // 加载监听
-require(dirname(__FILE__)  . '/src/live2d-Login.php');
+//require(dirname(__FILE__)  . '/src/live2d-Login.php');
 
 //添加样式（初始化）
 function live2D_style(){
@@ -126,7 +126,7 @@ function live_2d_link($url, $text='', $ext=''){
     return stripos($ext, 'p') !== false ? "<p>{$link}</p>" : "{$link} ";
 }
 
-add_action( 'wp_loaded', 'live2D_Callback' );
+/*add_action( 'wp_loaded', 'live2D_Callback' );
 
 function live2D_Callback(){
     if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
@@ -134,5 +134,5 @@ function live2D_Callback(){
         do_action('onchangeapi', new live2D_Login($_POST));
     }
 }
-
+*/
 ?>
