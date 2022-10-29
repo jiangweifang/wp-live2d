@@ -200,6 +200,10 @@ class live2D_Settings{
 			$sanitary_values['defineHitAreaName'] = $input['defineHitAreaName'] ;
 		}
 
+		if( isset( $input['live2dToken'] ) ){
+			$sanitary_values['live2dToken'] = $input['live2dToken'] ;
+		}
+
         return $sanitary_values;
     }
 
