@@ -35,6 +35,9 @@ jQuery(function($){
         console.log("已打开登陆窗口");
     });
     $("#signOut").on("click",function (e){
-        $.post(`${userInfo.hosts}src/live2d-SignOut.php`,{userName: userInfo.userName},function(rsp){ });
+        $.post(`${userInfo.hosts}src/live2d-SignOut.php`,{userName: userInfo.userName},function(rsp){
+            $("#btnLogin").show();
+            $(".lgoined").hide();
+         });
     });
 })
