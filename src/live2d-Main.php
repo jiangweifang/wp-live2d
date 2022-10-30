@@ -11,9 +11,6 @@ require(dirname(__FILE__)  . '/waifu-Settings-Tips.php');
 require(dirname(__FILE__)  . '/waifu-Settings-Toolbar.php');
 require(dirname(__FILE__)  . '/waifu-Settings-Base.php');
 class live2D {
-	
-	
-
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'live_2d__add_plugin_page' ) );
 		add_action( 'admin_init', array( $this, 'live_2d_waifu_page_init' ) );
@@ -41,8 +38,6 @@ class live2D {
 		);
 		add_action('load-'.$my_admin_page, array('live2D_Utils','live_2D_help_tab'));
 	}
-
-	
 
 	public function live_2d__create_admin_page() {
 ?>
@@ -159,6 +154,15 @@ class live2D {
 					let x = window.screen.availWidth - width;
 					let y = window.screen.availHeight - height;
 					loginWin.moveTo(x/2,y/2);
+					let intervalId = setInterval(
+						()=>{
+							if(loginWin.closed){
+								clearInterval(intervalId);
+							}
+						},
+						500
+					);
+					console.log("已打开登陆窗口");
 				});
 			});
 			
