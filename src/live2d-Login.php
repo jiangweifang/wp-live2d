@@ -9,6 +9,7 @@ if(!empty($_POST["token"])){
     $userInfo["userName"] = $_POST["userName"];
     $userInfo["errorCode"] = intval($_POST["errorCode"]);
     if(is_plugin_active($dir[$dirLenght - 2]."/wordpress-live2d.php")){
+        delete_option( 'live_2d_settings_user_token' );
         add_option('live_2d_settings_user_token',$userInfo);
         echo "1";
     }else{

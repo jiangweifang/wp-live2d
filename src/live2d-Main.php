@@ -18,6 +18,8 @@ class live2D {
 		add_action('updated_option', function( $option_name, $old_value, $value ) {
 			$this->live2D_Advanced_Save($option_name, $old_value, $value );
 		}, 10, 3);
+		wp_enqueue_script('admin_js',plugins_url( '../assets/waifu-admin.js', __FILE__));
+		wp_localize_script( 'admin_js', 'userInfo',get_option( 'live_2d_settings_user_token' ));
 	}
 
 	public function live2D_Advanced_Save($option_name, $old_value, $value ){
@@ -146,24 +148,7 @@ class live2D {
 					jQuery(this).next('.result').html(jQuery(this).val());
 				});
 
-				$("#btnLogin").on("click",function(){
-					let ref = encodeURIComponent(`<?php echo plugin_dir_url(dirname(__FILE__)) ?>`);
-					let width = 500;
-					let height  = 680;
-					let loginWin = window.open(`https://localhost:7051/SingleLogin?referer=${ref}`,"Login",`toolbar=no,location=no,resizable=no, height=${height}, width=${width}`);
-					let x = window.screen.availWidth - width;
-					let y = window.screen.availHeight - height;
-					loginWin.moveTo(x/2,y/2);
-					let intervalId = setInterval(
-						()=>{
-							if(loginWin.closed){
-								clearInterval(intervalId);
-							}
-						},
-						500
-					);
-					console.log("已打开登陆窗口");
-				});
+				
 			});
 			
 			function addMsgInput(optName,clsName,obj,typeName){
@@ -272,6 +257,5 @@ class live2D {
 		$waifu_opt = new live2D_Advanced();
 		$waifu_opt->live_2d_advanced_init();
 	}
-
 }
 ?>

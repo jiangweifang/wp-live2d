@@ -53,6 +53,7 @@ register_uninstall_hook( __FILE__, 'live_2d_uninstall' );
 function live_2d_uninstall(){
     delete_option( 'live_2d_settings_option_name' );
     delete_option( 'live_2d_advanced_option_name' );
+    delete_option( 'live_2d_settings_user_token' );
 }
 
 // 设置面板设置按钮的钩子
