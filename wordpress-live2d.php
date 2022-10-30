@@ -28,6 +28,8 @@ function live2D_style(){
     wp_enqueue_script( 'jquery-ui-draggable');
     wp_enqueue_script( 'live2d_js' ,LIVE2D_ASSETS.'live2d.js',array('jquery'));
 	wp_enqueue_script( 'waifu-tips_js' ,LIVE2D_ASSETS.'waifu-tips.js',array('jquery-ui-draggable','live2d_js'));
+    wp_localize_script( 'waifu-tips_js', 'userInfo', get_option( 'live_2d_settings_user_token' ));
+    wp_localize_script( 'waifu-tips_js', 'waifu_settings', get_option( 'live_2d_settings_option_name' ));
 }
 add_action('wp_head', 'live2D_style',1 );
 
@@ -111,9 +113,8 @@ function live2D_DefMod(){
             </div>
         </div>
         <script type="text/javascript">
-        var settings_Json = '<?php echo json_encode(get_option( 'live_2d_settings_option_name' )); ?>';
         jQuery(function(){
-            initModel("<?php echo LIVE2D_ASSETS ?>waifu-tips.json",JSON.parse(settings_Json));
+            initModel("<?php echo LIVE2D_ASSETS ?>waifu-tips.json");
         });
         </script>
     <?php

@@ -47,8 +47,8 @@ function hideMessage(timeout) {
     $('.waifu-tips').delay(timeout).fadeTo(200, 0);
 }
 
-function initModel(waifuPath, settingsJson) {
-    live2d_settings = settingsJson;
+function initModel(waifuPath) {
+    live2d_settings = waifu_settings;
     
     //设置一个单位为px的文字
     var unitType = 'px';
