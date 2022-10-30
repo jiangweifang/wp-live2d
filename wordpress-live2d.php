@@ -127,14 +127,4 @@ function live_2d_link($url, $text='', $ext=''){
     $link = "<a href='{$url}'{$button}{$target}>{$text}</a>";
     return stripos($ext, 'p') !== false ? "<p>{$link}</p>" : "{$link} ";
 }
-
-/*add_action( 'wp_loaded', 'live2D_Callback' );
-
-function live2D_Callback(){
-    if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
-        // fire the custom action
-        do_action('onchangeapi', new live2D_Login($_POST));
-    }
-}
-*/
 ?>

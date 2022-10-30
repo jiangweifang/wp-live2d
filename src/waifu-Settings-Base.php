@@ -96,7 +96,7 @@ class live2D_Settings_Base {
     public function live2dLogin_callback() {
         ?>
         <buttom id="btnLogin" class="button button-primary">登录</buttom> 
-        <p id="labLogined" style="display:none"></p>
+        <p id="labLogined" class="lgoined" style="display:none"></p> <br /> <a id="signOut" class="lgoined" href="#">退出登录</a>
         <?php
     }
     public function live2dLayoutType_callback() {

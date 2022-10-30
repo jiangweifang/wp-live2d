@@ -19,7 +19,9 @@ class live2D {
 			$this->live2D_Advanced_Save($option_name, $old_value, $value );
 		}, 10, 3);
 		wp_enqueue_script('admin_js',plugins_url( '../assets/waifu-admin.js', __FILE__));
-		wp_localize_script( 'admin_js', 'userInfo',get_option( 'live_2d_settings_user_token' ));
+		$user_info = get_option( 'live_2d_settings_user_token' );
+		$user_info["hosts"] = plugin_dir_url(dirname(__FILE__));
+		wp_localize_script( 'admin_js', 'userInfo', $user_info);
 	}
 
 	public function live2D_Advanced_Save($option_name, $old_value, $value ){
