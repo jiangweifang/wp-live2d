@@ -110,7 +110,7 @@ function live2D_DefMod(){
         </div>
         <script type="text/javascript">
         jQuery(function(){
-            initModel("<?php echo LIVE2D_ASSETS ?>waifu-tips.json",JSON.parse(settings_Json));
+            initModel("<?php echo LIVE2D_ASSETS ?>waifu-tips.json");
         });
         </script>
     <?php
