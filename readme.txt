@@ -184,8 +184,6 @@ License: MIT
   [2]: https://github.com/journey-ad/live2d_src "基于 #fea64e4 的修改版"
   [3]: https://www.fghrsh.net/post/123.html "fghrsh.net"
   
-- 请勿将本插件使用在商业网站中！
-- Do not use this plugin on commercial websites！
 - WordPress Live 2D 插件不属于 Live2D Inc. 它是一个非官方产品
 - 我的QQ：八五八三八六零七，欢迎加我反馈信息。
 
