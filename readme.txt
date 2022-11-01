@@ -5,7 +5,7 @@ Donate link: https://blog.csdn.net/jiangweifang
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation
 Tested up to: 6.1
 Requires at least: 5.5
-Stable tag: 1.7.9
+Stable tag: 1.8.0
 License: MIT
 
 == Changelog ==

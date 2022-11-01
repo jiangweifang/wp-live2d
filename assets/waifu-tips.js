@@ -2,7 +2,7 @@
 window.live2d_settings = Array(); 
 var re = /x/;
 var hltips = 'color:';//定义highlight标记
-console.log(re + 'WP-Live2D 1.7.9');
+console.log(re + 'WP-Live2D 1.8.0');
 
 String.prototype.render = function(context) {
     var tokenReg = /(\\)?\{([^\{\}\\]+)(\\)?\}/g;
@@ -144,16 +144,12 @@ function initModel(waifuPath) {
     } loadModel(
         modelId,
         modelTexturesId,
-        live2d_settings.modelPoint.zoom, 
-        live2d_settings.modelPoint.x, 
-        live2d_settings.modelPoint.y, 
-        live2d_settings.defineHitAreaName,
-        live2d_settings.sdkUrl
+        live2d_settings
     );
 }
 
-function loadModel(modelId, modelTexturesId=0,zoom = 1.0 ,x = 0, y = 0, hitAreaList = {} , sdkUrl = '') {
-    if (live2d_settings.modelStorage) {
+function loadModel(modelId, modelTexturesId=0, settings) {
+    if (settings.modelStorage) {
         localStorage.setItem('modelId', modelId);
         localStorage.setItem('modelTexturesId', modelTexturesId);
     } else {
@@ -161,23 +157,18 @@ function loadModel(modelId, modelTexturesId=0,zoom = 1.0 ,x = 0, y = 0, hitAreaL
         sessionStorage.setItem('modelTexturesId', modelTexturesId);
     } 
     let modelPath;
-    if(live2d_settings.modelAPI.indexOf('model3.json') > 0 ){
-        modelPath = live2d_settings.modelAPI;
+    if(settings.modelAPI.indexOf('model3.json') > 0 ){
+        modelPath = settings.modelAPI;
     }else{
-        modelPath = live2d_settings.modelAPI+'get/?id='+modelId+'-'+modelTexturesId;
+        modelPath = settings.modelAPI+'get/?id='+modelId+'-'+modelTexturesId;
     }
-    if(sdkUrl == undefined || sdkUrl == null || sdkUrl == ''){
-        sdkUrl = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
+    if(settings.sdkUrl == undefined || settings.sdkUrl == null || settings.sdkUrl == ''){
+        settings.sdkUrl = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
     }
     loadlive2d(
         'live2d', 
         modelPath,
-        0.5,
-        zoom,
-        x,
-        y,
-        hitAreaList,
-        sdkUrl
+        settings
     );
 }
 
@@ -356,18 +347,6 @@ function loadTipsMessage(result) {
     
     function showHitokoto() {
     	switch(live2d_settings.hitokotoAPI) {
-    	    case 'lwl12.com':
-    	        $.getJSON('https://api.lwl12.com/hitokoto/v1?encode=realjson',function(result){
-        	        if (!empty(result.source)) {
-						var txtArr = waifu_tips.hitokoto_api_message['lwl12.com'][0].split('|');
-						var text = txtArr[0];
-						if(txtArr.length > 1){
-							if (!empty(result.author)) text += txtArr[1];
-						}
-                        text = text.render({source: result.source, creator: result.author,highlight: hltips});
-                        window.setTimeout(function() {showMessage(text, 3000, true);}, 5000);
-                    } showMessage(result.text, 5000, true);
-                });break;
     	    case 'fghrsh.net':
     	        $.getJSON('https://api.fghrsh.net/hitokoto/rand/?encode=jsc&uid=3335',function(result){
             	    if (!empty(result.source)) {
