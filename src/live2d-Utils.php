@@ -177,9 +177,10 @@ class live2D_Utils{
 		) );
 	}
 
-	public function Save_Options($new_value, $old_value, $value){
+	public function Save_Options($new_value){
+		$userInfo = get_option( 'live_2d_settings_user_token' );
 		$post = [
-			'token'=>'',
+			'token'=> $userInfo["token"],
 			'new_value' => json_encode($new_value)
 		];
 		$curl = curl_init();
