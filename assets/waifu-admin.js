@@ -20,12 +20,7 @@ jQuery(function($){
         let intervalId = setInterval(
             ()=>{
                 if(loginWin.closed){
-                    if(userInfo.errorCode == 0 && userInfo.userName){
-                        $("#btnLogin").hide();
-                        $(".lgoined").show();
-                        $("#labLogined").html(`${userInfo.userName} 已登录`);
-                    }
-                    console.log(userInfo.userName);
+                    window.location.reload();
                     clearInterval(intervalId);
                 }
             },

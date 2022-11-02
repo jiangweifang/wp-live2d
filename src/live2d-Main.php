@@ -18,17 +18,16 @@ class live2D {
 		add_action('updated_option', function( $option_name, $old_value, $value ) {
 			$this->live2D_Advanced_Save($option_name, $old_value, $value );
 		}, 10, 3);
-		wp_enqueue_script('admin_js',plugins_url( '../assets/waifu-admin.js', __FILE__));
-		$user_info = get_option( 'live_2d_settings_user_token' );
-		$user_info["hosts"] = plugin_dir_url(dirname(__FILE__));
-		wp_localize_script( 'admin_js', 'userInfo', $user_info);
+		add_action( "update_option_live_2d_settings_option_name", function($option_name, $old_value, $value){
+			$live2d_utils = new live2D_Utils();
+			$test = $live2d_utils -> Save_Options($option_name, $old_value, $value);
+		},10,4);
 	}
 
 	public function live2D_Advanced_Save($option_name, $old_value, $value ){
 		if($option_name == 'live_2d_advanced_option_name'){
-			$waifu_tips = new live2D_Utils();
-			$waifu_Josn = $waifu_tips -> advanced_json($value);
-			$waifu_tips -> update_Waifu_JsonFile($waifu_Josn);
+			$waifu_Josn = $live2d_utils -> advanced_json($value);
+			$live2d_utils -> update_Waifu_JsonFile($waifu_Josn);
 		}
 	}
 	public function live_2d__add_plugin_page() {
@@ -231,7 +230,8 @@ class live2D {
 			'jQuery( function() { jQuery( ".color-picker" ).wpColorPicker(); } );'
 		);
 		wp_enqueue_script( 'wp-color-picker-alpha' );
-		
+		wp_enqueue_script('admin_js',plugins_url( '../assets/waifu-admin.js', __FILE__));
+		wp_localize_script( 'admin_js', 'userInfo', get_option( 'live_2d_settings_user_token' ));
 		// 注册基础设置
         register_setting(
             'live_2d_settings_base_group', // option_group
