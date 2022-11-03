@@ -21,6 +21,7 @@ class live2D {
 		add_action( "update_option_live_2d_settings_option_name", function($old_value, $value, $option){
 			$live2d_utils = new live2D_Utils();
 			$test = $live2d_utils -> Save_Options($value);
+			echo $test;
 		},10,4);
 	}
 

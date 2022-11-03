@@ -191,7 +191,7 @@ class live2D_Utils{
 		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post));
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER,false);  //禁用后cURL将终止从服务端进行验证
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST,false);  //不验证证书是否存在
-		curl_exec($curl);
+		return curl_exec($curl);
 	}
 }
 

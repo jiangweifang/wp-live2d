@@ -160,7 +160,7 @@ function loadModel(modelId, modelTexturesId=0, settings) {
     if(settings.modelAPI.indexOf('model3.json') > 0 ){
         modelPath = settings.modelAPI;
     }else{
-        modelPath = settings.modelAPI+'get/?id='+modelId+'-'+modelTexturesId;
+        modelPath = settings.modelAPI+'?id='+modelId+'-'+modelTexturesId;
     }
     if(settings.sdkUrl == undefined || settings.sdkUrl == null || settings.sdkUrl == ''){
         settings.sdkUrl = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';

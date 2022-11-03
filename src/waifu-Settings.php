@@ -207,7 +207,7 @@ class live2D_Settings{
 		$defValue = array();
 		if(FALSE === $live_2d_settings){
 			$defValue['live2dLayoutType']=true;
-			$defValue['modelAPI']='//live2d.fghrsh.net/api/';
+			$defValue['modelAPI']='https://live2d.fghrsh.net/api/get';
 			$defValue['hitokotoAPI']='lwl12.com';
 			$defValue['modelId']='1';
 			$defValue['modelTexturesId']='53';
