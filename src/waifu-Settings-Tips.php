@@ -145,8 +145,6 @@ class live2D_Settings_Tips {
 
     public function hitokotoAPI_callback() {
         ?> <select name="live_2d_settings_option_name[hitokotoAPI]" id="hitokotoAPI">
-            <?php $selected = (isset( $this->live_2d__options['hitokotoAPI'] ) && $this->live_2d__options['hitokotoAPI'] === 'lwl12.com') ? 'selected' : '' ; ?>
-            <option <?php echo $selected; ?>>lwl12.com</option>
             <?php $selected = (isset( $this->live_2d__options['hitokotoAPI'] ) && $this->live_2d__options['hitokotoAPI'] === 'hitokoto.cn') ? 'selected' : '' ; ?>
             <option <?php echo $selected; ?>>hitokoto.cn</option>
             <?php $selected = (isset( $this->live_2d__options['hitokotoAPI'] ) && $this->live_2d__options['hitokotoAPI'] === 'jinrishici.com') ? 'selected' : '' ; ?>

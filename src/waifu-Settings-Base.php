@@ -108,7 +108,7 @@ class live2D_Settings_Base {
 
     public function modelAPI_callback() {
         printf(
-            '<input class="regular-text" type="text" name="live_2d_settings_option_name[modelAPI]" id="modelAPI" value="%s">',
+            '<input class="regular-text" type="url" name="live_2d_settings_option_name[modelAPI]" id="modelAPI" value="%s">',
             isset( $this->live_2d__options['modelAPI'] ) ? esc_attr( $this->live_2d__options['modelAPI']) : ''
         );
     }
