@@ -48,6 +48,7 @@ function live_2d_stop ()
 {
 	//delete_option( 'live_2d_settings_option_name' );
     //delete_option( 'live_2d_advanced_option_name' );
+    delete_option( 'live_2d_settings_user_token' );
 }
 
 //卸载插件
@@ -77,7 +78,7 @@ add_action( 'rest_api_init', function(){
     register_rest_route( 'live2d/v1', '/token', array(
         'methods' => 'POST',
         'callback' => array( $login, 'user_login')
-    ) );
+    ));
 } );
 // 初始化加载
 function live2D_Init(){

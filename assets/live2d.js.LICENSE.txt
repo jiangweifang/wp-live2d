@@ -1,0 +1,431 @@
+/*! ../cubismframeworkconfig */
+
+/*! ../effect/cubismbreath */
+
+/*! ../effect/cubismeyeblink */
+
+/*! ../effect/cubismpose */
+
+/*! ../live2dcubismframework */
+
+/*! ../math/cubismmath */
+
+/*! ../math/cubismmatrix44 */
+
+/*! ../math/cubismmodelmatrix */
+
+/*! ../math/cubismtargetpoint */
+
+/*! ../math/cubismvector2 */
+
+/*! ../motion/cubismexpressionmotion */
+
+/*! ../motion/cubismmotion */
+
+/*! ../motion/cubismmotionmanager */
+
+/*! ../physics/cubismphysics */
+
+/*! ../rendering/cubismrenderer */
+
+/*! ../rendering/cubismrenderer_webgl */
+
+/*! ../type/csmmap */
+
+/*! ../type/csmrectf */
+
+/*! ../type/csmstring */
+
+/*! ../type/csmvector */
+
+/*! ../utils/cubismdebug */
+
+/*! ../utils/cubismjson */
+
+/*! ./DbCache */
+
+/*! ./Framework/cubismdefaultparameterid */
+
+/*! ./Framework/cubismmodelsettingjson */
+
+/*! ./Framework/effect/cubismbreath */
+
+/*! ./Framework/effect/cubismeyeblink */
+
+/*! ./Framework/live2dcubismframework */
+
+/*! ./Framework/math/cubismmatrix44 */
+
+/*! ./Framework/math/cubismviewmatrix */
+
+/*! ./Framework/model/cubismusermodel */
+
+/*! ./Framework/motion/acubismmotion */
+
+/*! ./Framework/motion/cubismmotionqueuemanager */
+
+/*! ./Framework/type/csmmap */
+
+/*! ./Framework/type/csmvector */
+
+/*! ./Framework/utils/cubismjson */
+
+/*! ./LAppLive2DManager_v2 */
+
+/*! ./LAppModel_v2 */
+
+/*! ./Live2DFramework */
+
+/*! ./PlatformManager */
+
+/*! ./acubismmotion */
+
+/*! ./csmmap */
+
+/*! ./csmrectf */
+
+/*! ./csmstring */
+
+/*! ./csmvector */
+
+/*! ./cubismbreath */
+
+/*! ./cubismdebug */
+
+/*! ./cubismdefaultparameterid */
+
+/*! ./cubismexpressionmotion */
+
+/*! ./cubismeyeblink */
+
+/*! ./cubismid */
+
+/*! ./cubismidmanager */
+
+/*! ./cubismjson */
+
+/*! ./cubismjsonextension */
+
+/*! ./cubismmath */
+
+/*! ./cubismmatrix44 */
+
+/*! ./cubismmoc */
+
+/*! ./cubismmodel */
+
+/*! ./cubismmodelmatrix */
+
+/*! ./cubismmodelsettingjson */
+
+/*! ./cubismmodeluserdata */
+
+/*! ./cubismmodeluserdatajson */
+
+/*! ./cubismmotion */
+
+/*! ./cubismmotioninternal */
+
+/*! ./cubismmotionjson */
+
+/*! ./cubismmotionmanager */
+
+/*! ./cubismmotionqueueentry */
+
+/*! ./cubismmotionqueuemanager */
+
+/*! ./cubismphysics */
+
+/*! ./cubismphysicsinternal */
+
+/*! ./cubismphysicsjson */
+
+/*! ./cubismpose */
+
+/*! ./cubismrenderer */
+
+/*! ./cubismrenderer_webgl */
+
+/*! ./cubismtargetpoint */
+
+/*! ./cubismusermodel */
+
+/*! ./cubismvector2 */
+
+/*! ./cubismviewmatrix */
+
+/*! ./icubismmodelsetting */
+
+/*! ./id/cubismidmanager */
+
+/*! ./lappdefine */
+
+/*! ./lappdelegate */
+
+/*! ./lapplive2dmanager */
+
+/*! ./lappmodel */
+
+/*! ./lapppal */
+
+/*! ./lapptexturemanager */
+
+/*! ./lappview */
+
+/*! ./lib/Live2DFramework */
+
+/*! ./lib/MatrixStack */
+
+/*! ./lib/ModelSettingJson */
+
+/*! ./lib/live2d.min */
+
+/*! ./live2dcubismframework */
+
+/*! ./rendering/cubismrenderer */
+
+/*! ./touchmanager */
+
+/*! ./type/csmvector */
+
+/*! ./utils/cubismdebug */
+
+/*! ./utils/cubismjson */
+
+/*! dexie */
+
+/*!*********************!*\
+  !*** ./src/main.js ***!
+  \*********************/
+
+/*!************************!*\
+  !*** ./src/DbCache.ts ***!
+  \************************/
+
+/*!************************!*\
+  !*** ./src/lapppal.ts ***!
+  \************************/
+
+/*!*************************!*\
+  !*** ./src/lappview.ts ***!
+  \*************************/
+
+/*!**************************!*\
+  !*** ./src/lappmodel.ts ***!
+  \**************************/
+
+/*!***************************!*\
+  !*** ./src/lappdefine.ts ***!
+  \***************************/
+
+/*!*****************************!*\
+  !*** ./src/LAppModel_v2.ts ***!
+  \*****************************/
+
+/*!*****************************!*\
+  !*** ./src/lappdelegate.ts ***!
+  \*****************************/
+
+/*!*****************************!*\
+  !*** ./src/touchmanager.ts ***!
+  \*****************************/
+
+/*!*******************************!*\
+  !*** ./src/lib/live2d.min.js ***!
+  \*******************************/
+
+/*!********************************!*\
+  !*** ./src/PlatformManager.ts ***!
+  \********************************/
+
+/*!********************************!*\
+  !*** ./src/lib/MatrixStack.ts ***!
+  \********************************/
+
+/*!**********************************!*\
+  !*** ./src/lapplive2dmanager.ts ***!
+  \**********************************/
+
+/*!***********************************!*\
+  !*** ./src/lapptexturemanager.ts ***!
+  \***********************************/
+
+/*!************************************!*\
+  !*** ./src/lib/Live2DFramework.js ***!
+  \************************************/
+
+/*!*************************************!*\
+  !*** ./src/LAppLive2DManager_v2.ts ***!
+  \*************************************/
+
+/*!*************************************!*\
+  !*** ./src/lib/ModelSettingJson.ts ***!
+  \*************************************/
+
+/*!**************************************!*\
+  !*** ./src/Framework/id/cubismid.ts ***!
+  \**************************************/
+
+/*!**************************************!*\
+  !*** ./src/Framework/type/csmmap.ts ***!
+  \**************************************/
+
+/*!****************************************!*\
+  !*** ./src/Framework/type/csmrectf.ts ***!
+  \****************************************/
+
+/*!*****************************************!*\
+  !*** ./src/Framework/type/csmstring.ts ***!
+  \*****************************************/
+
+/*!*****************************************!*\
+  !*** ./src/Framework/type/csmvector.ts ***!
+  \*****************************************/
+
+/*!******************************************!*\
+  !*** ./src/Framework/math/cubismmath.ts ***!
+  \******************************************/
+
+/*!******************************************!*\
+  !*** ./src/Framework/model/cubismmoc.ts ***!
+  \******************************************/
+
+/*!*******************************************!*\
+  !*** ./src/Framework/utils/cubismjson.ts ***!
+  \*******************************************/
+
+/*!********************************************!*\
+  !*** ./src/Framework/effect/cubismpose.ts ***!
+  \********************************************/
+
+/*!********************************************!*\
+  !*** ./src/Framework/model/cubismmodel.ts ***!
+  \********************************************/
+
+/*!********************************************!*\
+  !*** ./src/Framework/utils/cubismdebug.ts ***!
+  \********************************************/
+
+/*!*********************************************!*\
+  !*** ./src/Framework/id/cubismidmanager.ts ***!
+  \*********************************************/
+
+/*!*********************************************!*\
+  !*** ./src/Framework/math/cubismvector2.ts ***!
+  \*********************************************/
+
+/*!**********************************************!*\
+  !*** ./src/Framework/effect/cubismbreath.ts ***!
+  \**********************************************/
+
+/*!**********************************************!*\
+  !*** ./src/Framework/icubismmodelsetting.ts ***!
+  \**********************************************/
+
+/*!**********************************************!*\
+  !*** ./src/Framework/math/cubismmatrix44.ts ***!
+  \**********************************************/
+
+/*!**********************************************!*\
+  !*** ./src/Framework/motion/cubismmotion.ts ***!
+  \**********************************************/
+
+/*!***********************************************!*\
+  !*** ./src/Framework/motion/acubismmotion.ts ***!
+  \***********************************************/
+
+/*!************************************************!*\
+  !*** ./src/Framework/cubismframeworkconfig.ts ***!
+  \************************************************/
+
+/*!************************************************!*\
+  !*** ./src/Framework/effect/cubismeyeblink.ts ***!
+  \************************************************/
+
+/*!************************************************!*\
+  !*** ./src/Framework/live2dcubismframework.ts ***!
+  \************************************************/
+
+/*!************************************************!*\
+  !*** ./src/Framework/math/cubismviewmatrix.ts ***!
+  \************************************************/
+
+/*!************************************************!*\
+  !*** ./src/Framework/model/cubismusermodel.ts ***!
+  \************************************************/
+
+/*!************************************************!*\
+  !*** ./src/Framework/physics/cubismphysics.ts ***!
+  \************************************************/
+
+/*!*************************************************!*\
+  !*** ./src/Framework/cubismmodelsettingjson.ts ***!
+  \*************************************************/
+
+/*!*************************************************!*\
+  !*** ./src/Framework/math/cubismmodelmatrix.ts ***!
+  \*************************************************/
+
+/*!*************************************************!*\
+  !*** ./src/Framework/math/cubismtargetpoint.ts ***!
+  \*************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/dexie/dist/modern/dexie.mjs ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./src/Framework/motion/cubismmotionjson.ts ***!
+  \**************************************************/
+
+/*!***************************************************!*\
+  !*** ./src/Framework/cubismdefaultparameterid.ts ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./src/Framework/rendering/cubismrenderer.ts ***!
+  \***************************************************/
+
+/*!****************************************************!*\
+  !*** ./src/Framework/model/cubismmodeluserdata.ts ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./src/Framework/physics/cubismphysicsjson.ts ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./src/Framework/utils/cubismjsonextension.ts ***!
+  \****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./src/Framework/motion/cubismmotionmanager.ts ***!
+  \*****************************************************/
+
+/*!******************************************************!*\
+  !*** ./src/Framework/motion/cubismmotioninternal.ts ***!
+  \******************************************************/
+
+/*!********************************************************!*\
+  !*** ./src/Framework/model/cubismmodeluserdatajson.ts ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./src/Framework/motion/cubismexpressionmotion.ts ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./src/Framework/motion/cubismmotionqueueentry.ts ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./src/Framework/physics/cubismphysicsinternal.ts ***!
+  \********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./src/Framework/rendering/cubismrenderer_webgl.ts ***!
+  \*********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./src/Framework/motion/cubismmotionqueuemanager.ts ***!
+  \**********************************************************/

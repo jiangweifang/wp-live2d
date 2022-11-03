@@ -238,6 +238,7 @@ class live2D {
 			update_option('live_2d_settings_user_token',$userInfo);
 		}
 		wp_localize_script( 'admin_js', 'userInfo', get_option( 'live_2d_settings_user_token' ));
+		wp_localize_script( 'admin_js', 'siteurl', get_option( 'siteurl' ));
 		// 注册基础设置
         register_setting(
             'live_2d_settings_base_group', // option_group

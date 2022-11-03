@@ -20,5 +20,9 @@ class live2d_Login{
             echo "-1";
         }
     }
+
+    function user_signout($request){
+        echo $request["userName"];
+    }
 }
 ?>
