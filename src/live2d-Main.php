@@ -21,7 +21,7 @@ class live2D {
 		add_action( "update_option_live_2d_settings_option_name", function($old_value, $value, $option){
 			$live2d_utils = new live2D_Utils();
 			$test = $live2d_utils -> Save_Options($value);
-			echo $test;
+			return false;
 		},10,4);
 	}
 
@@ -232,6 +232,11 @@ class live2D {
 		);
 		wp_enqueue_script( 'wp-color-picker-alpha' );
 		wp_enqueue_script('admin_js',plugins_url( '../assets/waifu-admin.js', __FILE__));
+		if(! get_option( 'live_2d_settings_user_token' )){
+			$userInfo = array();
+			$userInfo["hosts"] = plugin_dir_url(dirname(__FILE__));
+			update_option('live_2d_settings_user_token',$userInfo);
+		}
 		wp_localize_script( 'admin_js', 'userInfo', get_option( 'live_2d_settings_user_token' ));
 		// 注册基础设置
         register_setting(

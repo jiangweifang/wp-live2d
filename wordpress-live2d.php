@@ -18,8 +18,8 @@ define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)).'/languages');//基础目
 require(dirname(__FILE__)  . '/src/live2d-Main.php');
 // 加载小工具
 require(dirname(__FILE__)  . '/src/live2d-Widget.php');
-// 加载监听
-//require(dirname(__FILE__)  . '/src/live2d-Login.php');
+// 加载登录确认API
+require(dirname(__FILE__)  . '/src/live2d-Login.php');
 
 //添加样式（初始化）
 function live2D_style(){
@@ -72,6 +72,13 @@ if ( is_admin() ){
 }
 
 add_action( 'plugins_loaded', 'live2D_Init' );
+add_action( 'rest_api_init', function(){
+    $login = new live2d_Login();
+    register_rest_route( 'live2d/v1', '/token', array(
+        'methods' => 'POST',
+        'callback' => array( $login, 'user_login')
+    ) );
+} );
 // 初始化加载
 function live2D_Init(){
     // 多语言加载
@@ -127,4 +134,5 @@ function live_2d_link($url, $text='', $ext=''){
     $link = "<a href='{$url}'{$button}{$target}>{$text}</a>";
     return stripos($ext, 'p') !== false ? "<p>{$link}</p>" : "{$link} ";
 }
+
 ?>
