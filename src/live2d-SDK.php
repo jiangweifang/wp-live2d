@@ -50,7 +50,7 @@ class live2d_SDK{
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_POST, true);//POST数据
             curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post));
-            curl_setopt($curl, CURLOPT_TIMEOUT,20);
+            curl_setopt($curl, CURLOPT_TIMEOUT,20L);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER,false);  //禁用后cURL将终止从服务端进行验证
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST,false);  //不验证证书是否存在
             $response = curl_exec($curl);
