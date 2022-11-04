@@ -14,19 +14,18 @@ class live2D {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'live_2d__add_plugin_page' ) );
 		add_action( 'admin_init', array( $this, 'live_2d_waifu_page_init' ) );
-		// 保存设置JSON的钩子 在执行update_option_live_2d_advanced_option_name时进行
+		// 保存设置JSON的钩子 在执行update_option_live_2d_advanced_option_name之后进行
 		add_action('updated_option', function( $option_name, $old_value, $value ) {
 			$this->live2D_Advanced_Save($option_name, $old_value, $value );
 		}, 10, 3);
-		add_action( "update_option_live_2d_settings_option_name", function($old_value, $value, $option){
-			$live2d_utils = new live2D_Utils();
-			$test = $live2d_utils -> Save_Options($value);
-			return false;
-		},10,4);
+		// 在update_option_live_2d_settings_option_name 时进行
+		$live2D_sdk = new live2D_SDK();
+		add_filter("pre_update_option_live_2d_settings_option_name",array(new live2D_SDK(),'Save_Options'),10,3);
 	}
 
 	public function live2D_Advanced_Save($option_name, $old_value, $value ){
 		if($option_name == 'live_2d_advanced_option_name'){
+			$live2d_utils = new live2D_Utils();
 			$waifu_Josn = $live2d_utils -> advanced_json($value);
 			$live2d_utils -> update_Waifu_JsonFile($waifu_Josn);
 		}
@@ -54,6 +53,7 @@ class live2D {
 				<a id="advanced_btn" href="#advanced" class="nav-tab"><?php esc_html_e('高级设置','live-2d') ?></a>
 			</h2>
 			<?php get_settings_errors('live_2d_advanced_option_saveFiles'); ?>
+			<?php get_settings_errors('live_2d_sdk_error'); ?>
 			<form method="post" action="options.php">
 			<?php settings_fields( 'live_2d_settings_base_group' ); ?>
 				<div id="settings" class="group">
@@ -232,18 +232,15 @@ class live2D {
 		);
 		wp_enqueue_script( 'wp-color-picker-alpha' );
 		wp_enqueue_script('admin_js',plugins_url( '../assets/waifu-admin.js', __FILE__));
-		if(! get_option( 'live_2d_settings_user_token' )){
-			$userInfo = array();
-			$userInfo["hosts"] = plugin_dir_url(dirname(__FILE__));
-			update_option('live_2d_settings_user_token',$userInfo);
-		}
-		wp_localize_script( 'admin_js', 'userInfo', get_option( 'live_2d_settings_user_token' ));
-		wp_localize_script( 'admin_js', 'siteurl', get_option( 'siteurl' ));
+		wp_localize_script( 'admin_js', 'settings',array(
+			'userInfo' => get_option( 'live_2d_settings_user_token' ),
+			'siteurl' => site_url()
+		));
 		// 注册基础设置
         register_setting(
             'live_2d_settings_base_group', // option_group
             'live_2d_settings_option_name', // option_name
-            array( 'live2D_Settings', 'live_2d_settings_sanitize' ) // sanitize_callback
+            array( new live2D_Settings(), 'live_2d_settings_sanitize' ) // sanitize_callback
         );
 
 		//加载基础设置

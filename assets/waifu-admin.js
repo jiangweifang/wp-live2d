@@ -1,4 +1,6 @@
 jQuery(function($){
+    console.log(settings);
+    var userInfo = settings.userInfo;
     if(userInfo.errorCode == 0 && userInfo.userName){
         $("#btnLogin").hide();
         $(".lgoined").show();
@@ -8,7 +10,7 @@ jQuery(function($){
         $(".lgoined").hide();
     }
     $("#btnLogin").on("click",function(){
-        let ref = encodeURIComponent(`${siteurl}`);
+        let ref = encodeURIComponent(`${settings.siteurl}`);
         let width = 500;
         let height  = 680;
         let loginWin = window.open(`https://localhost:7051/SingleLogin?referer=${ref}`,"Login",`toolbar=no,location=no,resizable=no, height=${height}, width=${width}`);
@@ -26,7 +28,7 @@ jQuery(function($){
             },
             500
         );
-        console.log(userInfo);
+        
         console.log("已打开登陆窗口");
     });
 })

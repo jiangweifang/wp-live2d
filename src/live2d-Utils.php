@@ -176,23 +176,6 @@ class live2D_Utils{
 			<p>如果您想恢复初始设置，可以删除插件后重新安装，所有内容会恢复初始化。</p>'
 		) );
 	}
-
-	public function Save_Options($new_value){
-		$userInfo = get_option( 'live_2d_settings_user_token' );
-		$post = [
-			'token'=> $userInfo["token"],
-			'new_value' => json_encode($new_value)
-		];
-		$curl = curl_init();
-		$url = "https://localhost:7017/Options/UpdateOpt";
-		curl_setopt($curl,CURLOPT_URL,$url );
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);//POST数据
-		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post));
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER,false);  //禁用后cURL将终止从服务端进行验证
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST,false);  //不验证证书是否存在
-		return curl_exec($curl);
-	}
 }
 
 ?>
