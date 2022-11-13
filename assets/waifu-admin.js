@@ -1,7 +1,7 @@
 jQuery(function($){
     console.log(settings);
     var userInfo = settings.userInfo;
-    if(userInfo.errorCode == 0 && userInfo.userName){
+    if(userInfo.errorCode == 200 && userInfo.userName){
         $("#btnLogin").hide();
         $(".lgoined").show();
         $("#labLogined").html(`${userInfo.userName} 已登录`);
