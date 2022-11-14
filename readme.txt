@@ -1,4 +1,4 @@
-=== Live 2D ===
+=== Live2DWebCanvas ===
 
 Contributors: Weifang Chiang
 Donate link: https://blog.csdn.net/jiangweifang
