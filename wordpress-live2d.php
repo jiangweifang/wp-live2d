@@ -74,10 +74,14 @@ if ( is_admin() ){
 
 add_action( 'plugins_loaded', 'live2D_Init' );
 add_action( 'rest_api_init', function(){
-    $login = new live2d_SDK();
+    $sdk = new live2d_SDK();
     register_rest_route( 'live2d/v1', '/token', array(
         'methods' => 'POST',
-        'callback' => array( $login, 'user_login')
+        'callback' => array( $sdk, 'user_login')
+    ));
+    register_rest_route( 'live2d/v1', '/rollback_set', array(
+        'methods' => 'POST',
+        'callback' => array( $sdk, 'rollback_set')
     ));
 } );
 // 初始化加载

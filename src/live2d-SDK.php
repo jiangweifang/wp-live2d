@@ -1,16 +1,21 @@
 <?php
 require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/wp-admin/includes/plugin.php');
+$dir = explode('/',plugin_dir_url(dirname(__FILE__)));
+$dir_len = count($dir);
+define( 'IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2]."/wordpress-live2d.php") );//补丁启用
 class live2d_SDK{
-    function user_login($request){
-        $dir = explode('/',plugin_dir_url(dirname(__FILE__)));
-        $dirLenght = count($dir);
+    /**
+     * 获取用户登录结果
+     */
+    public function user_login($request){
+        
         if(!empty($request["token"])){
             $userInfo = array();
             $userInfo["token"] = $request["token"];
             $userInfo["userName"] = $request["userName"];
             $userInfo["errorCode"] = intval($request["errorCode"]);
             $userInfo["hosts"] = plugin_dir_url(dirname(__FILE__));
-            if(is_plugin_active($dir[$dirLenght - 2]."/wordpress-live2d.php")){
+            if(IS_PLUGIN_ACTIVE){
                 update_option('live_2d_settings_user_token',$userInfo);
                 echo "1";
             }else{
@@ -20,27 +25,68 @@ class live2d_SDK{
             echo "-1";
         }
     }
-
-    public function Save_Options($value, $old_value){
-        $response = $this -> DoPost($value, "Options/UpdateOpt");
-        $result = array();
-        if($response["errorCode"] != 200){
-            add_settings_error('live_2d_sdk_error',$response["errorCode"],'Save Error:'. $response["errorMsg"].' Error Code:'.$response["errorCode"]);
-            return $old_value;
+    /**
+     * 获取回滚的设置
+     */
+    public function rollback_set($request){
+        $tokenInfo = get_option( 'live_2d_settings_user_token' );
+        $settings = array();
+        $dir = explode('/',plugin_dir_url(dirname(__FILE__)));
+        $dirLenght = count($dir);
+        $token = $tokenInfo['token'];
+        $userName = $tokenInfo['userName'];
+        if(!empty($request['token'])){
+            if($userName == $request['userName']){
+                $setArr = json_decode($request['setJson'],true);
+                $keyList = array_keys($setArr);
+                foreach($keyList as $keyItem){
+                    $item = $setArr[$keyItem];
+                    if(is_array($item)){
+                        foreach(array_keys($item) as $childKey){
+                            $settings[$keyItem][$childKey] = $item[$childKey];
+                        } 
+                    }else if(strlen($item) != 0){
+                        $settings[$keyItem] = $item;
+                    }
+                }
+                if(IS_PLUGIN_ACTIVE){
+                    update_option('live_2d_settings_option_name',$settings);
+                    echo "1";
+                }else{
+                    echo "0";
+                }
+            }else{
+                echo '-1';
+            }
         }else{
-            $result = json_decode($response,true);
+            echo '-2';
         }
-        return $value;
     }
 
-    public function DoPost($new_value,$api_name){
+    public function Save_Options($value, $old_value){
+        $response = $this -> DoPost('new_value',$value, "Options/UpdateOpt");
+        $result = json_decode($response,true);
+        if(isset($result)){
+            if($result["errorCode"] != 200){
+                add_settings_error('live_2d_sdk_error',$result["errorCode"],'Save Error:'. $result["errorMsg"].' Error Code:'.$result["errorCode"]);
+                return $old_value;
+            }else{
+                return $value;
+            }
+        }else{
+            add_settings_error('live_2d_sdk_error',500, '接口返回为空');
+            return $old_value;
+        }
+    }
+
+    public function DoPost($paramName,$new_value,$api_name){
         try{
             $userInfo = get_option( 'live_2d_settings_user_token' );
             $post = [
-                'new_value' => json_encode($new_value)
+                $paramName => json_encode($new_value)
             ];
             $curl = curl_init();
-            $url = "https://localhost:7017/". $api_name;
+            $url = "https://api.live2dweb.com/". $api_name;
             curl_setopt($curl, CURLOPT_URL,$url );
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_POST, true);//POST数据
