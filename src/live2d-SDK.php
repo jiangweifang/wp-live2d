@@ -1,5 +1,9 @@
 <?php
 require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/wp-admin/includes/plugin.php');
+require(dirname(__FILE__)  . '/../jwt/JWT.php');
+require(dirname(__FILE__)  . '/../jwt/Key.php');
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 $dir = explode('/',plugin_dir_url(dirname(__FILE__)));
 $dir_len = count($dir);
 define( 'IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2]."/wordpress-live2d.php") );//补丁启用
@@ -8,10 +12,10 @@ class live2d_SDK{
      * 获取用户登录结果
      */
     public function user_login($request){
-        
         if(!empty($request["token"])){
             $userInfo = array();
             $userInfo["token"] = $request["token"];
+            $userInfo["publicKey"] = $request["publicKey"];
             $userInfo["userName"] = $request["userName"];
             $userInfo["errorCode"] = intval($request["errorCode"]);
             $userInfo["hosts"] = plugin_dir_url(dirname(__FILE__));
@@ -31,11 +35,11 @@ class live2d_SDK{
     public function rollback_set($request){
         $tokenInfo = get_option( 'live_2d_settings_user_token' );
         $settings = array();
-        $dir = explode('/',plugin_dir_url(dirname(__FILE__)));
-        $dirLenght = count($dir);
-        $token = $tokenInfo['token'];
+        $publicKey = $tokenInfo['publicKey'];
         $userName = $tokenInfo['userName'];
         if(!empty($request['token'])){
+            $public_key = live2d_SDK::MakePem($publicKey);
+            print_r(new Key($public_key, 'RS256'));
             if($userName == $request['userName']){
                 $setArr = json_decode($request['setJson'],true);
                 $keyList = array_keys($setArr);
@@ -119,5 +123,10 @@ class live2d_SDK{
             );
         }
 	}
+
+    private function MakePem($str){
+        $str=chunk_split($str, 64, "\r\n");
+        return "-----BEGIN PUBLIC KEY-----\r\n$str-----END PUBLIC KEY-----\r\n";
+    }
 }
 ?>
