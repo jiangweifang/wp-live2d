@@ -68,7 +68,8 @@ class live2d_SDK{
     }
 
     public function Save_Options($value, $old_value){
-        $response = $this -> DoPost('new_value',$value, "Options/UpdateOpt");
+        $userInfo = get_option( 'live_2d_settings_user_token' );
+        $response = $this -> DoPost('new_value',$value, "Options/UpdateOpt",$userInfo["token"]);
         $result = json_decode($response,true);
         if(isset($result)){
             if($result["errorCode"] != 200){
@@ -83,11 +84,10 @@ class live2d_SDK{
         }
     }
 
-    public function DoPost($paramName,$new_value,$api_name){
+    public function DoPost($paramName,$paramValue,$api_name,$jwt){
         try{
-            $userInfo = get_option( 'live_2d_settings_user_token' );
             $post = [
-                $paramName => json_encode($new_value)
+                $paramName => json_encode($paramValue)
             ];
             $curl = curl_init();
             $url = "https://api.live2dweb.com/". $api_name;
@@ -95,7 +95,7 @@ class live2d_SDK{
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_POST, true);//POST数据
             curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                'Authorization: Bearer '.$userInfo["token"]
+                'Authorization: Bearer '. $jwt
             ));
             curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post));
             //curl_setopt($curl, CURLOPT_TIMEOUT,20);
