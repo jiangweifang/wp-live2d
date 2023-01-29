@@ -39,8 +39,8 @@ class live2d_SDK{
      */
     public function rollback_set($request){
         $userInfo = get_option( 'live_2d_settings_user_token' );
+        $settings = get_option( 'live_2d_settings_option_name' );
         $setArr = $this -> Get_Jwt($request["token"]);
-        $settings = array();
         if(!empty($request['sign']) && $userInfo['userName'] == $request['userName']){
                 $keyList = array_keys($setArr);
                 foreach($keyList as $keyItem){
