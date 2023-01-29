@@ -7,22 +7,27 @@ use Firebase\JWT\Key;
 $dir = explode('/',plugin_dir_url(dirname(__FILE__)));
 $dir_len = count($dir);
 define( 'IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2]."/wordpress-live2d.php") );//补丁启用
+define( 'API_URL', "https://localhost:7017");//补丁启用
 class live2d_SDK{
     /**
      * 获取用户登录结果
      */
     public function user_login($request){
-        if(!empty($request["token"])){
+        $homeUrl = get_home_url();
+        if(!empty($request["sign"])){
+            $signInfo = $this -> Get_Jwt($request["sign"]);
             $userInfo = array();
-            $userInfo["token"] = $request["token"];
-            $userInfo["publicKey"] = $request["publicKey"];
-            $userInfo["userName"] = $request["userName"];
+            $userInfo["sign"] = $request["sign"];
+            $userInfo["userName"] = $signInfo["email"];
+            $userInfo["role"] = $signInfo["role"];
+            $userInfo["certserialnumber"] = $signInfo["certserialnumber"];
+            $userInfo["userLevel"] = $signInfo["http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata"];
             $userInfo["errorCode"] = intval($request["errorCode"]);
             $userInfo["hosts"] = plugin_dir_url(dirname(__FILE__));
-            if(IS_PLUGIN_ACTIVE){
+            if($homeUrl == $signInfo["aud"] && IS_PLUGIN_ACTIVE){
                 update_option('live_2d_settings_user_token',$userInfo);
                 echo "1";
-            }else{
+            }else {
                 echo "0";
             }
         }else{
@@ -33,23 +38,19 @@ class live2d_SDK{
      * 获取回滚的设置
      */
     public function rollback_set($request){
-        $tokenInfo = get_option( 'live_2d_settings_user_token' );
+        $userInfo = get_option( 'live_2d_settings_user_token' );
+        $setArr = $this -> Get_Jwt($request["token"]);
         $settings = array();
-        $publicKey = $tokenInfo['publicKey'];
-        $userName = $tokenInfo['userName'];
-        if(!empty($request['token'])){
-            $public_key = live2d_SDK::MakePem($publicKey);
-            print_r(new Key($public_key, 'RS256'));
-            if($userName == $request['userName']){
-                $setArr = json_decode($request['setJson'],true);
+        if(!empty($request['sign']) && $userInfo['userName'] == $request['userName']){
                 $keyList = array_keys($setArr);
                 foreach($keyList as $keyItem){
                     $item = $setArr[$keyItem];
-                    if(is_array($item)){
+                    if(is_object($item)){
+                        $item = (array)$item;
                         foreach(array_keys($item) as $childKey){
                             $settings[$keyItem][$childKey] = $item[$childKey];
                         } 
-                    }else if(strlen($item) != 0){
+                    }else if(isset($item)){
                         $settings[$keyItem] = $item;
                     }
                 }
@@ -59,17 +60,15 @@ class live2d_SDK{
                 }else{
                     echo "0";
                 }
-            }else{
-                echo '-1';
-            }
+          
         }else{
-            echo '-2';
+            echo '-1';
         }
     }
 
     public function Save_Options($value, $old_value){
         $userInfo = get_option( 'live_2d_settings_user_token' );
-        $response = $this -> DoPost('new_value',$value, "Options/UpdateOpt",$userInfo["token"]);
+        $response = $this -> DoPost('new_value',$value, "Options/UpdateOpt",$userInfo["sign"]);
         $result = json_decode($response,true);
         if(isset($result)){
             if($result["errorCode"] != 200){
@@ -84,13 +83,19 @@ class live2d_SDK{
         }
     }
 
+    private function Get_Jwt($sign) {
+        $pub_key = new Key( $this -> GetPem() ,'RS256');
+        $setArr = (array)JWT::decode( $sign , $pub_key);
+        return $setArr;
+    }
+
     public function DoPost($paramName,$paramValue,$api_name,$jwt){
         try{
             $post = [
                 $paramName => json_encode($paramValue)
             ];
             $curl = curl_init();
-            $url = "https://api.live2dweb.com/". $api_name;
+            $url = API_URL . "/" . $api_name;
             curl_setopt($curl, CURLOPT_URL,$url );
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_POST, true);//POST数据
@@ -124,9 +129,12 @@ class live2d_SDK{
         }
 	}
 
-    private function MakePem($str){
-        $str=chunk_split($str, 64, "\r\n");
-        return "-----BEGIN PUBLIC KEY-----\r\n$str-----END PUBLIC KEY-----\r\n";
+    private function GetPem(){
+        $publicKeyFile = plugin_dir_url(dirname(__FILE__)) . '/../assets/client.pem';
+        $publicKey = openssl_pkey_get_public(
+            file_get_contents($publicKeyFile)
+        );
+        return $publicKey;
     }
 }
 ?>
