@@ -23,7 +23,7 @@ class live2d_SDK{
             $userInfo["certserialnumber"] = $signInfo["certserialnumber"];
             $userInfo["userLevel"] = $signInfo["http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata"];
             $userInfo["errorCode"] = intval($request["errorCode"]);
-            $userInfo["hosts"] = plugin_dir_url(dirname(__FILE__));
+            $userInfo["hosts"] = $signInfo["aud"];
             if($homeUrl == $signInfo["aud"] && IS_PLUGIN_ACTIVE){
                 update_option('live_2d_settings_user_token',$userInfo);
                 echo "1";
@@ -130,7 +130,7 @@ class live2d_SDK{
 	}
 
     private function GetPem(){
-        $publicKeyFile = plugin_dir_url(dirname(__FILE__)) . '/../assets/client.pem';
+        $publicKeyFile = plugin_dir_url(dirname(__FILE__)) . 'assets/client.pem';
         $publicKey = openssl_pkey_get_public(
             file_get_contents($publicKeyFile)
         );

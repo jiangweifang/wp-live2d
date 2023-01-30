@@ -13,7 +13,7 @@ jQuery(function($){
         let ref = encodeURIComponent(`${settings.homeUrl}`);
         let width = 500;
         let height  = 680;
-        let loginWin = window.open(`https://localhost:7051/SingleLogin?referer=${ref}`,"Login",`toolbar=no,location=no,resizable=no, height=${height}, width=${width}`);
+        let loginWin = window.open(`https://www.live2dweb.com/SingleLogin?referer=${ref}`,"Login",`toolbar=no,location=no,resizable=no, height=${height}, width=${width}`);
         let x = window.screen.availWidth - width;
         let y = window.screen.availHeight - height;
         try{
