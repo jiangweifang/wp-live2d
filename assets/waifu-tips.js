@@ -102,7 +102,7 @@ function initModel(waifuPath) {
         }else{
             $(".waifu").show(); 
         }
-        $(window).resize(function() {waifuResize()});
+        $(window).on("resize",function() {waifuResize()});
     }
     
     try {
