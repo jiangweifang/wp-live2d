@@ -1,7 +1,7 @@
 === Live2DWebCanvas ===
 
 Contributors: Weifang Chiang
-Donate link: https://blog.csdn.net/jiangweifang
+Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation
 Tested up to: 6.1
 Requires at least: 5.5
@@ -9,6 +9,16 @@ Stable tag: 1.8.0
 License: MIT
 
 == Changelog ==
+
+= 1.8.0 =
+- 新增登陆功能, 用户登录成功后可与官网 https://www.live2dweb.com/ 通讯。
+- 与株式会社Live2D（ Live2D Inc. ）签订合约, 本软件是使用Cubism 4 SDK for Web核心制作的可扩展性应用程序, 本软件为正版授权。
+- 所有使用moc3模型的demo 必须购买后使用, 如果私自修改live2d.js代码, 属于违法行为。
+- https://www.live2dweb.com/ 中, 付费为支付宝。
+- 付费后您可使用站点中的回滚功能, 如果您的设置出现错误, 回滚将会给您的站点恢复到上一次的备份中, 备份有6个历史版本。
+- 对API进行优化, 由于调用fghrsh的API,可能会导致其服务器请求过多, 本软件将改为调用自己的API, API部分非开源。
+- 关于退款: 您可以发送邮件至 support@live2dweb.com, 我将符合我国规定 7天无理由退款。
+- 下一个版本将增加model3.json的整理功能, 您可以使用本插件官网中的整理, 将model3.json整理为网页可以用的格式。
 
 = 1.7.9 =
 - 首先，感谢各位的支持，由于Live2D官方授权问题，下次更新，本插件将会进行部分收费，价格不会很贵，希望各位谅解。
