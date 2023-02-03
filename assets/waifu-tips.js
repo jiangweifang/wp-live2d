@@ -156,10 +156,14 @@ function loadModel(modelId, modelTexturesId=0, settings) {
         sessionStorage.setItem('modelId', modelId);
         sessionStorage.setItem('modelTexturesId', modelTexturesId);
     } 
-    let modeljson = new RegExp(/model3(\.json$)/i);
-    if(!modeljson.test(settings.modelAPI)){
-        //settings.modelAPI = settings.modelAPI+'?id='+modelId+'-'+modelTexturesId;
-        settings.modelAPI = `${settings.modelAPI}?id=${modelId}&tid=${modelTexturesId}`;
+    let regJson = new RegExp(/model3(\.json$)/i);
+    if(!regJson.test(settings.modelAPI)){
+        regapiJson = new RegExp("https://api.live2dweb.com/[^\s]*(\/v2$)","i");
+        if(regapiJson.test(settings.modelAPI)){
+            settings.modelAPI = `${settings.modelAPI}?id=${modelId}&tid=${modelTexturesId}`;
+        }else{
+            settings.modelAPI = settings.modelAPI+'get/?id='+modelId+'-'+modelTexturesId;
+        }
     }
     if(settings.sdkUrl == undefined || settings.sdkUrl == null || settings.sdkUrl == ''){
         settings.sdkUrl = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
