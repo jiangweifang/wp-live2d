@@ -5,10 +5,14 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation
 Tested up to: 6.1
 Requires at least: 5.5
-Stable tag: 1.8.0
+Stable tag: 1.8.1
 License: MIT
 
 == Changelog ==
+= 1.8.1 =
+- 本次更新是为了初学者，感谢[水以动为常(QQ:25***45)] [λ^Maxwell(QQ:87***93)] 提供的建议。
+- 更新后直接启用插件就可以使用本插件。
+- 已知问题：LiteSpeed CDN缓存时，不要压缩live2d.js 文件，本文件已经压缩过了，再压缩会出错的。
 
 = 1.8.0 =
 - 新增登陆功能, 用户登录成功后可与官网 https://www.live2dweb.com/ 通讯。
@@ -176,9 +180,10 @@ License: MIT
 支持moc和moc3模型的插件。
 
 ## 特性
-
+- 与株式会社Live2D（ Live2D Inc. ）签订合约, 本软件是使用Cubism 4 SDK for Web核心制作的可扩展性应用程序, 本软件为正版授权。
+- 使用 Cubism 4 生成的模型必须购买此插件才可以使用。
 - 基于Live2D 看板娘插件 (https://www.fghrsh.net/post/123.html) 的前端 HTML 源码改写
-- 基于 API 加载模型，支持 定制 提示语
+- 基于 API 加载模型，支持定制提示语
 - 增加：可通过WordPress后台进行参数设置，易用性++
 - 增加：可后台设置看板娘样式，可直接设置宽高度等
 - 支持多种一言接口，基于 JQuery UI 实现拖拽，JQuery UI引用WordPress内置，无需担心加载延迟

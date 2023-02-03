@@ -6,6 +6,11 @@
 ![1](https://user-images.githubusercontent.com/38683169/216086597-6acf9f5e-f694-4c14-85cc-08cbbdfbfd4c.png)
 
 ### 更新
+= 1.8.1 =
+- 本次更新是为了初学者，感谢[水以动为常(QQ:25***45)] [λ^Maxwell(QQ:87***93)] 提供的建议。
+- 更新后直接启用插件就可以使用本插件。
+- 已知问题：LiteSpeed CDN缓存时，不要压缩live2d.js 文件，本文件已经压缩过了，再压缩会出错的。
+
 = 1.8.0 =
 - 与株式会社Live2D（ Live2D Inc. ）签订合约, 本软件是使用Cubism 4 SDK for Web核心制作的可扩展性应用程序. 购买本软件为正版授权。
 - 新增登陆功能, 用户登录成功后可与官网 https://www.live2dweb.com/ 通讯。

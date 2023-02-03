@@ -3,7 +3,7 @@
  * Plugin Name: Live 2D
  * Plugin URI: https://blog.csdn.net/jiangweifang
  * Description: 看板娘插件
- * Version: 1.8.0
+ * Version: 1.8.1
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
  * Text Domain: live-2d
