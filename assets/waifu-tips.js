@@ -157,12 +157,17 @@ function loadModel(modelId, modelTexturesId=0, settings) {
         sessionStorage.setItem('modelTexturesId', modelTexturesId);
     } 
     let regJson = new RegExp(/model3(\.json$)/i);
-    if(!regJson.test(settings.modelAPI)){
+    let apiUrl = settings.modelAPI;
+    if(!regJson.test(apiUrl)){
         regapiJson = new RegExp("https://api.live2dweb.com/[^\s]*(\/v2$)","i");
-        if(regapiJson.test(settings.modelAPI)){
-            settings.modelAPI = `${settings.modelAPI}?id=${modelId}&tid=${modelTexturesId}`;
+        if(regapiJson.test(apiUrl)){
+            settings.modelAPI = `${apiUrl}?id=${modelId}&tid=${modelTexturesId}`;
         }else{
-            settings.modelAPI = settings.modelAPI+'get/?id='+modelId+'-'+modelTexturesId;
+            let apiLen = apiUrl.length - 1;
+            let lidx = apiUrl.lastIndexOf('/');
+            if(apiLen == lidx)
+                apiUrl = apiUrl.substring(0,lidx);
+            settings.modelAPI = `${apiUrl}/get/?id=${modelId}-${modelTexturesId}`;
         }
     }
     if(settings.sdkUrl == undefined || settings.sdkUrl == null || settings.sdkUrl == ''){
