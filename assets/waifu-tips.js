@@ -2,7 +2,7 @@
 window.live2d_settings = Array(); 
 var re = /x/;
 var hltips = 'color:';//定义highlight标记
-console.log('WP-Live2D 1.8.1');
+console.log('WP-Live2D 1.8.2');
 
 String.prototype.render = function(context) {
     var tokenReg = /(\\)?\{([^\{\}\\]+)(\\)?\}/g;

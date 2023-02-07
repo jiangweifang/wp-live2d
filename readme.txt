@@ -5,11 +5,15 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation
 Tested up to: 6.1
 Requires at least: 5.5
-Stable tag: 1.8.1
+Stable tag: 1.8.2
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+= 1.8.2 =
+- 更新后支持PHP8.2 , 修复之前在PHP8.x中会出现的错误, 感谢[七院(QQ:74*****10)] 协助测试。
+- 修复切换的错误。
+
 = 1.8.1 =
 - 本次更新是为了初学者，感谢[水以动为常(QQ:25*****45)] [λ^Maxwell(QQ:87*****93)] 提供的建议。
 - 更新后直接启用插件就可以使用本插件。
