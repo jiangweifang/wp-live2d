@@ -6,7 +6,8 @@ Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation
 Tested up to: 6.1
 Requires at least: 5.5
 Stable tag: 1.8.1
-License: MIT
+Requires PHP: 7.4
+License: GPLv3
 
 == Changelog ==
 = 1.8.1 =

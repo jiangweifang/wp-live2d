@@ -4,6 +4,7 @@
  * Plugin URI: https://blog.csdn.net/jiangweifang
  * Description: 看板娘插件
  * Version: 1.8.1
+ * Requires PHP: 7.4
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
  * Text Domain: live-2d
