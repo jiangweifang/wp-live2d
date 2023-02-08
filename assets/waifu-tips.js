@@ -2,7 +2,11 @@
 window.live2d_settings = Array(); 
 var re = /x/;
 var hltips = 'color:';//定义highlight标记
-console.log('WP-Live2D 1.8.2');
+console.log('WP-Live2D 1.8.1');
+var connection = null;
+var gptMsg = "";
+var isConn = false;
+var tipsIsShow = false;
 
 String.prototype.render = function(context) {
     var tokenReg = /(\\)?\{([^\{\}\\]+)(\\)?\}/g;
@@ -29,22 +33,29 @@ function getRandText(text) {return Array.isArray(text) ? text[Math.floor(Math.ra
 function showMessage(text, timeout, flag) {
     if(flag || sessionStorage.getItem('waifu-text') === '' || sessionStorage.getItem('waifu-text') === null){
         if(Array.isArray(text)) text = text[Math.floor(Math.random() * text.length + 1)-1];
-        if (live2d_settings.showF12Message) console.log('[Message]', text.replace(/<[^<>]+>/g,''));
-        
+        //if (live2d_settings.showF12Message) console.log('[Message]', text.replace(/<[^<>]+>/g,''));
         if(flag) sessionStorage.setItem('waifu-text', text);
-        
-        $('.waifu-tips').stop();
-        $('.waifu-tips').html(text).fadeTo(200, 1);
         if (timeout === undefined) timeout = 5000;
-        hideMessage(timeout);
+        $('.waifu-tips').stop();
+        if(!tipsIsShow){
+            $('.waifu-tips').fadeTo(200, 1);
+            tipsIsShow = true;
+            hideMessage(timeout);
+        }
+        $('.waifu-tips').html(text);
     }
 }
 
 function hideMessage(timeout) {
     $('.waifu-tips').stop().css('opacity',1);
     if (timeout === undefined) timeout = 5000;
-    window.setTimeout(function() {sessionStorage.removeItem('waifu-text')}, timeout);
-    $('.waifu-tips').delay(timeout).fadeTo(200, 0);
+    if(tipsIsShow){
+        window.setTimeout(function() {
+            sessionStorage.removeItem('waifu-text');
+            $('.waifu-tips').fadeTo(200, 0);
+            tipsIsShow = false;
+        }, timeout);
+    }
 }
 
 function initModel(waifuPath) {
@@ -68,7 +79,7 @@ function initModel(waifuPath) {
     //----------从JSON中获取颜色定义----------
     $(".waifu-tips").css({
         "width":live2d_settings.waifuTipsSize['width'] + unitType,      //宽度
-        "height":live2d_settings.waifuTipsSize['height'] + unitType,    //高度
+        "min-height":live2d_settings.waifuTipsSize['height'] + unitType,    //高度
         "top":(0 - live2d_settings.waifuTipTop) + unitType,                  //上方位置可以是负数
         "font-size":live2d_settings.waifuFontSize + unitType,           //字号
         "border":"1px solid "+live2d_settings.waifuBorderColor,         //边框颜色 固定值是1px实心线条
@@ -162,6 +173,109 @@ function loadModel(modelId, modelTexturesId=0, settings) {
         objSet.sdkUrl = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
     }
     loadlive2d('live2d', objSet);
+}
+
+function showHitokoto() {
+    switch(live2d_settings.hitokotoAPI) {
+        case 'fghrsh.net':
+            $.getJSON('https://api.fghrsh.net/hitokoto/rand/?encode=jsc&uid=3335',function(result){
+                if (!empty(result.source)) {
+                    var text = waifu_tips.waifu.hitokoto_api_message['fghrsh.net'][0];
+                    text = text.render({source: result.source, date: result.date,highlight: hltips});
+                    window.setTimeout(function() {showMessage(text, 3000, true);}, 5000);
+                    showMessage(result.hitokoto, 5000, true);
+                }
+            });break;
+        case 'jinrishici.com':
+            $.ajax({
+                url: 'https://v2.jinrishici.com/one.json',
+                xhrFields: {withCredentials: true},
+                success: function (result, status) {
+                    if (!empty(result.data.origin.title)) {
+                        var text = waifu_tips.waifu.hitokoto_api_message['jinrishici.com'][0];
+                        text = text.render({title: result.data.origin.title, dynasty: result.data.origin.dynasty, author:result.data.origin.author,highlight: hltips});
+                        window.setTimeout(function() {showMessage(text, 3000, true);}, 5000);
+                    } showMessage(result.data.content, 5000, true);
+                }
+            });break;
+        default:
+            $.getJSON('https://v1.hitokoto.cn',function(result){
+                if (!empty(result.from)) {
+                    var text = waifu_tips.waifu.hitokoto_api_message['hitokoto.cn'][0];
+                    text = text.render({source: result.from, creator: result.creator,highlight: hltips});
+                    window.setTimeout(function() {showMessage(text, 3000, true);}, 5000);
+                }
+                showMessage(result.hitokoto, 5000, true);
+            });
+    }
+}
+
+async function chatGpt(){
+    if(typeof userToken === 'undefined'){
+        showMessage("想和我说点什么？记得插件需要先登录哦~", 5000, true);
+        return;
+    }
+    let sign = userToken.sign;
+    
+    showMessage("想和我说点什么？", 5000, true);
+    connection = new signalR.HubConnectionBuilder()
+    .withUrl("https://api.live2dweb.com/chatmsg", { accessTokenFactory: () => sign })
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
+    try {
+        if (connection.state != "Connected") {
+            await connection.start();
+            console.log("服务器已连接.");
+            showChatControl();
+            isConn = true;
+            connection.on("reply", (text) => {
+                gptMsg += text;
+                console.log(gptMsg);
+                showMessage(gptMsg, 5000);
+            });
+        } else {
+            isConn = false;
+            console.log("服务器已连接, 请勿重新连接", hubConnection);
+        }
+    } catch (err) {
+        console.log("服务异常,正在重新连接", err);
+        setTimeout(
+            async () => {
+                await chatGpt()
+            }
+            , 5000);
+    }
+}
+
+function showChatControl(){
+    $(".gptInput").addClass("show");
+    $('#live2dSend').on("click",(e)=>{
+        sendMsg();
+    });
+    $('#live2dChatText').on('keydown',(e)=>{
+        var keyCode = e.keyCode;
+        if(keyCode === 13){
+            sendMsg();
+        }
+    });
+}
+
+
+
+async function sendMsg(){
+    gptMsg = "";
+    let text = $('#live2dChatText').val();
+    try {
+        await connection.invoke("Conversation", text);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function hideChatControl(){
+    $(".gptInput").removeClass("show");
+    $("#live2dSend").off("click");
+    isConn = false;
 }
 
 function loadTipsMessage(result) {
@@ -313,7 +427,7 @@ function loadTipsMessage(result) {
     }
     
     function ifActed() {
-        if (!hitokotoInterval) {
+        if (!hitokotoInterval && !isConn) {
             hitokotoInterval = true;
             hitokotoTimer = window.setInterval(showHitokotoActed, 30000);
         }
@@ -327,54 +441,9 @@ function loadTipsMessage(result) {
     function showHitokotoActed() {
         if ($(document)[0].visibilityState == 'visible') showHitokoto();
     }
-    
-    function showHitokoto() {
-    	switch(live2d_settings.hitokotoAPI) {
-    	    case 'fghrsh.net':
-    	        $.getJSON('https://api.fghrsh.net/hitokoto/rand/?encode=jsc&uid=3335',function(result){
-            	    if (!empty(result.source)) {
-                        var text = waifu_tips.hitokoto_api_message['fghrsh.net'][0];
-                        text = text.render({source: result.source, date: result.date,highlight: hltips});
-                        window.setTimeout(function() {showMessage(text, 3000, true);}, 5000);
-                        showMessage(result.hitokoto, 5000, true);
-            	    }
-                });break;
-            case 'jinrishici.com':
-                $.ajax({
-                    url: 'https://v2.jinrishici.com/one.json',
-                    xhrFields: {withCredentials: true},
-                    success: function (result, status) {
-                        if (!empty(result.data.origin.title)) {
-                            var text = waifu_tips.hitokoto_api_message['jinrishici.com'][0];
-                            text = text.render({title: result.data.origin.title, dynasty: result.data.origin.dynasty, author:result.data.origin.author,highlight: hltips});
-                            window.setTimeout(function() {showMessage(text, 3000, true);}, 5000);
-                        } showMessage(result.data.content, 5000, true);
-                    }
-                });break;
-    	    default:
-    	        $.getJSON('https://v1.hitokoto.cn',function(result){
-            	    if (!empty(result.from)) {
-                        var text = waifu_tips.hitokoto_api_message['hitokoto.cn'][0];
-                        text = text.render({source: result.from, creator: result.creator,highlight: hltips});
-                        window.setTimeout(function() {showMessage(text, 3000, true);}, 5000);
-            	    }
-                    showMessage(result.hitokoto, 5000, true);
-                });
-    	}
-    }
-    function rgbToRgba(color,alp){
-        var r,g,b;
-        var rgbaAttr = color.match(/[\d.]+/g);
-        if(rgbaAttr.length >=3){
-            var r,g,b;
-            r = rgbaAttr[0];
-            g = rgbaAttr[1];
-            b = rgbaAttr[2];
-            return 'rgba('+r+','+g+','+b+','+alp+')';
-        }
-    }
-    
+
     $('.waifu-tool .fui-eye').on("click",function (){loadOtherModel()});
     $('.waifu-tool .fui-user').on("click",function (){loadRandTextures()});
     $('.waifu-tool .fui-chat').on("click",function (){showHitokoto()});
+    $('.waifu-tool .fui-bot').on("click",(e)=>chatGpt(e));
 }

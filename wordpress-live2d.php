@@ -25,13 +25,15 @@ require(dirname(__FILE__)  . '/src/live2d-SDK.php');
 //添加样式（初始化）
 function live2D_style(){
 	wp_enqueue_style( 'waifu_css' ,LIVE2D_ASSETS . "waifu.css");//css
+    wp_enqueue_style( 'fontawesome_css' ,LIVE2D_ASSETS . "fontawesome/css/all.min.css");//css
     wp_enqueue_script('jquery-core');
     wp_enqueue_script( 'jquery-ui-draggable');
+    wp_enqueue_script( 'SignalR_js' ,LIVE2D_ASSETS.'signalr.min.js');
     wp_enqueue_script( 'live2d_js' ,LIVE2D_ASSETS.'live2d.js',array('jquery'));
-	wp_enqueue_script( 'waifu-tips_js' ,LIVE2D_ASSETS.'waifu-tips.js',array('jquery-ui-draggable','live2d_js'));
+	wp_enqueue_script( 'waifu-tips_js' ,LIVE2D_ASSETS.'waifu-tips.js',array('jquery-ui-draggable','live2d_js','SignalR_js'));
     $userInfo = get_option( 'live_2d_settings_user_token' );
     if(is_array($userInfo)){
-        wp_localize_script( 'live2d_js', 'userToken', $userInfo);
+        wp_localize_script( 'waifu-tips_js', 'userToken', $userInfo);
     }
     wp_localize_script( 'waifu-tips_js', 'waifu_settings', get_option( 'live_2d_settings_option_name' ));
 }
@@ -119,14 +121,16 @@ function live2D_DefMod(){
             <div class="waifu-tips"></div>
             <canvas id="live2d" class="live2d"></canvas>
             <div class="waifu-tool">
-                <span class="fui-home"></span>
-                <span class="fui-chat"></span>
-                <span class="fui-eye"></span>
-                <span class="fui-user"></span>
-                <span class="fui-photo"></span>
-                <span class="fui-info-circle"></span>
-                <span class="fui-cross"></span>
+                <span class="fui-home"><i class="fa-solid fa-house"></i></span>
+                <span class="fui-chat"><i class="fa-solid fa-message"></i></span>
+                <span class="fui-bot"><i class="fa-solid fa-robot"></i></span>
+                <span class="fui-eye"><i class="fa-solid fa-eye"></i></span>
+                <span class="fui-user"><i class="fa-solid fa-user"></i></span>
+                <span class="fui-photo"><i class="fa-solid fa-image"></i></span>
+                <span class="fui-info-circle"><i class="fa-solid fa-circle-info"></i></span>
+                <span class="fui-cross"><i class="fa-solid fa-circle-xmark"></i></span>
             </div>
+            <div class="gptInput"><input type="text" id="live2dChatText" /><span><button class="wp-element-button" id="live2dSend">发送</button></span></div>
         </div>
         <script type="text/javascript">
         jQuery(function(){
