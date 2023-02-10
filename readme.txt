@@ -195,8 +195,7 @@ License: GPLv3
 - 付费后如果没有反应请及时联系我的QQ：85838607， 我会尽快给你解决
 - 插件可以通过后台直接对Live2D进行设置，无需复杂的修改代码。
 - 可视化设置并生成waifu-tips.json，避免手动修改JSON
-- 使用CDN加速的朋友请注意，更新插件后记得刷新CDN加速缓存
-- live2d.js 无需JS压缩，如果压缩后出现错误，请自行查看是否已排除。
+
 
 ## 版权声明
 
@@ -300,11 +299,15 @@ License: GPLv3
 
 == Frequently Asked Questions ==
 
-- 1.7版本已更新完成，下面讲解如何使用moc3（最高支持到live2D 4.0）模型
-1. 将你准备好的moc3模型上传至目录当中，如果您准备存放github中，可以直接存储至Public项目。
-2. 然后请了解存放路径，并给材质API选项中填写此路径至*.model3.json。例如：https://cdn.jsdelivr.net/gh/jiangweifang/live2d_api@live2d_api_v4/model/kiritan/kiritan.model3.json
-3. 刷新页面后，您将会看到moc3模型展示至前台。
-4. moc3的缩放比例可能会比较小，所以您需要将模型缩放比例调整至合适大小，建议2.0，我没有进行控制是因为如果我在代码中写入2.0，其计算方式将会x2 ，例如1.1 实际计算结果将会是2.2。
+1. 1.8版本已更新完成，下面讲解如何使用moc3（最高支持到live2D 4.0）模型
+2. 将你准备好的moc3模型上传至目录当中，如果您准备存放github中，可以直接存储至Public项目。
+3. 然后请了解存放路径，并给材质API选项中填写此路径至*.model3.json。例如：https://cdn.jsdelivr.net/gh/jiangweifang/live2d_api@live2d_api_v4/model/kiritan/kiritan.model3.json
+4. 刷新页面后，您将会看到moc3模型展示至前台。
+5. moc3的缩放比例可能会比较小，所以您需要将模型缩放比例调整至合适大小，建议2.0，我没有进行控制是因为如果我在代码中写入2.0，其计算方式将会x2 ，例如1.1 实际计算结果将会是2.2。
+6. 请务必保证您的Wordpress REST API (rest_route) 可以被正常访问，如果你在保存时出现异常，请检查您的站点是否将Wordpress REST API设置白名单，如果是Cloudflare用户，很有可能出现这种情况。
+7. 使用CDN加速的朋友请注意，更新插件后记得刷新CDN加速缓存
+8. live2d.js 无需JS压缩，如果压缩后出现错误，请自行查看是否已排除。
+9. 内网用户，请使用公网IP访问您的网站，并配置好域名，可以是花生壳免费域名。本地测试，插件无法保存。
 
 == Screenshots ==
 None
