@@ -74,8 +74,22 @@ class live2d_SDK{
         if(!empty($userInfo["sign"])){
             $result = $this -> DoPost('new_value',$value, "Options/UpdateOpt",$userInfo["sign"]);
             if(isset($result) && $result["errorCode"] != 200){
-                add_settings_error('live_2d_sdk_error',$result["errorCode"],'保存失败:'. $result["errorMsg"].' | 错误代码:'.$result["errorCode"]);
+                add_settings_error('live_2d_sdk_error',$result["errorCode"],'保存成功！但插件暂时无法同步，这不影响您的使用:'. $result["errorMsg"].' | 错误代码:'.$result["errorCode"]);
             }
+        }
+    }
+
+    /**
+     * 删除这段有可能会导致保存成功后调用不了我的API
+     */
+    public function Update_Options($value, $old_value){
+        $userInfo = get_option( 'live_2d_settings_user_token' );
+        $url = $value["modelAPI"];
+        if (preg_match('/^https:\/\/api\.live2dweb\.com/i', $url) && !empty($userInfo["sign"])){
+            return $value;
+        }else{
+            add_settings_error('live_2d_sdk_error',500,'保存失败，您必须登录才可以使用官方API。');
+            return $old_value;
         }
     }
 
