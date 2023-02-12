@@ -69,23 +69,13 @@ class live2d_SDK{
         }
     }
 
-    public function Save_Options($value, $old_value){
+    public function Save_Options($value){
         $userInfo = get_option( 'live_2d_settings_user_token' );
-        $result = $this -> DoPost('new_value',$value, "Options/UpdateOpt",$userInfo["sign"]);
-        if(empty($userInfo["sign"])){
-            add_settings_error('live_2d_sdk_error',500, "您没有登录");
-            return $old_value;
-        }
-        if(isset($result)){
-            if($result["errorCode"] != 200){
+        if(!empty($userInfo["sign"])){
+            $result = $this -> DoPost('new_value',$value, "Options/UpdateOpt",$userInfo["sign"]);
+            if(isset($result) && $result["errorCode"] != 200){
                 add_settings_error('live_2d_sdk_error',$result["errorCode"],'保存失败:'. $result["errorMsg"].' | 错误代码:'.$result["errorCode"]);
-                return $old_value;
-            }else{
-                return $value;
             }
-        }else{
-            add_settings_error('live_2d_sdk_error',500, "接口返回为空");
-            return $old_value;
         }
     }
 

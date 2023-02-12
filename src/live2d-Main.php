@@ -18,9 +18,6 @@ class live2D {
 		add_action('updated_option', function( $option_name, $old_value, $value ) {
 			$this->live2D_Advanced_Save($option_name, $old_value, $value );
 		}, 10, 3);
-		// 在update_option_live_2d_settings_option_name 时进行
-		$live2D_sdk = new live2D_SDK();
-		add_filter("pre_update_option_live_2d_settings_option_name",array(new live2D_SDK(),'Save_Options'),10,3);
 	}
 
 	public function live2D_Advanced_Save($option_name, $old_value, $value ){
@@ -28,6 +25,10 @@ class live2D {
 			$live2d_utils = new live2D_Utils();
 			$waifu_Josn = $live2d_utils -> advanced_json($value);
 			$live2d_utils -> update_Waifu_JsonFile($waifu_Josn);
+		}
+		if($option_name == 'live_2d_settings_option_name'){
+			$live2D_sdk = new live2D_SDK();
+			$live2D_sdk -> Save_Options($value);
 		}
 	}
 	public function live_2d__add_plugin_page() {
