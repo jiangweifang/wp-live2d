@@ -2,14 +2,22 @@
 
 Contributors: Weifang Chiang
 Donate link: https://github.com/jiangweifang/wp-live2d
-Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation
+Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.1
 Requires at least: 5.5
-Stable tag: 1.8.2
+Stable tag: 1.8.3
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+= 1.8.3 = 
+- 根据付费用户的反馈，去掉了讨厌的保存验证。
+- 去掉验证后不登录也可以正常保存了。
+- 本次更新有一部分代码是由ChatGPT写的，我PHP苦手。
+- ChatGPT需要从上下文聊天，请不要和他说过于简单的话，他不太懂，他说的代码和我服务器无关。
+- 请尽量在PHP7.x环境中使用插件，目前8.x会有未知错误。
+- 请仔细查看FAQ。
+
 = 1.8.2 =
 - 付费用户功能(测试): 实装ChatGPT, 目前处于试用状态, 我需要观察一段时间数据后才可以知道是否付费.
 - 更新ICON, 改为使用fontawesome 6.4免费版, 您可以通过fontawesome 来更换图标.
