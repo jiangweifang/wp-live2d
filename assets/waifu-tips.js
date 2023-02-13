@@ -2,7 +2,7 @@
 window.live2d_settings = Array(); 
 var re = /x/;
 var hltips = 'color:';//定义highlight标记
-console.log('WP-Live2D 1.8.1');
+console.log('WP-Live2D 1.8.3');
 var connection = null;
 var gptMsg = "";
 var isConn = false;
@@ -230,7 +230,9 @@ async function chatGpt(){
             isConn = true;
             connection.on("reply", (text) => {
                 gptMsg += text;
-                console.log(gptMsg);
+                $("#live2dChatContext").val((i, origText)=>{
+                    return origText + text;
+                });
                 showMessage(gptMsg, 5000);
             });
         } else {
@@ -258,6 +260,7 @@ function showChatControl(){
             sendMsg();
         }
     });
+    $("#live2dChatContext").val("AI: 想和我说点什么？");
 }
 
 
@@ -265,8 +268,12 @@ function showChatControl(){
 async function sendMsg(){
     gptMsg = "";
     let text = $('#live2dChatText').val();
+    var context = $("#live2dChatContext").val((i, origText)=>{
+        return `${origText} \nHuman: ${text}\n\nAI: `;
+    });
+    $('#live2dChatText').val("");
     try {
-        await connection.invoke("Conversation", text);
+        await connection.invoke("Conversation", context.val());
     } catch (err) {
         console.error(err);
     }
