@@ -236,7 +236,7 @@ async function chatGpt(){
                 showMessage(gptMsg, 5000);
             });
         } else {
-            isConn = false;
+            isConn = true;
             console.log("服务器已连接, 请勿重新连接", hubConnection);
         }
     } catch (err) {
@@ -434,9 +434,9 @@ function loadTipsMessage(result) {
     }
     
     function ifActed() {
-        if (!hitokotoInterval && !isConn) {
+        if (!hitokotoInterval) {
             hitokotoInterval = true;
-            hitokotoTimer = window.setInterval(showHitokotoActed, 30000);
+            hitokotoTimer = window.setInterval(showHitokotoActed, 60000);
         }
     }
     
@@ -445,8 +445,12 @@ function loadTipsMessage(result) {
         window.clearInterval(hitokotoTimer);
     }
     
-    function showHitokotoActed() {
+    async function showHitokotoActed() {
         if ($(document)[0].visibilityState == 'visible') showHitokoto();
+        if(connection && connection.state == 'Connected') {
+            await connection.stop();
+            hideChatControl();
+        }
     }
 
     $('.waifu-tool .fui-eye').on("click",function (){loadOtherModel()});
