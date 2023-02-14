@@ -16,7 +16,7 @@ class live2D {
 		add_action( 'admin_init', array( $this, 'live_2d_waifu_page_init' ) );
 		// 保存设置JSON的钩子 在执行update_option_live_2d_advanced_option_name之后进行
 		add_filter("pre_update_option_live_2d_settings_option_name",array(new live2D_SDK(),'Update_Options'),10,3);
-		add_action('updated_option', 'live2D_Advanced_Save', 10, 3);
+		add_action('updated_option', array( $this ,'live2D_Advanced_Save'), 10, 3);
 	}
 
 	public function live2D_Advanced_Save($option_name, $old_value, $value ){
