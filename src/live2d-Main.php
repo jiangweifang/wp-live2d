@@ -91,13 +91,6 @@ class live2D {
 				</form>
 			</div>
 		</div>
-		<script type="text/javascript">
-			jQuery(document).ready(function ($) {
-				var waifuAdmin = new WaifuAdmin(settings);
-				waifuAdmin.initLogin();
-				waifuAdmin.initControl();
-			});
-		</script>
 	<?php }
 	
 	public function live_2d_waifu_page_init(){
