@@ -28,9 +28,8 @@ function live2D_style(){
     wp_enqueue_style( 'fontawesome_css' ,LIVE2D_ASSETS . "fontawesome/css/all.min.css");//css
     wp_enqueue_script('jquery-core');
     wp_enqueue_script( 'jquery-ui-draggable');
-    wp_enqueue_script( 'SignalR_js' ,LIVE2D_ASSETS.'signalr.min.js');
     wp_enqueue_script( 'live2d_js' ,LIVE2D_ASSETS.'live2d.js',array('jquery'));
-	wp_enqueue_script( 'waifu-tips_js' ,LIVE2D_ASSETS.'waifu-tips.js',array('jquery-ui-draggable','live2d_js','SignalR_js'));
+	wp_enqueue_script( 'waifu-tips_js' ,LIVE2D_ASSETS.'waifu-tips.js',array('jquery-ui-draggable','live2d_js'));
     $userInfo = get_option( 'live_2d_settings_user_token' );
     if(is_array($userInfo)){
         wp_localize_script( 'waifu-tips_js', 'userToken', $userInfo);
