@@ -35,6 +35,7 @@ function live2D_style(){
         wp_localize_script( 'waifu-tips_js', 'userToken', $userInfo);
     }
     wp_localize_script( 'waifu-tips_js', 'live2d_settings', get_option( 'live_2d_settings_option_name' ));
+    wp_localize_script( 'waifu-tips_js', 'waifu_tips', get_option( 'live_2d_advanced_option_name' ));
 }
 add_action('wp_head', 'live2D_style',1 );
 
@@ -134,7 +135,7 @@ function live2D_DefMod(){
         </div>
         <script type="text/javascript">
         jQuery(function(){
-            initModel("<?php echo LIVE2D_ASSETS ?>waifu-tips.json");
+            initModel();
         });
         </script>
     <?php

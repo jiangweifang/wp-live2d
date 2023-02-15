@@ -20,11 +20,6 @@ class live2D {
 	}
 
 	public function live2D_Advanced_Save($option_name, $old_value, $value ){
-		if($option_name == 'live_2d_advanced_option_name'){
-			$live2d_utils = new live2D_Utils();
-			$waifu_Josn = $live2d_utils -> advanced_json($value);
-			$live2d_utils -> update_Waifu_JsonFile($waifu_Josn);
-		}
 		if($option_name == 'live_2d_settings_option_name'){
 			$live2D_sdk = new live2D_SDK();
 			$live2D_sdk -> Save_Options($value);

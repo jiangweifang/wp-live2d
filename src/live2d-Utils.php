@@ -70,16 +70,6 @@ class live2D_Utils{
 			break;
 		}
     }
-    
-    public function update_Waifu_JsonFile($jsonArray){
-		try{
-			$filePath = plugin_dir_path(__FILE__)  . '../assets/waifu-tips.json';
-			$isSave = file_put_contents($filePath,json_encode($jsonArray));
-			if(!$isSave) add_settings_error('live_2d_advanced_option_saveFiles','500','文件保存失败,当前文件路径为：'.$filePath);
-		}catch (Exception $e){
-			add_settings_error('live_2d_advanced_option_saveFiles','500','Save Error:'.$e);
-		}
-    }
 
     public function advanced_json($value) {
 		$result = array();
