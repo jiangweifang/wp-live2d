@@ -96,7 +96,7 @@ class live2D {
 			'jQuery( function() { jQuery( ".color-picker" ).wpColorPicker(); } );'
 		);
 		wp_enqueue_script( 'wp-color-picker-alpha' );
-		wp_enqueue_script('admin_js',plugins_url( '../assets/waifu-admin.js', __FILE__));
+		wp_enqueue_script('admin_js',plugins_url( '../assets/waifu-admin.min.js', __FILE__));
 		wp_localize_script( 'admin_js', 'settings',array(
 			'userInfo' => get_option( 'live_2d_settings_user_token' ),
 			'homeUrl' => get_home_url()
