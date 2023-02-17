@@ -35,7 +35,7 @@ class Live2D_Widget extends WP_Widget{
         </div>
         <script type="text/javascript">
         jQuery(function(){
-            initModel("<?php echo LIVE2D_ASSETS ?>waifu-tips.json");
+            initModel();
         });
         </script>
         <?php

@@ -5,11 +5,20 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.1
 Requires at least: 5.5
-Stable tag: 1.8.3
+Stable tag: 1.8.4
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+= 1.8.4 =
+- 在PHP8中有一个函数错误, 已经修复了.
+- 在保存的时候有个判断错误, 会强制你用我的 API 实在是抱歉.
+- 切换功能目前处于可用状态, 但是我的接口返回的JSON格式有问题, 会导致模型黑掉. 谨慎使用.
+- 重构部分JS文件, 如果您使用的是CDN, 请在更新后务必更新CDN缓存
+- 本次更新后JS将会改为 live2d.min.js waifu-tips.min.js waifu-admin.min.js 
+- 新增JS moment.min.js, 摆脱了一部分jquery, 下个版本将完全不再依赖jquery, 避免应用顺序错误.
+- 去掉了生成JSON文件的过程, 避免你的服务器权限不够
+
 = 1.8.3 = 
 - 根据付费用户的反馈，去掉了讨厌的保存验证。
 - 去掉验证后不登录也可以正常保存了。
