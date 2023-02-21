@@ -24,14 +24,17 @@ class Live2D_Widget extends WP_Widget{
             <div class="waifu-tips"></div>
             <canvas id="live2d" class="live2d"></canvas>
             <div class="waifu-tool">
-                <span class="fui-home"></span>
-                <span class="fui-chat"></span>
-                <span class="fui-eye"></span>
-                <span class="fui-user"></span>
-                <span class="fui-photo"></span>
-                <span class="fui-info-circle"></span>
-                <span class="fui-cross"></span>
+                <span class="fui-home"><i class="fa-solid fa-house"></i></span>
+                <span class="fui-chat"><i class="fa-solid fa-message"></i></span>
+                <span class="fui-bot"><i class="fa-solid fa-robot"></i></span>
+                <span class="fui-eye"><i class="fa-solid fa-eye"></i></span>
+                <span class="fui-user"><i class="fa-solid fa-user"></i></span>
+                <span class="fui-photo"><i class="fa-solid fa-image"></i></span>
+                <span class="fui-info-circle"><i class="fa-solid fa-circle-info"></i></span>
+                <span class="fui-cross"><i class="fa-solid fa-circle-xmark"></i></span>
             </div>
+            <div class="gptInput"><input type="text" id="live2dChatText" /><span><button class="wp-element-button" id="live2dSend">发送</button></span></div>
+            <textarea style="display:none" id="live2dChatContext"></textarea>
         </div>
         <script type="text/javascript">
         jQuery(function(){

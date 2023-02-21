@@ -15,13 +15,6 @@ class live2D_Settings_Base {
             'live-2d-settings-base' // page
         );
         
-        add_settings_field(
-            'live2dLogin', // id
-            __('登录','live-2d'), // title
-            array( $this, 'live2dLogin_callback' ), // callback
-            'live-2d-settings-base', // page
-            'live_2d_setting_base_section' // section
-        );
         if(!empty( $this->userInfo["userLevel"] ) && $this->userInfo["userLevel"] > 0 ){
             add_settings_field(
                 'live2dLayoutType', // id
@@ -101,33 +94,7 @@ class live2D_Settings_Base {
         );
     }
     
-    public function live2dLogin_callback() {
-        $userInfo = $this->userInfo;
-        $homeUrl = get_home_url();
-        ?>
-        <buttom id="btnLogin" class="button button-primary">登录</buttom> 
-        <p id="labLogined" class="lgoined" style="display:none"></p>
-        <br /> 
-        <a id="signOut" class="lgoined">如要退出登陆请停用再启用插件</a>
-        <?php
-        if(!empty($userInfo)){
-            if($userInfo["hosts"] != $homeUrl){
-                ?>
-                <p>此站点未绑定, 请<a href="https://www.live2dweb.com/Sites" target="_blank">点击此处</a>绑定站点, 绑定时请注意与WordPress中的 站点地址（URL） 相同</p>
-                <?php
-            }
-            if(intval($userInfo["role"]) != 2){
-                ?>
-                <p>您的邮箱未激活, 请<a href="https://www.live2dweb.com/Email" target="_blank">点击此处</a>激活邮箱</p>
-                <?php
-            }
-            if(intval($userInfo["userLevel"]) < 1){
-                ?>
-                <p>您是未付费用户, 请<a href="https://www.live2dweb.com/Order/Pay" target="_blank">点击此处</a>付费后使用更多功能</p>
-                <?php
-            }
-        }
-    }
+    
     public function live2dLayoutType_callback() {
         ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['live2dLayoutType'] ) && $this->live_2d__options['live2dLayoutType'] === true ) ? 'checked' : '' ; ?>
         <label for="live2dLayoutType-0"><input type="radio" name="live_2d_settings_option_name[live2dLayoutType]" id="live2dLayoutType-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('页面','live-2d') ?></label><br>

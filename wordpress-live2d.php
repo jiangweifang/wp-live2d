@@ -16,11 +16,11 @@ define( 'LIVE2D_ASSETS', plugin_dir_url( __FILE__ ) . 'assets/' );//资源目录
 define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)).'/languages');//基础目录
 
 // 加载设置组件
-require(dirname(__FILE__)  . '/src/live2d-Main.php');
+include_once(dirname(__FILE__)  . '/src/live2d-Main.php');
 // 加载小工具
-require(dirname(__FILE__)  . '/src/live2d-Widget.php');
+include_once(dirname(__FILE__)  . '/src/live2d-Widget.php');
 // 加载登录确认API
-require(dirname(__FILE__)  . '/src/live2d-SDK.php');
+include_once(dirname(__FILE__)  . '/src/live2d-SDK.php');
 
 //添加样式（初始化）
 function live2D_style(){

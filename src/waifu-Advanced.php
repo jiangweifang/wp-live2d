@@ -1,5 +1,5 @@
 <?php
-require(dirname(__FILE__)  . '/live2d-Utils.php');
+include_once(dirname(__FILE__)  . '/live2d-Utils.php');
 class live2D_Advanced {
 	
 	private $live_2d_advanced_options;
