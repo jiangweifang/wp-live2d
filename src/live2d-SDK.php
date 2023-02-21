@@ -115,6 +115,7 @@ class live2d_SDK{
             $curl = curl_init();
             $url = API_URL . "/" . $api_name;
             curl_setopt($curl, CURLOPT_URL,$url );
+            curl_setopt($curl, CURLOPT_REFERER, get_home_url());
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_POST, true);//POST数据
             curl_setopt($curl, CURLOPT_HTTPHEADER, array(
