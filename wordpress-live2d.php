@@ -3,7 +3,7 @@
  * Plugin Name: Live 2D
  * Plugin URI: https://blog.csdn.net/jiangweifang
  * Description: 看板娘插件
- * Version: 1.8.4
+ * Version: 1.8.5
  * Requires PHP: 7.4
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
@@ -133,7 +133,6 @@ function live2D_DefMod(){
                 <span class="fui-cross"><i class="fa-solid fa-circle-xmark"></i></span>
             </div>
             <div class="gptInput"><input type="text" id="live2dChatText" /><span><button class="wp-element-button" id="live2dSend">发送</button></span></div>
-            <textarea style="display:none" id="live2dChatContext"></textarea>
         </div>
         <script type="text/javascript">
         jQuery(function(){
