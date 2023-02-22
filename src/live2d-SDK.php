@@ -37,16 +37,6 @@ class live2d_SDK{
             }
         }
     }
-
-    public function jwt_login(){
-        ?>
-        <div class="wrap">
-            <p>如果您发现登录没有反应，或者出现了错误，请先检查 <a href="<?php echo get_home_url() ?>/?rest_route=/live2d/v1/"><?php echo get_home_url() ?>/?rest_route=/live2d/v1/</a> 是否可以被访问</p>
-            <p>如果您无法解决链接问题，请在<a href="https://www.live2dweb.com/Sites" target="_blank">官方网站登录</a>，查看Token后将其复制到下方，保存后就可以登录成功了！</p>
-            
-        </div>
-        <?php
-    }
     /**
      * 获取回滚的设置
      */

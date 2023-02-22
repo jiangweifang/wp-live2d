@@ -11,6 +11,7 @@
 - 对服务器进行了一些压力测试后发现有一部分内容不适合使用ChatGPT. 感谢[flysheep](https://www.flysheep6.com/) 提供压力测试;
 - 修改了ChatGPT的上下文, 降低成本, 我被flysheep拉爆了, 2天用了80块钱;
 - 拆分JS, live2d.min.js 日益臃肿, 本次更新后live2d.min.js将与其核心组件分离. 多线加载速度更快一些.
+- 为新手制作了docker, 您如果自己不方便搭建API, 可以使用docker容器[live2d_api](https://hub.docker.com/r/jwf8732/live2d_api)
 
 = 1.8.4 =
 - 在PHP8中有一个函数错误, 已经修复了.
