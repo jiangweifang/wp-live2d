@@ -76,15 +76,6 @@ class live2D_Settings_Base {
                 'live_2d_setting_base_section' // section
             );
         }
-        if(!empty( $this->userInfo["userLevel"] ) && $this->userInfo["userLevel"] > 0 ){
-            add_settings_field(
-                'defineHitAreaName', // id
-                __('moc3模型自定义动作','live-2d'), // title
-                array( $this, 'defineHitAreaName_callback' ), // callback
-                'live-2d-settings-base', // page
-                'live_2d_setting_base_section' // section
-            );
-        }
     }
     
     public function live_2d__section_info() {
@@ -162,14 +153,6 @@ class live2D_Settings_Base {
         <p>'. esc_html__('软件许可协议：', 'live-2d') 
         .'<a href = "https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html" target="_blank">Live2D Proprietary Software License Agreement</a> 
         | <a href = "https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html" target="_blank">Live2D Open Software License Agreement</a> </p>';
-    }
-
-    public function defineHitAreaName_callback(){
-        live2D_Utils::loopMsg('defineHitAreaName','List',true,'live_2d_settings_option_name');
-        echo '<p>'.esc_html__('请输入文件名（不包含扩展名），例如："touch_head.motion3.json"请在输入框中输入touch_head','live-2d').'</p>';
-        ?>
-        <p>此功能将在下个版本停用, 转移至<a href="https://www.live2dweb.com/">插件官网</a>进行motion3.json的整理</p>
-        <?php
     }
 }
 ?>

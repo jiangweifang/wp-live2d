@@ -6,6 +6,7 @@ require_once(dirname(__FILE__)  . '/waifu-Settings-Tips.php');
 require_once(dirname(__FILE__)  . '/waifu-Settings-Toolbar.php');
 require_once(dirname(__FILE__)  . '/waifu-Settings-Base.php');
 require_once(dirname(__FILE__)  . '/live2d-Login.php');
+require_once(dirname(__FILE__)  . '/live2d-Shop.php');
 class live2D {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'live_2d__add_plugin_page' ) );
@@ -29,6 +30,14 @@ class live2D {
 			'manage_options', // capability
 			'live-2d-options', // menu_slug
 			array( $this, 'live_2d__create_admin_page' ) // function
+		);
+		$shop_title = __('Live 2D 创意工坊','live-2d');
+		add_menu_page(
+			$shop_title, // page_title
+			$shop_title, // menu_title
+			'manage_options', // capability
+			'live-2d-shop', // menu_slug
+			array( new live2d_Shop(), 'live2d_shop_init' ) // function
 		);
 		add_action('load-'.$my_admin_page, array('live2D_Utils','live_2D_help_tab'));
 	}

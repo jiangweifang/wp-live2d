@@ -195,10 +195,6 @@ class live2D_Settings{
 		if ( isset( $input['waifuTipTop'] ) ) {
             $sanitary_values['waifuTipTop'] = (int) $input['waifuTipTop'] ;
 		}
-		// 自定义HitAreaName
-		if( isset( $input['defineHitAreaName'] ) ){
-			$sanitary_values['defineHitAreaName'] = $input['defineHitAreaName'] ;
-		}
         return $sanitary_values;
     }
 
