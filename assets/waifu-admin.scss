@@ -1,0 +1,30 @@
+#live2d-shop {
+    width: 100%;
+}
+
+.live2d-container {
+    display: flex;
+
+}
+
+.model-item {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    width: 280px;
+    height: 300px;
+    margin: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.thumb img {
+    width: 200px;
+    height: 200px;
+}
+.title{
+    font-size: 16px;
+    line-height: 28px;
+    margin: 5px 0;
+}
