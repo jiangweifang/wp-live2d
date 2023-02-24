@@ -15,7 +15,7 @@ class live2D_Login {
 
 		add_settings_section(
 			'live_2d_login_setting_section', // id
-			__('登陆','live-2d'), // title
+			__('登录','live-2d'), // title
 			array( $this, 'live_2d_login_section_info' ), // callback
 			'live-2d-login-admin' // page
 		);
