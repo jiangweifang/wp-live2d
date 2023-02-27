@@ -105,7 +105,8 @@ class live2D {
 	
 	public function live_2d_waifu_page_init(){
 		wp_enqueue_style( 'wp-color-picker' );
-		wp_register_script( 'wp-color-picker-alpha', plugin_dir_url( __FILE__ ) . '../assets/wp-color-picker-alpha.min.js', array( 'wp-color-picker' ));
+		wp_enqueue_style( 'live2d_admin' ,plugin_dir_url(dirname(__FILE__)).'assets/waifu-admin.scss');//css
+		wp_register_script( 'wp-color-picker-alpha', plugin_dir_url(dirname(__FILE__)) . 'assets/wp-color-picker-alpha.min.js', array( 'wp-color-picker' ));
 		wp_add_inline_script(
 			'wp-color-picker-alpha',
 			'jQuery( function() { jQuery( ".color-picker" ).wpColorPicker(); } );'
