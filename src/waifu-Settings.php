@@ -1,16 +1,20 @@
 <?php
 class live2D_Settings{
-
+	
     public function live_2d_settings_sanitize($input) {
             
 		$sanitary_values = array();
 		if ( isset( $input['live2dLayoutType'] ) ) {
             $sanitary_values['live2dLayoutType'] = (Boolean)$input['live2dLayoutType'];
-        }
+        }else{
+			$sanitary_values['live2dLayoutType'] = true;
+		}
 
         if ( isset( $input['modelAPI'] ) ) {
             $sanitary_values['modelAPI'] = sanitize_text_field( $input['modelAPI'] );
-        }
+        }else{
+			$sanitary_values['modelAPI'] = "https://live2d.fghrsh.net/api/";
+		}
 
         if ( isset( $input['tipsMessage'] ) ) {
             $sanitary_values['tipsMessage'] = sanitize_text_field( $input['tipsMessage'] );
@@ -30,11 +34,17 @@ class live2D_Settings{
 		
 		if ( isset( $input['modelPoint'] ) ) {
             $sanitary_values['modelPoint'] = $input['modelPoint'];
+		}else{
+			$sanitary_values['modelPoint']['zoom']="1.0";
+			$sanitary_values['modelPoint']['x']= 0;
+			$sanitary_values['modelPoint']['y']= 0;
 		}
 
 		if ( isset( $input['sdkUrl'] ) ) {
             $sanitary_values['sdkUrl'] = sanitize_text_field( $input['sdkUrl'] );
-        }
+        }else{
+			$sanitary_values['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
+		}
 
         if ( isset( $input['showToolMenu'] ) ) {
             $sanitary_values['showToolMenu'] = (Boolean)$input['showToolMenu'];
@@ -203,7 +213,7 @@ class live2D_Settings{
 		$defValue = array();
 		if(FALSE === $live_2d_settings){
 			$defValue['live2dLayoutType']=true;
-			$defValue['modelAPI']= 'https://live2d.fghrsh.net/api/';
+			$defValue['modelAPI']= "https://live2d.fghrsh.net/api/";
 			$defValue['hitokotoAPI']='lwl12.com';
 			$defValue['modelId']='1';
 			$defValue['modelTexturesId']='53';
