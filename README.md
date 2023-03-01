@@ -13,6 +13,7 @@
 - 免去自己搭建服务器的困扰
 - 对Live2D Cubism 4 SDK for Web R6 进行支持 [変更履歴](https://docs.live2d.com/cubism-sdk-manual/cubism-web-framework-changelog/)
 - 对老版本(Pio等模型)的SDK 进行解耦拆分, 完全与新的版本隔离, 避免代码混乱.
+- 前端JS 完全抛弃jQuery 独立运行.
 
 ### 本次更新
 = 1.8.5 =
