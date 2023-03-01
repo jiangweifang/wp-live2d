@@ -26,18 +26,13 @@ include_once(dirname(__FILE__)  . '/src/live2d-SDK.php');
 function live2D_style(){
 	wp_enqueue_style( 'waifu_css' ,LIVE2D_ASSETS . "waifu.css");//css
     wp_enqueue_style( 'fontawesome_css' ,LIVE2D_ASSETS . "fontawesome/css/all.min.css");//css
-    wp_enqueue_script('jquery-core');
-    wp_enqueue_script( 'jquery-ui-draggable');
     wp_enqueue_script( 'moment' ,LIVE2D_ASSETS.'moment.min.js');//
     wp_enqueue_script( 'live2dv1core' ,LIVE2D_ASSETS.'live2dv1core.min.js');
-    wp_enqueue_script( 'live2d' ,LIVE2D_ASSETS.'live2d.min.js',array('jquery','live2dv1core'));
-	wp_enqueue_script( 'live2d_tips' ,LIVE2D_ASSETS.'waifu-tips.min.js',array('jquery-ui-draggable','live2d','moment'));
-    $userInfo = get_option( 'live_2d_settings_user_token' );
-    if(is_array($userInfo)){
-        wp_localize_script( 'live2d_tips', 'userToken', $userInfo);
-    }
-    wp_localize_script( 'live2d_tips', 'live2d_settings', get_option( 'live_2d_settings_option_name' ));
-    wp_localize_script( 'live2d_tips', 'waifu_tips', get_option( 'live_2d_advanced_option_name' ));
+    wp_enqueue_script( 'live2dweb' ,LIVE2D_ASSETS.'live2dwebsdk.min.js',array('live2dv1core','moment'));
+    wp_localize_script( 'live2dweb', 'userToken', get_option( 'live_2d_settings_user_token' ));
+    wp_localize_script( 'live2dweb', 'live2d_settings', get_option( 'live_2d_settings_option_name' ));
+    wp_localize_script( 'live2dweb', 'waifu_tips', get_option( 'live_2d_advanced_option_name' ));
+    //wp_add_inline_script( 'live2dweb', 'window.onload = initLive2dWeb();' );
 }
 add_action('wp_head', 'live2D_style',1 );
 
@@ -135,9 +130,7 @@ function live2D_DefMod(){
             <div class="gptInput"><input type="text" id="live2dChatText" /><span><button class="wp-element-button" id="live2dSend">发送</button></span></div>
         </div>
         <script type="text/javascript">
-        jQuery(function(){
-            initModel();
-        });
+        window.onload = initLive2dWeb();
         </script>
     <?php
 }
