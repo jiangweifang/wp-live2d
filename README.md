@@ -5,7 +5,16 @@
 
 ![1](https://user-images.githubusercontent.com/38683169/216086597-6acf9f5e-f694-4c14-85cc-08cbbdfbfd4c.png)
 
-### 更新
+### 更新预告
+= 1.9.0 =
+- 别问我为啥不叫1.8.6
+- 将会新增一个简化的创意工坊, 后续继续对创意工坊升级
+- 付费用户可以通过创意工坊下载更多的皮肤到本地
+- 免去自己搭建服务器的困扰
+- 对Live2D Cubism 4 SDK for Web R6 进行支持 [変更履歴](https://docs.live2d.com/cubism-sdk-manual/cubism-web-framework-changelog/)
+- 对老版本(Pio等模型)的SDK 进行解耦拆分, 完全与新的版本隔离, 避免代码混乱.
+
+### 本次更新
 = 1.8.5 =
 - 为不能登录的用户开启了一个新的功能;
 - 对服务器进行了一些压力测试后发现有一部分内容不适合使用ChatGPT. 感谢[flysheep](https://www.flysheep6.com/) 提供压力测试;
