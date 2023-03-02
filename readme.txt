@@ -1,15 +1,24 @@
 === Live2DWebCanvas ===
 
 Contributors: Weifang Chiang
-Donate link: https://github.com/jiangweifang/wp-live2d
+Donate link: https://www.live2dweb.com/
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.1
 Requires at least: 5.5
-Stable tag: 1.8.5
+Stable tag: 1.8.6
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+= 1.9.0 更新预告 =
+- 本次更新没有任何内容, 只是告诉各位用户我已经在做下一个版本1.9.0了, 不继续1.8.x的开发, 这是一个新的里程碑.
+- 将会新增一个简化的创意工坊, 后续继续对创意工坊升级
+- 付费用户可以通过创意工坊下载更多的皮肤到本地, 免去自己搭建服务器的困扰.
+- 对Live2D Cubism 4 SDK for Web R6 进行支持 [変更履歴](https://docs.live2d.com/cubism-sdk-manual/cubism-web-framework-changelog/)
+- 对老版本(Pio等模型)的SDK 进行解耦拆分, 完全与新的版本隔离, 避免代码混乱.
+- 前端JS 完全抛弃jQuery 独立运行, 避免某些WP站点样式夺取wordpress官方的指定钩子(hook), 导致无法加载jQuery.
+- ChatGPT我还在等一个新模型, `gpt-3.5-turbo`, 在服务端接口尚未完成之前, 此功能目前暂时不继续开放.
+
 = 1.8.5 =
 - 为不能登录的用户开启了一个新的功能;
 - 对服务器进行了一些压力测试后发现有一部分内容不适合使用ChatGPT. 感谢[flysheep](https://www.flysheep6.com/) 提供压力测试;
