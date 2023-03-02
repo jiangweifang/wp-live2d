@@ -23,6 +23,14 @@ class live2D_Settings_Base {
                 'live-2d-settings-base', // page
                 'live_2d_setting_base_section' // section
             );
+
+            add_settings_field(
+                'apiType', // id
+                __('API 方式','live-2d'), // title
+                array( $this, 'apiType_callback' ), // callback
+                'live-2d-settings-base', // page
+                'live_2d_setting_base_section' // section
+            );
         }
 
         add_settings_field(
@@ -56,8 +64,7 @@ class live2D_Settings_Base {
                 'live-2d-settings-base', // page
                 'live_2d_setting_base_section' // section
             );
-        }
-        if(!empty( $this->userInfo["userLevel"] ) && $this->userInfo["userLevel"] > 0 ){
+        
             add_settings_field(
                 'modelXYaxis', // id
                 __('看板娘位置','live-2d'), // title
@@ -65,9 +72,7 @@ class live2D_Settings_Base {
                 'live-2d-settings-base', // page
                 'live_2d_setting_base_section' // section
             );
-        }
 
-        if(!empty( $this->userInfo["userLevel"] ) && $this->userInfo["userLevel"] > 0 ){
             add_settings_field(
                 'sdkUrl', // id
                 __('Cubism Core for Web <br/> 引用地址','live-2d'), // title
@@ -85,6 +90,12 @@ class live2D_Settings_Base {
         );
     }
     
+    public function apiType_callback(){
+        ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['apiType'] ) && $this->live_2d__options['apiType'] === true ) ? 'checked' : '' ; ?>
+        <label for="apiType-0"><input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('创意工坊','live-2d') ?></label><br>
+        <?php $checked = ( isset( $this->live_2d__options['apiType'] ) && $this->live_2d__options['apiType'] === false ) ? 'checked' : '' ; ?>
+        <label for="apiType-1"><input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-1" value="0" <?php echo $checked; ?>> <?php esc_html_e('自定API','live-2d') ?></label></fieldset> <?php
+    }
     
     public function live2dLayoutType_callback() {
         ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['live2dLayoutType'] ) && $this->live_2d__options['live2dLayoutType'] === true ) ? 'checked' : '' ; ?>

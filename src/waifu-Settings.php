@@ -10,6 +10,12 @@ class live2D_Settings{
 			$sanitary_values['live2dLayoutType'] = true;
 		}
 
+		if ( isset( $input['apiType'] ) ) {
+            $sanitary_values['apiType'] = sanitize_text_field( $input['apiType'] );
+        }else{
+			$sanitary_values['apiType'] = false;
+		}
+
         if ( isset( $input['modelAPI'] ) ) {
             $sanitary_values['modelAPI'] = sanitize_text_field( $input['modelAPI'] );
         }else{
