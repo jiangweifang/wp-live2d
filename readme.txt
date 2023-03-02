@@ -13,11 +13,13 @@ License: GPLv3
 = 1.9.0 =
 - 重构前台界面的JSSDK, 解除了对jQuery的依赖, 使用原生JS进行运行.
 - 修复了十余个没有人报告的BUG, 通过对js的重构发现的.
+- Tips有的时候它一闪一闪的, 看起来很奇怪, 已经修复了.
 - 新增创意工坊, 站长可以通过下载到本地, 省去了部署服务的困扰.
-- 创意工坊预制Live2D官方MOC3模型, 未来您可以通过 https://www.live2dweb.com/ 上传自己的模型, 并向其他人出售.
+- 创意工坊预制Live2D官方MOC3模型, 未来您可以通过 https://www.live2dweb.com/ 上传自己的模型, 并向其他人出售或分享.
 - 对Live2D Cubism 4 SDK for Web R6 进行支持 [変更履歴](https://docs.live2d.com/cubism-sdk-manual/cubism-web-framework-changelog/)
 - 对老版本(Pio等模型)的SDK 进行解耦拆分, 完全与新的版本隔离, 避免代码混乱, 此模型SDK未来不会增加新的功能.
 - 前端JS 完全抛弃jQuery 独立运行, 避免某些WP站点样式夺取wordpress官方的指定钩子(hook), 导致无法加载jQuery.
+- 服务端取消了回滚功能, 这玩意有点太没有用了.
 - 站长插件价格上涨至49元, 已付费用户不需要补款.
 
 = 1.8.6 =
