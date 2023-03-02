@@ -169,7 +169,7 @@ class live2d_SDK
 
     private function GetPem()
     {
-        $publicKeyFile = plugin_dir_url(dirname(__FILE__)) . 'assets/client.pem';
+        $publicKeyFile = plugin_dir_path(dirname(__FILE__)) . 'assets/client.pem';
         $publicKey = openssl_pkey_get_public(
             file_get_contents($publicKeyFile)
         );
