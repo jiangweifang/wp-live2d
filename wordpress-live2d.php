@@ -32,7 +32,6 @@ function live2D_style(){
     wp_localize_script( 'live2dweb', 'userToken', get_option( 'live_2d_settings_user_token' ));
     wp_localize_script( 'live2dweb', 'live2d_settings', get_option( 'live_2d_settings_option_name' ));
     wp_localize_script( 'live2dweb', 'waifu_tips', get_option( 'live_2d_advanced_option_name' ));
-    //wp_add_inline_script( 'live2dweb', 'window.onload = initLive2dWeb();' );
 }
 add_action('wp_head', 'live2D_style',1 );
 
