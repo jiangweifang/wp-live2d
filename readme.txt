@@ -5,11 +5,24 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.1
 Requires at least: 5.5
-Stable tag: 1.8.5
+Stable tag: 1.9.0
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+= 1.9.0 =
+- 重构前台界面的JSSDK, 解除了对jQuery的依赖, 使用原生JS进行运行.
+- 修复了十余个没有人报告的BUG, 通过对js的重构发现的.
+- 新增创意工坊, 站长可以通过下载到本地, 省去了部署服务的困扰.
+- 创意工坊预制Live2D官方MOC3模型, 未来您可以通过 https://www.live2dweb.com/ 上传自己的模型, 并向其他人出售.
+- 对Live2D Cubism 4 SDK for Web R6 进行支持 [変更履歴](https://docs.live2d.com/cubism-sdk-manual/cubism-web-framework-changelog/)
+- 对老版本(Pio等模型)的SDK 进行解耦拆分, 完全与新的版本隔离, 避免代码混乱, 此模型SDK未来不会增加新的功能.
+- 前端JS 完全抛弃jQuery 独立运行, 避免某些WP站点样式夺取wordpress官方的指定钩子(hook), 导致无法加载jQuery.
+- 站长插件价格上涨至49元, 已付费用户不需要补款.
+
+= 1.8.6 =
+- 更新了一个说明文件
+
 = 1.8.5 =
 - 为不能登录的用户开启了一个新的功能;
 - 对服务器进行了一些压力测试后发现有一部分内容不适合使用ChatGPT. 感谢[flysheep](https://www.flysheep6.com/) 提供压力测试;
