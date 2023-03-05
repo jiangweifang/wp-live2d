@@ -5,7 +5,8 @@ require(dirname(__FILE__)  . '/jwt/Key.php');
 $dir = explode('/', plugin_dir_url(dirname(__FILE__)));
 $dir_len = count($dir);
 define('IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2] . "/wordpress-live2d.php")); //补丁启用
-define('API_URL', "https://api.live2dweb.com"); //补丁启用
+define('API_URL', "https://api.live2dweb.com"); //API地址
+define('DOWNLOAD_URL',"http://download.live2dweb.com/");//下载URL
 class live2d_SDK
 {
     /**
@@ -39,36 +40,9 @@ class live2d_SDK
             }
         }
     }
-    /**
-     * 获取回滚的设置
-     */
-    public function rollback_set($request)
-    {
-        $userInfo = get_option('live_2d_settings_user_token');
-        $settings = get_option('live_2d_settings_option_name');
-        $setArr = $this->Get_Jwt($request["token"]);
-        if (!empty($request['sign']) && $userInfo['userName'] == $request['userName']) {
-            $keyList = array_keys($setArr);
-            foreach ($keyList as $keyItem) {
-                $item = $setArr[$keyItem];
-                if (is_object($item)) {
-                    $item = (array)$item;
-                    foreach (array_keys($item) as $childKey) {
-                        $settings[$keyItem][$childKey] = $item[$childKey];
-                    }
-                } else if (isset($item)) {
-                    $settings[$keyItem] = $item;
-                }
-            }
-            if (IS_PLUGIN_ACTIVE) {
-                update_option('live_2d_settings_option_name', $settings);
-                echo "1";
-            } else {
-                echo "0";
-            }
-        } else {
-            echo '-1';
-        }
+    
+    public function DownloadModel(){
+
     }
 
     public function Save_Options($value)
