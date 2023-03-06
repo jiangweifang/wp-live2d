@@ -29,16 +29,7 @@ function model_shop_scripts()
     <script>
         jQuery(function() {
             window.getModelList(settings)
-            jQuery.post(ajaxurl, {
-                'action': 'download_model',
-                'modelId': 1
-            }, function(rsp) {
-                console.log(rsp);
-                if(rsp.fileName){
-                    console.log("下载完成");
-                }
-            });
-        })
+        });
     </script>
 <?php
 }
