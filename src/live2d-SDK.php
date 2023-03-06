@@ -7,6 +7,7 @@ $dir_len = count($dir);
 define('IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2] . "/wordpress-live2d.php")); //补丁启用
 define('API_URL', "https://api.live2dweb.com"); //API地址
 define('DOWNLOAD_URL', "http://download.live2dweb.com/"); //下载URL
+define('DOWNLOAD_DIR', plugin_dir_path(dirname(__FILE__)) . 'model/'); //服务器下载的路径
 class live2d_SDK
 {
     /**
@@ -43,8 +44,9 @@ class live2d_SDK
     /**
      * 下载一个指定ID的模型
      */
-    public function DownloadModel($modelId)
+    public function DownloadModel()
     {
+        $modelId = intval($_POST["modelId"]);
         $userInfo = get_option('live_2d_settings_user_token');
         if (!empty($userInfo["sign"])) {
             $param = ['id' => $modelId];
@@ -53,8 +55,7 @@ class live2d_SDK
                 $modelName = str_replace(array('/', '.'), '_', $result["modelName"]);
                 $fileName = urlencode($modelName) . ".zip";
                 $fileUrl = DOWNLOAD_URL . "model/" . $fileName;
-                $save_dir = plugin_dir_path(dirname(__FILE__)) . 'model/';
-                if (!file_exists($save_dir) && !mkdir($save_dir, 0777, true)) {
+                if (!file_exists(DOWNLOAD_DIR) && !mkdir(DOWNLOAD_DIR, 0777, true)) {
                     return false;
                 }
                 // 初始化一个新的cURL句柄
@@ -77,18 +78,44 @@ class live2d_SDK
                 // 关闭cURL句柄
                 curl_close($curl);
                 if ($httpCode === 200) {
-                    $localFile = @fopen($save_dir . $fileName, 'a');
+                    $localFile = @fopen(DOWNLOAD_DIR . $fileName, 'a');
                     fwrite($localFile, $content);
                     fclose($localFile);
                     unset($content, $fileUrl);
 
-                    $downloaded_file = $save_dir . $fileName;
+                    $downloaded_file = DOWNLOAD_DIR . $fileName;
                     $downloaded_md5 = md5_file($downloaded_file);
-                    print_r($downloaded_md5);
+                    if ($result["fileMd5"] === $downloaded_md5) {
+                    } else {
+                    }
+                    echo json_encode(array(
+                        'errorCode' => 200,
+                        'fileName' => $fileName
+                    ));
                 }
+            } else {
+                echo json_encode($result);
             }
         }
+        wp_die();
     }
+
+    public function OpenZip($fileName)
+    {
+        $zip = new ZipArchive;
+        $zipFile = DOWNLOAD_DIR . $fileName;
+        $zipFileName = pathinfo($zipFile, PATHINFO_FILENAME);
+        $res = $zip->open($zipFile);
+        if ($res === TRUE) {
+            $zip->extractTo(DOWNLOAD_DIR . '/' . $zipFileName);
+            $zip->close();
+            unlink($zipFile);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     //排查错误使用
     public function Save_Options($value)
     {
@@ -124,8 +151,8 @@ class live2d_SDK
     public function DoPost($param, $api_name, $jwt)
     {
         try {
-            $curl = curl_init();
             $url = API_URL . "/" . $api_name;
+            $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_REFERER, get_home_url());
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -139,23 +166,22 @@ class live2d_SDK
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  //不验证证书是否存在
             $response = curl_exec($curl);
             $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            curl_close($curl);
             if ($httpCode === 401 || $httpCode === 403) {
-                $response = json_encode(array(
+                return array(
                     'errorCode' => $httpCode,
                     'errorMsg' => '登录不正确, 请检查是否和域名匹配'
-                ));
+                );
             } else {
                 if (!$response) {
-                    $response = json_encode(array(
+                    return array(
                         'errorCode' => $httpCode,
                         'errorMsg' => curl_error($curl)
-                    ));
+                    );
                 } else {
                     return json_decode($response, true);
                 }
             }
-            curl_close($curl);
-            return json_decode($response, true);
         } catch (Exception $e) {
             return array(
                 'errorCode' => 9500,
