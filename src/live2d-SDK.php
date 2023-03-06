@@ -100,8 +100,9 @@ class live2d_SDK
         wp_die();
     }
 
-    public function OpenZip($fileName)
+    public function OpenZip()
     {
+        $fileName = intval($_POST["fileName"]);
         $zip = new ZipArchive;
         $zipFile = DOWNLOAD_DIR . $fileName;
         $zipFileName = pathinfo($zipFile, PATHINFO_FILENAME);
@@ -110,10 +111,11 @@ class live2d_SDK
             $zip->extractTo(DOWNLOAD_DIR . '/' . $zipFileName);
             $zip->close();
             unlink($zipFile);
-            return true;
+            echo 1;
         } else {
-            return false;
+            echo 0;
         }
+        wp_die();
     }
 
     //排查错误使用
