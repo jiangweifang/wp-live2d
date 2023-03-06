@@ -92,10 +92,20 @@ class live2d_SDK
                         'errorCode' => 200,
                         'fileName' => $fileName
                     ));
+                }else{
+                    echo json_encode(array(
+                        'errorCode' => $httpCode,
+                        'errorMsg' => '服务器未授权此访问'.$fileUrl
+                    ));
                 }
             } else {
                 echo json_encode($result);
             }
+        }else{
+            echo json_encode(array(
+                'errorCode' => 9500,
+                'errorMsg' => '没有登录信息'
+            ));
         }
         wp_die();
     }
