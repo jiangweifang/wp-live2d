@@ -22,7 +22,9 @@ class live2d_Shop
             }
         </script>
 <?php
-        //live2d_SDK::DownloadModel("https://www.live2dweb.com/imgs/logo-full.png",plugin_dir_path(dirname(__FILE__)).'model/logo-full.png');
+        
+        $live2dSDK =new live2d_SDK();
+        $live2dSDK -> DownloadModel('1');
     }
 }
 ?>

@@ -6,7 +6,7 @@ $dir = explode('/', plugin_dir_url(dirname(__FILE__)));
 $dir_len = count($dir);
 define('IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2] . "/wordpress-live2d.php")); //补丁启用
 define('API_URL', "https://api.live2dweb.com"); //API地址
-define('DOWNLOAD_URL',"http://download.live2dweb.com/");//下载URL
+define('DOWNLOAD_URL', "http://download.live2dweb.com/"); //下载URL
 class live2d_SDK
 {
     /**
@@ -40,19 +40,64 @@ class live2d_SDK
             }
         }
     }
-    
-    public function DownloadModel(){
+    /**
+     * 下载一个指定ID的模型
+     */
+    public function DownloadModel($modelId)
+    {
+        $userInfo = get_option('live_2d_settings_user_token');
+        if (!empty($userInfo["sign"])) {
+            $param = ['id' => $modelId];
+            $result = $this->DoPost($param, "Model/ModelInfo", $userInfo["sign"]);
+            if (isset($result) && !empty($result["modelName"])) {
+                $modelName = str_replace(array('/', '.'), '_', $result["modelName"]);
+                $fileName = urlencode($modelName) . ".zip";
+                $fileUrl = DOWNLOAD_URL . "model/" . $fileName;
+                $save_dir = plugin_dir_path(dirname(__FILE__)) . 'model/';
+                if (!file_exists($save_dir) && !mkdir($save_dir, 0777, true)) {
+                    return false;
+                }
+                // 初始化一个新的cURL句柄
+                $curl = curl_init();
+                // 设置要下载的文件的URL
+                curl_setopt($curl, CURLOPT_URL, $fileUrl);
+                // 设置选项以将传输作为字符串返回
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                // 设置选项以在后台执行传输
+                curl_setopt($curl, CURLOPT_HEADER, 0);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  //禁用后cURL将终止从服务端进行验证
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  //不验证证书是否存在
+                curl_setopt($curl, CURLOPT_REFERER, get_home_url());
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                    'Authorization: Bearer ' . $userInfo["sign"]
+                ));
+                // 执行传输
+                $content = curl_exec($curl);
+                $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                // 关闭cURL句柄
+                curl_close($curl);
+                if ($httpCode === 200) {
+                    $localFile = @fopen($save_dir . $fileName, 'a');
+                    fwrite($localFile, $content);
+                    fclose($localFile);
+                    unset($content, $fileUrl);
 
+                    $downloaded_file = $save_dir . $fileName;
+                    $downloaded_md5 = md5_file($downloaded_file);
+                    print_r($downloaded_md5);
+                }
+            }
+        }
     }
-
+    //排查错误使用
     public function Save_Options($value)
     {
         $userInfo = get_option('live_2d_settings_user_token');
         if (!empty($userInfo["sign"])) {
-            $result = $this->DoPost('new_value', $value, "Options/UpdateOpt", $userInfo["sign"]);
-            if (isset($result) && $result["errorCode"] != 200) {
-                add_settings_error('live_2d_sdk_error', $result["errorCode"], '保存成功！但插件暂时无法同步，这不影响您的使用:' . $result["errorMsg"] . ' | 错误代码:' . $result["errorCode"]);
-            }
+            $param = [
+                'new_value' => json_encode($value)
+            ];
+            $result = $this->DoPost($param, "Options/UpdateOpt", $userInfo["sign"]);
         }
     }
 
@@ -76,12 +121,9 @@ class live2d_SDK
         return $setArr;
     }
 
-    public function DoPost($paramName, $paramValue, $api_name, $jwt)
+    public function DoPost($param, $api_name, $jwt)
     {
         try {
-            $post = [
-                $paramName => json_encode($paramValue)
-            ];
             $curl = curl_init();
             $url = API_URL . "/" . $api_name;
             curl_setopt($curl, CURLOPT_URL, $url);
@@ -89,30 +131,27 @@ class live2d_SDK
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_POST, true); //POST数据
             curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                'Authorization: Bearer ' . $jwt
+                'Authorization: Bearer ' . $jwt,
             ));
-            curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post));
+            curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($param));
             //curl_setopt($curl, CURLOPT_TIMEOUT,20);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  //禁用后cURL将终止从服务端进行验证
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  //不验证证书是否存在
             $response = curl_exec($curl);
             $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            if ($response === false) {
+            if ($httpCode === 401 || $httpCode === 403) {
                 $response = json_encode(array(
                     'errorCode' => $httpCode,
-                    'errorMsg' => curl_error($curl)
+                    'errorMsg' => '登录不正确, 请检查是否和域名匹配'
                 ));
-            } else if (empty($response)) {
-                if ($httpCode === 401) {
+            } else {
+                if (!$response) {
                     $response = json_encode(array(
                         'errorCode' => $httpCode,
-                        'errorMsg' => '请登录成功后保存设置'
+                        'errorMsg' => curl_error($curl)
                     ));
                 } else {
-                    $response = json_encode(array(
-                        'errorCode' => $httpCode,
-                        'errorMsg' => '接口返回为空'
-                    ));
+                    return json_decode($response, true);
                 }
             }
             curl_close($curl);
@@ -122,22 +161,6 @@ class live2d_SDK
                 'errorCode' => 9500,
                 'errorMsg' => $e
             );
-        }
-    }
-
-    public static function DownloadModel($remoteUrl, $localFilePath)
-    {
-        $fileContent = file_get_contents($remoteUrl);
-        if ($fileContent === false) {
-            // 文件下载失败
-        } else {
-            // 文件下载成功，将文件内容写入本地文件
-            $result = file_put_contents($localFilePath, $fileContent);
-            if ($result === false) {
-                // 文件保存失败
-            } else {
-                // 文件保存成功
-            }
         }
     }
 
