@@ -6,7 +6,6 @@ $dir = explode('/', plugin_dir_url(dirname(__FILE__)));
 $dir_len = count($dir);
 define('IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2] . "/wordpress-live2d.php")); //补丁启用
 define('API_URL', "https://api.live2dweb.com"); //API地址
-define('DOWNLOAD_URL', "http://download.live2dweb.com/"); //下载URL
 define('DOWNLOAD_DIR', plugin_dir_path(dirname(__FILE__)) . 'model/'); //服务器下载的路径
 class live2d_SDK
 {
@@ -52,9 +51,7 @@ class live2d_SDK
             $param = ['id' => $modelId];
             $result = $this->DoPost($param, "Model/ModelInfo", $userInfo["sign"]);
             if (isset($result) && !empty($result["modelName"])) {
-                $modelName = str_replace(array('/', '.'), '_', $result["modelName"]);
-                $fileName = urlencode($modelName) . ".zip";
-                $fileUrl = DOWNLOAD_URL . "model/" . $fileName;
+                $fileUrl = $result["fileUrl"];
                 if (!file_exists(DOWNLOAD_DIR) && !mkdir(DOWNLOAD_DIR, 0777, true)) {
                     return false;
                 }
