@@ -63,7 +63,7 @@ class live2d_SDK
                 curl_setopt($curl, CURLOPT_HTTPGET, true); //GET数据
                 curl_setopt($curl, CURLOPT_HTTPHEADER, array(
                     'Authorization: Bearer ' . $userInfo["sign"],
-                    'Origin: '. get_home_url(),
+                    'Origin: ' . get_home_url(),
                 ));
                 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  //禁用后cURL将终止从服务端进行验证
                 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  //不验证证书是否存在
@@ -165,7 +165,7 @@ class live2d_SDK
             curl_setopt($curl, CURLOPT_POST, true); //POST数据
             curl_setopt($curl, CURLOPT_HTTPHEADER, array(
                 'Authorization: Bearer ' . $jwt,
-                'Origin: '. get_home_url(),
+                'Origin: ' . get_home_url(),
             ));
             curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($param));
             //curl_setopt($curl, CURLOPT_TIMEOUT,20);
