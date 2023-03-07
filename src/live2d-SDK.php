@@ -51,34 +51,33 @@ class live2d_SDK
             $param = ['id' => $modelId];
             $result = $this->DoPost($param, "Model/ModelInfo", $userInfo["sign"]);
             if (isset($result) && !empty($result["modelName"])) {
-                $fileUrl = $result["fileUrl"];
                 if (!file_exists(DOWNLOAD_DIR) && !mkdir(DOWNLOAD_DIR, 0777, true)) {
-                    return false;
+                    echo json_encode(array(
+                        'errorCode' => 9500,
+                        'errorMsg' => '文件夹创建失败'
+                    ));
                 }
-                // 初始化一个新的cURL句柄
                 $curl = curl_init();
-                // 设置要下载的文件的URL
-                curl_setopt($curl, CURLOPT_URL, $fileUrl);
-                // 设置选项以将传输作为字符串返回
+                curl_setopt($curl, CURLOPT_URL, $result["fileUrl"]);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                // 设置选项以在后台执行传输
-                curl_setopt($curl, CURLOPT_HEADER, 0);
+                curl_setopt($curl, CURLOPT_HTTPGET, true); //GET数据
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                    'Authorization: Bearer ' . $userInfo["sign"],
+                    'Origin: '. get_home_url(),
+                ));
                 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  //禁用后cURL将终止从服务端进行验证
                 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  //不验证证书是否存在
-                curl_setopt($curl, CURLOPT_REFERER, get_home_url());
-                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                    'Authorization: Bearer ' . $userInfo["sign"]
-                ));
-                // 执行传输
                 $content = curl_exec($curl);
                 $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                // 关闭cURL句柄
                 curl_close($curl);
                 if ($httpCode === 200) {
+                    $modelName = str_replace(array('/', '.'), '_', $result["modelName"]);
+                    $fileName = urlencode($modelName) . ".zip";
                     $localFile = @fopen(DOWNLOAD_DIR . $fileName, 'a');
                     fwrite($localFile, $content);
                     fclose($localFile);
-                    unset($content, $fileUrl);
+                    chmod(DOWNLOAD_DIR . $fileName, 0777);
+                    unset($content);
 
                     $downloaded_file = DOWNLOAD_DIR . $fileName;
                     $downloaded_md5 = md5_file($downloaded_file);
@@ -89,16 +88,16 @@ class live2d_SDK
                         'errorCode' => 200,
                         'fileName' => $fileName
                     ));
-                }else{
+                } else {
                     echo json_encode(array(
                         'errorCode' => $httpCode,
-                        'errorMsg' => '服务器未授权此访问'.$fileUrl
+                        'errorMsg' => '服务器未授权此访问'
                     ));
                 }
             } else {
                 echo json_encode($result);
             }
-        }else{
+        } else {
             echo json_encode(array(
                 'errorCode' => 9500,
                 'errorMsg' => '没有登录信息'
@@ -109,9 +108,8 @@ class live2d_SDK
 
     public function OpenZip()
     {
-        $fileName = intval($_POST["fileName"]);
         $zip = new ZipArchive;
-        $zipFile = DOWNLOAD_DIR . $fileName;
+        $zipFile = DOWNLOAD_DIR . $_POST["fileName"];
         $zipFileName = pathinfo($zipFile, PATHINFO_FILENAME);
         $res = $zip->open($zipFile);
         if ($res === TRUE) {
@@ -163,11 +161,11 @@ class live2d_SDK
             $url = API_URL . "/" . $api_name;
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_REFERER, get_home_url());
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_POST, true); //POST数据
             curl_setopt($curl, CURLOPT_HTTPHEADER, array(
                 'Authorization: Bearer ' . $jwt,
+                'Origin: '. get_home_url(),
             ));
             curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($param));
             //curl_setopt($curl, CURLOPT_TIMEOUT,20);
