@@ -105,15 +105,26 @@ class live2d_SDK
         }
         wp_die();
     }
-
+    /**
+     * 去服务器获取列表, 被ts中 getModelList 方法调用
+     * 这个方法可以通过PHP过滤已下载的路径, 避免前端重复下载
+     */
     public function GetModelList()
     {
         $userInfo = $_POST["userInfo"];
-        $result = $this->DoPost([], "Model/List", $userInfo["sign"]);
-        echo $result;
+        $result = $this->DoGet([], "Model/List", $userInfo["sign"]);
+        foreach ($result as &$value) {
+            $fileName = str_replace(array('/', '.'), '_', $value["name"]);
+            $filePath = DOWNLOAD_DIR .$fileName;
+            $value["downloaded"] = file_exists($filePath);
+        }
+        echo json_encode($result);
         wp_die();
     }
 
+    /**
+     * 对ZIP进行解压缩
+     */
     public function OpenZip()
     {
         $zip = new ZipArchive;
@@ -130,7 +141,10 @@ class live2d_SDK
         }
         wp_die();
     }
-
+    /**
+     * 清理文件: 用户如果没有下载成功, 会下载一个XML是.ZIP格式的, 需要给它清除
+     * 执行此方法可以清除
+     */
     public function ClearFiles()
     {
         $filePath = DOWNLOAD_DIR . $_POST["fileName"];
@@ -189,6 +203,46 @@ class live2d_SDK
             ));
             curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($param));
             //curl_setopt($curl, CURLOPT_TIMEOUT,20);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  //禁用后cURL将终止从服务端进行验证
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  //不验证证书是否存在
+            $response = curl_exec($curl);
+            $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            curl_close($curl);
+            if ($httpCode === 401 || $httpCode === 403) {
+                return array(
+                    'errorCode' => $httpCode,
+                    'errorMsg' => '登录不正确, 请检查是否和域名匹配'
+                );
+            } else {
+                if (!$response) {
+                    return array(
+                        'errorCode' => $httpCode,
+                        'errorMsg' => curl_error($curl)
+                    );
+                } else {
+                    return json_decode($response, true);
+                }
+            }
+        } catch (Exception $e) {
+            return array(
+                'errorCode' => 9500,
+                'errorMsg' => $e
+            );
+        }
+    }
+
+    public function DoGet($param, $api_name, $jwt)
+    {
+        try {
+            $url = API_URL . "/" . $api_name.http_build_query($param);
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_HTTPGET, true); //POST数据
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'Authorization: Bearer ' . $jwt,
+                'Origin: ' . get_home_url(),
+            ));
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  //禁用后cURL将终止从服务端进行验证
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  //不验证证书是否存在
             $response = curl_exec($curl);
