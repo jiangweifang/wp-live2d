@@ -78,7 +78,7 @@ class live2d_SDK
                     fclose($localFile);
                     chmod(DOWNLOAD_DIR . $fileName, 0777);
                     unset($content);
-
+                    //验证文件MD5是否正确
                     $downloaded_file = DOWNLOAD_DIR . $fileName;
                     $downloaded_md5 = md5_file($downloaded_file);
                     if ($result["fileMd5"] === $downloaded_md5) {
@@ -106,6 +106,14 @@ class live2d_SDK
         wp_die();
     }
 
+    public function GetModelList()
+    {
+        $userInfo = $_POST["userInfo"];
+        $result = $this->DoPost([], "Model/List", $userInfo["sign"]);
+        echo $result;
+        wp_die();
+    }
+
     public function OpenZip()
     {
         $zip = new ZipArchive;
@@ -116,6 +124,18 @@ class live2d_SDK
             $zip->extractTo(DOWNLOAD_DIR . '/' . $zipFileName);
             $zip->close();
             unlink($zipFile);
+            echo 1;
+        } else {
+            echo 0;
+        }
+        wp_die();
+    }
+
+    public function ClearFiles()
+    {
+        $filePath = DOWNLOAD_DIR . $_POST["fileName"];
+        if (file_exists($filePath)) {
+            unlink($filePath);
             echo 1;
         } else {
             echo 0;
