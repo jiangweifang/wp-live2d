@@ -121,7 +121,8 @@ class live2D
 		wp_enqueue_script('admin_js', plugins_url('../assets/waifu-admin.min.js', __FILE__));
 		wp_localize_script('admin_js', 'settings', array(
 			'userInfo' => get_option('live_2d_settings_user_token'),
-			'homeUrl' => get_home_url()
+			'homeUrl' => get_home_url(),
+			'settings'=> get_option('live_2d_settings_option_name'),
 		));
 		// 注册基础设置
 		register_setting(

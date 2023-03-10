@@ -11,19 +11,32 @@ add_action("wp_ajax_clear_files", array(new live2d_SDK, 'ClearFiles'));
 add_action("wp_ajax_get_model_list", array(new live2d_SDK, 'GetModelList'));
 class live2d_Shop
 {
+    private $userInfo;
+    public function __construct()
+    {
+        $this->userInfo = get_option('live_2d_settings_user_token');
+    }
     public function live2d_shop_init()
     {
 ?>
         <div id="live2d-shop">
-            <div>
-                列表中是您可以使用的模型。
+            <div class="wp-filter">
+                <h2>列表中是您可以使用的模型。</h2>
             </div>
-            <div class="live2d-container">
-
-            </div>
-            <div>
-                您还没有登录，请登录后查看。
-            </div>
+            <?php
+            $userInfo = $this->userInfo;
+            if (empty($userInfo["sign"]) && intval($userInfo["userLevel"]) < 1) {
+            ?>
+                <div>
+                    您需要登陆并付费才可以使用此功能。
+                </div>
+            <?php
+            } else {
+            ?>
+                <div class="live2d-container"></div>
+            <?php
+            }
+            ?>
         </div>
 
     <?php

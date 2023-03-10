@@ -11,7 +11,7 @@ class live2D_Settings{
 		}
 
 		if ( isset( $input['apiType'] ) ) {
-            $sanitary_values['apiType'] = sanitize_text_field( $input['apiType'] );
+            $sanitary_values['apiType'] = (Boolean)$input['apiType'];
         }else{
 			$sanitary_values['apiType'] = false;
 		}
