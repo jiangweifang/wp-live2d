@@ -22,6 +22,7 @@ class live2d_Shop
         <div id="live2d-shop">
             <div class="wp-filter">
                 <h2>列表中是您可以使用的模型。</h2>
+                <p>您可以通过<a href="https://www.live2dweb.com/Model/Workshop" target="_blank">插件官网</a>增加您的可选列表</p>
             </div>
             <?php
             $userInfo = $this->userInfo;
