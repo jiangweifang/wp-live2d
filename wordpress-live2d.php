@@ -32,9 +32,12 @@ function live2D_style()
     wp_enqueue_script('live2dv1core', LIVE2D_ASSETS . 'live2dv1.min.js');
     wp_enqueue_script('live2dv2core', $live2dSettings["sdkUrl"]);
     wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'live2dv2core', 'moment'));
-    wp_localize_script('live2dweb', 'userToken', get_option('live_2d_settings_user_token'));
-    wp_localize_script('live2dweb', 'live2d_settings', $live2dSettings);
-    wp_localize_script('live2dweb', 'waifu_tips', get_option('live_2d_advanced_option_name'));
+    wp_localize_script('live2dweb', 'live2d_settings', array(
+        'userInfo' => get_option('live_2d_settings_user_token'),
+        'waifuTips' => get_option('live_2d_advanced_option_name'),
+        'settings' => $live2dSettings,
+        'localPath' => plugin_dir_url(__FILE__) . 'model',
+    ));
 }
 add_action('wp_head', 'live2D_style', 1);
 
@@ -91,6 +94,7 @@ add_action('rest_api_init', function () {
         'callback' => array($sdk, 'rollback_set')
     ));
 });
+
 // 初始化加载
 function live2D_Init()
 {

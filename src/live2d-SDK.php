@@ -9,6 +9,11 @@ define('API_URL', "https://api.live2dweb.com"); //API地址
 define('DOWNLOAD_DIR', plugin_dir_path(dirname(__FILE__)) . 'model/'); //服务器下载的路径
 class live2d_SDK
 {
+    private $userInfo;
+    public function __construct()
+    {
+        $this->userInfo = get_option('live_2d_settings_user_token');
+    }
     /**
      * 获取用户登录结果
      */
@@ -46,7 +51,7 @@ class live2d_SDK
     public function DownloadModel()
     {
         $modelId = intval($_POST["modelId"]);
-        $userInfo = get_option('live_2d_settings_user_token');
+        $userInfo = $this->userInfo;
         if (!empty($userInfo["sign"])) {
             $param = ['id' => $modelId];
             $result = $this->DoPost($param, "Model/ModelInfo", $userInfo["sign"]);
@@ -111,11 +116,11 @@ class live2d_SDK
      */
     public function GetModelList()
     {
-        $userInfo = $_POST["userInfo"];
+        $userInfo = $this->userInfo;
         $result = $this->DoGet([], "Model/List", $userInfo["sign"]);
         foreach ($result as &$value) {
             $fileName = str_replace(array('/', '.'), '_', $value["name"]);
-            $filePath = DOWNLOAD_DIR .$fileName;
+            $filePath = DOWNLOAD_DIR . $fileName;
             $value["downloaded"] = file_exists($filePath);
         }
         echo json_encode($result);
@@ -160,7 +165,7 @@ class live2d_SDK
     //排查错误使用
     public function Save_Options($value)
     {
-        $userInfo = get_option('live_2d_settings_user_token');
+        $userInfo = $this->userInfo;
         if (!empty($userInfo["sign"])) {
             $param = [
                 'new_value' => json_encode($value)
@@ -174,7 +179,7 @@ class live2d_SDK
      */
     public function Update_Options($value, $old_value)
     {
-        $userInfo = get_option('live_2d_settings_user_token');
+        $userInfo = $this->userInfo;
         $url = $value["modelAPI"];
         if (preg_match('/^https:\/\/api\.live2dweb\.com/i', $url) && empty($userInfo["sign"])) {
             add_settings_error('live_2d_sdk_error', 500, '保存成功，但是您必须登录才可以使用官方API。');
@@ -234,7 +239,7 @@ class live2d_SDK
     public function DoGet($param, $api_name, $jwt)
     {
         try {
-            $url = API_URL . "/" . $api_name.http_build_query($param);
+            $url = API_URL . "/" . $api_name . http_build_query($param);
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
