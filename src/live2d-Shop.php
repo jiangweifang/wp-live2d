@@ -1,6 +1,5 @@
 <?php
 include_once(dirname(__FILE__)  . '/live2d-SDK.php');
-add_action('admin_footer', 'model_shop_scripts');
 //下载模型ajax
 add_action("wp_ajax_download_model", array(new live2d_SDK, 'DownloadModel'));
 //解压缩ajax
@@ -18,6 +17,7 @@ class live2d_Shop
     }
     public function live2d_shop_init()
     {
+        add_action('admin_footer', 'model_shop_scripts');
 ?>
         <div id="live2d-shop">
             <div class="wp-filter">
