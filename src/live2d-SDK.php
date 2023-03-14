@@ -146,6 +146,16 @@ class live2d_SDK
         }
         wp_die();
     }
+
+    public function Downloaded()
+    {
+        $modelId = intval($_POST["modelId"]);
+        $param = ['id' => $modelId];
+        $result = $this->DoPost($param, "Model/Downloaded", $userInfo["sign"]);
+        echo json_encode($result);
+        wp_die();
+    }
+
     /**
      * 清理文件: 用户如果没有下载成功, 会下载一个XML是.ZIP格式的, 需要给它清除
      * 执行此方法可以清除

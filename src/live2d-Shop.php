@@ -8,6 +8,8 @@ add_action("wp_ajax_zip_model", array(new live2d_SDK, 'OpenZip'));
 add_action("wp_ajax_clear_files", array(new live2d_SDK, 'ClearFiles'));
 //获取下方列表的ajax
 add_action("wp_ajax_get_model_list", array(new live2d_SDK, 'GetModelList'));
+//标记下载完成
+add_action("wp_ajax_downloaded", array(new live2d_SDK, 'Downloaded'));
 class live2d_Shop
 {
     private $userInfo;
