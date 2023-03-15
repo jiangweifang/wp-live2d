@@ -26,10 +26,16 @@ class live2d_Shop
             </div>
             <?php
             $userInfo = $this->userInfo;
-            if (empty($userInfo["sign"]) && intval($userInfo["userLevel"]) < 1) {
+            if (empty($userInfo["sign"]) && empty($userInfo["userLevel"])) {
             ?>
                 <div>
                     您需要登陆并付费才可以使用此功能。
+                </div>
+            <?php
+            } else if (intval($userInfo["userLevel"]) < 1) {
+            ?>
+                <div>
+                    您需要付费才可以使用此功能。
                 </div>
             <?php
             } else {
