@@ -127,6 +127,15 @@ class live2d_SDK
         wp_die();
     }
 
+    public function GetTextureList()
+    {
+        $userInfo = $this->userInfo;
+        $param = ['modelId' => $_POST["modelId"]];
+        $result = $this->DoGet($param, "Model/Textures", $userInfo["sign"]);
+        echo json_encode($result);
+        wp_die();
+    }
+
     /**
      * 对ZIP进行解压缩
      */
@@ -249,7 +258,7 @@ class live2d_SDK
     public function DoGet($param, $api_name, $jwt)
     {
         try {
-            $url = API_URL . "/" . $api_name . http_build_query($param);
+            $url = API_URL . "/" . $api_name ."/?". http_build_query($param);
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
