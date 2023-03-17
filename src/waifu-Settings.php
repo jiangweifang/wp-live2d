@@ -1,280 +1,288 @@
 <?php
-class live2D_Settings{
-	
-    public function live_2d_settings_sanitize($input) {
-            
+class live2D_Settings
+{
+
+	public function live_2d_settings_sanitize($input)
+	{
+
 		$sanitary_values = array();
-		if ( isset( $input['live2dLayoutType'] ) ) {
-            $sanitary_values['live2dLayoutType'] = (Boolean)$input['live2dLayoutType'];
-        }else{
+		if (isset($input['live2dLayoutType'])) {
+			$sanitary_values['live2dLayoutType'] = (bool)$input['live2dLayoutType'];
+		} else {
 			$sanitary_values['live2dLayoutType'] = true;
 		}
 
-		if ( isset( $input['apiType'] ) ) {
-            $sanitary_values['apiType'] = (Boolean)$input['apiType'];
-        }else{
+		if (isset($input['apiType'])) {
+			$sanitary_values['apiType'] = (bool)$input['apiType'];
+		} else {
 			$sanitary_values['apiType'] = false;
 		}
 
-        if ( isset( $input['modelAPI'] ) ) {
-            $sanitary_values['modelAPI'] = sanitize_text_field( $input['modelAPI'] );
-        }else{
+		if (isset($input['modelAPI'])) {
+			$sanitary_values['modelAPI'] = sanitize_text_field($input['modelAPI']);
+		} else {
 			$sanitary_values['modelAPI'] = "https://live2d.fghrsh.net/api/";
 		}
 
-        if ( isset( $input['tipsMessage'] ) ) {
-            $sanitary_values['tipsMessage'] = sanitize_text_field( $input['tipsMessage'] );
-        }
-
-        if ( isset( $input['hitokotoAPI'] ) ) {
-            $sanitary_values['hitokotoAPI'] = $input['hitokotoAPI'];
-        }
-
-        if ( isset( $input['modelId'] ) ) {
-            $sanitary_values['modelId'] = $input['modelId'];
-        }
-
-        if ( isset( $input['modelTexturesId'] ) ) {
-            $sanitary_values['modelTexturesId'] = sanitize_text_field( $input['modelTexturesId'] );
-		}
-		
-		if ( isset( $input['modelPoint'] ) ) {
-            $sanitary_values['modelPoint'] = $input['modelPoint'];
-		}else{
-			$sanitary_values['modelPoint']['zoom']="1.0";
-			$sanitary_values['modelPoint']['x']= 0;
-			$sanitary_values['modelPoint']['y']= 0;
+		if (isset($input['tipsMessage'])) {
+			$sanitary_values['tipsMessage'] = sanitize_text_field($input['tipsMessage']);
 		}
 
-		if ( isset( $input['sdkUrl'] ) ) {
-            $sanitary_values['sdkUrl'] = sanitize_text_field( $input['sdkUrl'] );
-        }else{
+		if (isset($input['hitokotoAPI'])) {
+			$sanitary_values['hitokotoAPI'] = $input['hitokotoAPI'];
+		}
+
+		if (isset($input['modelId'])) {
+			$sanitary_values['modelId'] = $input['modelId'];
+		}
+
+		if (isset($input['modelTexturesId'])) {
+			$sanitary_values['modelTexturesId'] = sanitize_text_field($input['modelTexturesId']);
+		}
+
+		if (isset($input['modelPoint'])) {
+			$sanitary_values['modelPoint']['zoom'] = $input['modelPoint']['zoom'];
+			$sanitary_values['modelPoint']['x'] = (int)$input['modelPoint']['x'];
+			$sanitary_values['modelPoint']['y'] = (int)$input['modelPoint']['y'];
+		} else {
+			$sanitary_values['modelPoint']['zoom'] = "1.0";
+			$sanitary_values['modelPoint']['x'] = 0;
+			$sanitary_values['modelPoint']['y'] = 0;
+		}
+
+		if (isset($input['sdkUrl'])) {
+			$sanitary_values['sdkUrl'] = sanitize_text_field($input['sdkUrl']);
+		} else {
 			$sanitary_values['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
 		}
 
-        if ( isset( $input['showToolMenu'] ) ) {
-            $sanitary_values['showToolMenu'] = (Boolean)$input['showToolMenu'];
-        }
-
-        if ( isset( $input['canCloseLive2d'] ) ) {
-            $sanitary_values['canCloseLive2d'] = (Boolean)$input['canCloseLive2d'];
-        }
-
-        if ( isset( $input['canSwitchModel'] ) ) {
-            $sanitary_values['canSwitchModel'] = (Boolean)$input['canSwitchModel'];
-        }
-
-        if ( isset( $input['canSwitchTextures'] ) ) {
-            $sanitary_values['canSwitchTextures'] = (Boolean)$input['canSwitchTextures'];
-        }
-
-        if ( isset( $input['canSwitchHitokoto'] ) ) {
-            $sanitary_values['canSwitchHitokoto'] = (Boolean)$input['canSwitchHitokoto'];
-        }
-
-        if ( isset( $input['canTakeScreenshot'] ) ) {
-            $sanitary_values['canTakeScreenshot'] = (Boolean)$input['canTakeScreenshot'];
-        }
-
-        if ( isset( $input['canTurnToHomePage'] ) ) {
-            $sanitary_values['canTurnToHomePage'] = (Boolean)$input['canTurnToHomePage'];
-        }
-
-        if ( isset( $input['canTurnToAboutPage'] ) ) {
-            $sanitary_values['canTurnToAboutPage'] = (Boolean)$input['canTurnToAboutPage'];
-        }
-
-        if ( isset( $input['modelStorage'] ) ) {
-            $sanitary_values['modelStorage'] = (Boolean)$input['modelStorage'];
-        }
-
-        if ( isset( $input['modelRandMode'] ) ) {
-            $sanitary_values['modelRandMode'] = $input['modelRandMode'];
-        }
-
-        if ( isset( $input['modelTexturesRandMode'] ) ) {
-            $sanitary_values['modelTexturesRandMode'] = $input['modelTexturesRandMode'];
-        }
-
-        if ( isset( $input['showHitokoto'] ) ) {
-            $sanitary_values['showHitokoto'] = (Boolean)$input['showHitokoto'];
-        }
-
-        if ( isset( $input['showF12Status'] ) ) {
-            $sanitary_values['showF12Status'] = (Boolean)$input['showF12Status'];
-        }
-
-        if ( isset( $input['showF12Message'] ) ) {
-            $sanitary_values['showF12Message'] = (Boolean)$input['showF12Message'];
-        }
-
-        if ( isset( $input['showF12OpenMsg'] ) ) {
-            $sanitary_values['showF12OpenMsg'] = (Boolean)$input['showF12OpenMsg'];
-        }
-
-        if ( isset( $input['showCopyMessage'] ) ) {
-            $sanitary_values['showCopyMessage'] = (Boolean)$input['showCopyMessage'];
-        }
-
-        if ( isset( $input['showWelcomeMessage'] ) ) {
-            $sanitary_values['showWelcomeMessage'] = (Boolean)$input['showWelcomeMessage'];
-        }
-
-        if ( isset( $input['waifuSize'] ) ) {
-            $sanitary_values['waifuSize'] = $input['waifuSize'];
-        }
-
-        if ( isset( $input['waifuTipsSize'] ) ) {
-            $sanitary_values['waifuTipsSize'] = $input['waifuTipsSize'];
-        }
-
-        if ( isset( $input['waifuFontSize'] ) ) {
-            $sanitary_values['waifuFontSize'] = (int) $input['waifuFontSize'] ;
-        }
-
-        if ( isset( $input['waifuToolFont'] ) ) {
-            $sanitary_values['waifuToolFont'] = (int)$input['waifuToolFont'];
-        }
-
-        if ( isset( $input['waifuToolLine'] ) ) {
-            $sanitary_values['waifuToolLine'] = (int)$input['waifuToolLine'];
-        }
-
-        if ( isset( $input['waifuToolTop'] ) ) {
-            $sanitary_values['waifuToolTop'] = (int) $input['waifuToolTop'] ;
-        }
-
-        if ( isset( $input['waifuMinWidth'] ) ) {
-            $sanitary_values['waifuMinWidth'] = (int) $input['waifuMinWidth'] ;
+		if (isset($input['showToolMenu'])) {
+			$sanitary_values['showToolMenu'] = (bool)$input['showToolMenu'];
 		}
 
-		if ( isset( $input['waifuMobileDisable'] ) ) {
-            $sanitary_values['waifuMobileDisable'] = (Boolean) $input['waifuMobileDisable'] ;
+		if (isset($input['canCloseLive2d'])) {
+			$sanitary_values['canCloseLive2d'] = (bool)$input['canCloseLive2d'];
 		}
-		
-		if ( isset( $input['waifuEdgeSide'] ) ) {
-            $sanitary_values['waifuEdgeSide'] = sanitize_text_field( $input['waifuEdgeSide'] );
-        }
 
-        if ( isset( $input['waifuEdgeSize'] ) ) {
-            $sanitary_values['waifuEdgeSize'] = (int) $input['waifuEdgeSize'] ;
-        }
+		if (isset($input['canSwitchModel'])) {
+			$sanitary_values['canSwitchModel'] = (bool)$input['canSwitchModel'];
+		}
 
-        if ( isset( $input['waifuDraggable'] ) ) {
-            $sanitary_values['waifuDraggable'] = $input['waifuDraggable'];
-        }
+		if (isset($input['canSwitchTextures'])) {
+			$sanitary_values['canSwitchTextures'] = (bool)$input['canSwitchTextures'];
+		}
 
-        if ( isset( $input['waifuDraggableRevert'] ) ) {
-            $sanitary_values['waifuDraggableRevert'] = (Boolean)$input['waifuDraggableRevert'];
-        }
+		if (isset($input['canSwitchHitokoto'])) {
+			$sanitary_values['canSwitchHitokoto'] = (bool)$input['canSwitchHitokoto'];
+		}
 
-        if ( isset( $input['homePageUrl'] ) ) {
-            $sanitary_values['homePageUrl'] = sanitize_text_field( $input['homePageUrl'] );
-        }
+		if (isset($input['canTakeScreenshot'])) {
+			$sanitary_values['canTakeScreenshot'] = (bool)$input['canTakeScreenshot'];
+		}
 
-        if ( isset( $input['aboutPageUrl'] ) ) {
-            $sanitary_values['aboutPageUrl'] = sanitize_text_field( $input['aboutPageUrl'] );
-        }
+		if (isset($input['canTurnToHomePage'])) {
+			$sanitary_values['canTurnToHomePage'] = (bool)$input['canTurnToHomePage'];
+		}
 
-        if ( isset( $input['screenshotCaptureName'] ) ) {
-            $sanitary_values['screenshotCaptureName'] = sanitize_text_field( $input['screenshotCaptureName'] );
+		if (isset($input['canTurnToAboutPage'])) {
+			$sanitary_values['canTurnToAboutPage'] = (bool)$input['canTurnToAboutPage'];
+		}
+
+		if (isset($input['modelStorage'])) {
+			$sanitary_values['modelStorage'] = (bool)$input['modelStorage'];
+		}
+
+		if (isset($input['modelRandMode'])) {
+			$sanitary_values['modelRandMode'] = $input['modelRandMode'];
+		}
+
+		if (isset($input['modelTexturesRandMode'])) {
+			$sanitary_values['modelTexturesRandMode'] = $input['modelTexturesRandMode'];
+		}
+
+		if (isset($input['showHitokoto'])) {
+			$sanitary_values['showHitokoto'] = (bool)$input['showHitokoto'];
+		}
+
+		if (isset($input['showF12Status'])) {
+			$sanitary_values['showF12Status'] = (bool)$input['showF12Status'];
+		}
+
+		if (isset($input['showF12Message'])) {
+			$sanitary_values['showF12Message'] = (bool)$input['showF12Message'];
+		}
+
+		if (isset($input['showF12OpenMsg'])) {
+			$sanitary_values['showF12OpenMsg'] = (bool)$input['showF12OpenMsg'];
+		}
+
+		if (isset($input['showCopyMessage'])) {
+			$sanitary_values['showCopyMessage'] = (bool)$input['showCopyMessage'];
+		}
+
+		if (isset($input['showWelcomeMessage'])) {
+			$sanitary_values['showWelcomeMessage'] = (bool)$input['showWelcomeMessage'];
+		}
+
+		if (isset($input['waifuSize'])) {
+			$sanitary_values['waifuSize']['width'] = (int)$input['waifuSize']['width'];
+			$sanitary_values['waifuSize']['height'] = (int)$input['waifuSize']['height'];
+		}
+
+		if (isset($input['waifuTipsSize'])) {
+			$sanitary_values['waifuTipsSize']['width'] = (int)$input['waifuTipsSize']['width'];
+			$sanitary_values['waifuTipsSize']['height'] = (int)$input['waifuTipsSize']['height'];
+		}
+
+		if (isset($input['waifuFontSize'])) {
+			$sanitary_values['waifuFontSize'] = (int) $input['waifuFontSize'];
+		}
+
+		if (isset($input['waifuToolFont'])) {
+			$sanitary_values['waifuToolFont'] = (int)$input['waifuToolFont'];
+		}
+
+		if (isset($input['waifuToolLine'])) {
+			$sanitary_values['waifuToolLine'] = (int)$input['waifuToolLine'];
+		}
+
+		if (isset($input['waifuToolTop'])) {
+			$sanitary_values['waifuToolTop'] = (int) $input['waifuToolTop'];
+		}
+
+		if (isset($input['waifuMinWidth'])) {
+			$sanitary_values['waifuMinWidth'] = (int) $input['waifuMinWidth'];
+		}
+
+		if (isset($input['waifuMobileDisable'])) {
+			$sanitary_values['waifuMobileDisable'] = (bool) $input['waifuMobileDisable'];
+		}
+
+		if (isset($input['waifuEdgeSide'])) {
+			$sanitary_values['waifuEdgeSide'] = sanitize_text_field($input['waifuEdgeSide']);
+		}
+
+		if (isset($input['waifuEdgeSize'])) {
+			$sanitary_values['waifuEdgeSize'] = (int) $input['waifuEdgeSize'];
+		}
+
+		if (isset($input['waifuDraggable'])) {
+			$sanitary_values['waifuDraggable'] = $input['waifuDraggable'];
+		}
+
+		if (isset($input['waifuDraggableRevert'])) {
+			$sanitary_values['waifuDraggableRevert'] = (bool)$input['waifuDraggableRevert'];
+		}
+
+		if (isset($input['homePageUrl'])) {
+			$sanitary_values['homePageUrl'] = sanitize_text_field($input['homePageUrl']);
+		}
+
+		if (isset($input['aboutPageUrl'])) {
+			$sanitary_values['aboutPageUrl'] = sanitize_text_field($input['aboutPageUrl']);
+		}
+
+		if (isset($input['screenshotCaptureName'])) {
+			$sanitary_values['screenshotCaptureName'] = sanitize_text_field($input['screenshotCaptureName']);
 		}
 		//新增的颜色和透明度
-		if ( isset( $input['waifuTipsColor'] ) ) {
-            $sanitary_values['waifuTipsColor'] = sanitize_text_field( $input['waifuTipsColor'] );
+		if (isset($input['waifuTipsColor'])) {
+			$sanitary_values['waifuTipsColor'] = sanitize_text_field($input['waifuTipsColor']);
 		}
 
-		if ( isset( $input['waifuBorderColor'] ) ) {
-            $sanitary_values['waifuBorderColor'] = sanitize_text_field( $input['waifuBorderColor'] );
+		if (isset($input['waifuBorderColor'])) {
+			$sanitary_values['waifuBorderColor'] = sanitize_text_field($input['waifuBorderColor']);
 		}
 
-		if ( isset( $input['waifuShadowColor'] ) ) {
-            $sanitary_values['waifuShadowColor'] = sanitize_text_field( $input['waifuShadowColor'] );
+		if (isset($input['waifuShadowColor'])) {
+			$sanitary_values['waifuShadowColor'] = sanitize_text_field($input['waifuShadowColor']);
 		}
 
-		if ( isset( $input['waifuFontsColor'] ) ) {
-            $sanitary_values['waifuFontsColor'] = sanitize_text_field( $input['waifuFontsColor'] );
+		if (isset($input['waifuFontsColor'])) {
+			$sanitary_values['waifuFontsColor'] = sanitize_text_field($input['waifuFontsColor']);
 		}
 
-		if ( isset( $input['waifuHighlightColor'] ) ) {
-            $sanitary_values['waifuHighlightColor'] = sanitize_text_field( $input['waifuHighlightColor'] );
+		if (isset($input['waifuHighlightColor'])) {
+			$sanitary_values['waifuHighlightColor'] = sanitize_text_field($input['waifuHighlightColor']);
 		}
 		//新增了工具栏的颜色 工具栏是字体组成的 
-		if ( isset( $input['waifuToolColor'] ) ) {
-            $sanitary_values['waifuToolColor'] = sanitize_text_field( $input['waifuToolColor'] );
+		if (isset($input['waifuToolColor'])) {
+			$sanitary_values['waifuToolColor'] = sanitize_text_field($input['waifuToolColor']);
 		}
 
-		if ( isset( $input['waifuToolHover'] ) ) {
-            $sanitary_values['waifuToolHover'] = sanitize_text_field( $input['waifuToolHover'] );
+		if (isset($input['waifuToolHover'])) {
+			$sanitary_values['waifuToolHover'] = sanitize_text_field($input['waifuToolHover']);
 		}
 		// 新增tips位置
-		if ( isset( $input['waifuTipTop'] ) ) {
-            $sanitary_values['waifuTipTop'] = (int) $input['waifuTipTop'] ;
+		if (isset($input['waifuTipTop'])) {
+			$sanitary_values['waifuTipTop'] = (int) $input['waifuTipTop'];
 		}
-        return $sanitary_values;
-    }
+		return $sanitary_values;
+	}
 
-    public function install_Default_Settings(){
-		$live_2d_settings = get_option( 'live_2d_settings_option_name' );
+	public function install_Default_Settings()
+	{
+		$live_2d_settings = get_option('live_2d_settings_option_name');
 		$defValue = array();
-		if(FALSE === $live_2d_settings){
-			$defValue['live2dLayoutType']=true;
-			$defValue['modelAPI']= "https://live2d.fghrsh.net/api/";
-			$defValue['hitokotoAPI']='lwl12.com';
-			$defValue['modelId']='1';
-			$defValue['modelTexturesId']='53';
-			$defValue['modelPoint']['zoom']='1.0';
-			$defValue['modelPoint']['x']=0;
-			$defValue['modelPoint']['y']=0;
-			$defValue['sdkUrl']='https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
-			$defValue['showToolMenu']=true;
-			$defValue['canCloseLive2d']=true;
-			$defValue['canSwitchModel']=true;
-			$defValue['canSwitchTextures']=true;
-			$defValue['canSwitchHitokoto']=true;
-			$defValue['canTakeScreenshot']=true;
-			$defValue['canTurnToHomePage']=true;
-			$defValue['canTurnToAboutPage']=true;
-			$defValue['modelStorage']=true;
-			$defValue['modelRandMode']='rand';
-			$defValue['modelTexturesRandMode']='switch';
-			$defValue['showHitokoto']=true;
-			$defValue['showF12Status']=true;
-			$defValue['showF12Message']=true;
-			$defValue['showF12OpenMsg']=true;
-			$defValue['showCopyMessage']=true;
-			$defValue['showWelcomeMessage']=true;
-			$defValue['waifuSize']['width']=280;
-			$defValue['waifuSize']['height']=250;
-			$defValue['waifuTipsSize']['width']=250;
-			$defValue['waifuTipsSize']['height']=70;
-			$defValue['waifuFontSize']=12;
-			$defValue['waifuToolFont']=14;
-			$defValue['waifuToolLine']=20;
-			$defValue['waifuToolTop']=20;
-			$defValue['waifuMinWidth']=768;
+		if (FALSE === $live_2d_settings) {
+			$defValue['live2dLayoutType'] = true;
+			$defValue['modelAPI'] = "https://live2d.fghrsh.net/api/";
+			$defValue['hitokotoAPI'] = 'lwl12.com';
+			$defValue['modelId'] = '1';
+			$defValue['modelTexturesId'] = '53';
+			$defValue['modelPoint']['zoom'] = '1.0';
+			$defValue['modelPoint']['x'] = 0;
+			$defValue['modelPoint']['y'] = 0;
+			$defValue['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
+			$defValue['showToolMenu'] = true;
+			$defValue['canCloseLive2d'] = true;
+			$defValue['canSwitchModel'] = true;
+			$defValue['canSwitchTextures'] = true;
+			$defValue['canSwitchHitokoto'] = true;
+			$defValue['canTakeScreenshot'] = true;
+			$defValue['canTurnToHomePage'] = true;
+			$defValue['canTurnToAboutPage'] = true;
+			$defValue['modelStorage'] = true;
+			$defValue['modelRandMode'] = 'rand';
+			$defValue['modelTexturesRandMode'] = 'switch';
+			$defValue['showHitokoto'] = true;
+			$defValue['showF12Status'] = true;
+			$defValue['showF12Message'] = true;
+			$defValue['showF12OpenMsg'] = true;
+			$defValue['showCopyMessage'] = true;
+			$defValue['showWelcomeMessage'] = true;
+			$defValue['waifuSize']['width'] = 280;
+			$defValue['waifuSize']['height'] = 250;
+			$defValue['waifuTipsSize']['width'] = 250;
+			$defValue['waifuTipsSize']['height'] = 70;
+			$defValue['waifuFontSize'] = 12;
+			$defValue['waifuToolFont'] = 14;
+			$defValue['waifuToolLine'] = 20;
+			$defValue['waifuToolTop'] = 20;
+			$defValue['waifuMinWidth'] = 768;
 			//$defValue['waifuMobileDisable']=false;
-			$defValue['waifuEdgeSide']='left';
-			$defValue['waifuEdgeSize']=0;
-			$defValue['waifuDraggable']='axis-x';
-			$defValue['waifuDraggableRevert']=true;
-			$defValue['homePageUrl']=get_home_url();
-			$defValue['aboutPageUrl']='#';
-			$defValue['screenshotCaptureName']='live2d.png';
-			$defValue['waifuTipsColor']='rgba(236, 217, 188, 0.5)';
-			$defValue['waifuBorderColor']='rgba(224, 186, 140, 0.62)';
-			$defValue['waifuShadowColor']='rgba(191, 158, 118, 0.2)';
-			$defValue['waifuFontsColor']='#32373c';
-			$defValue['waifuHighlightColor']='#0099cc';
-			$defValue['waifuToolColor']='#5b6c7d';
-			$defValue['waifuToolHover']='#34495e';
-			add_option('live_2d_settings_option_name',$defValue);
+			$defValue['waifuEdgeSide'] = 'left';
+			$defValue['waifuEdgeSize'] = 0;
+			$defValue['waifuDraggable'] = 'axis-x';
+			$defValue['waifuDraggableRevert'] = true;
+			$defValue['homePageUrl'] = get_home_url();
+			$defValue['aboutPageUrl'] = '#';
+			$defValue['screenshotCaptureName'] = 'live2d.png';
+			$defValue['waifuTipsColor'] = 'rgba(236, 217, 188, 0.5)';
+			$defValue['waifuBorderColor'] = 'rgba(224, 186, 140, 0.62)';
+			$defValue['waifuShadowColor'] = 'rgba(191, 158, 118, 0.2)';
+			$defValue['waifuFontsColor'] = '#32373c';
+			$defValue['waifuHighlightColor'] = '#0099cc';
+			$defValue['waifuToolColor'] = '#5b6c7d';
+			$defValue['waifuToolHover'] = '#34495e';
+			add_option('live_2d_settings_option_name', $defValue);
 		}
-    }
-    
-    public function install_Default_Advanced(){
-		$live_2d_advanced = get_option( 'live_2d_advanced_option_name' );
-		if(FALSE === $live_2d_advanced){
+	}
+
+	public function install_Default_Advanced()
+	{
+		$live_2d_advanced = get_option('live_2d_advanced_option_name');
+		if (FALSE === $live_2d_advanced) {
 			$defKey = array();
 			//控制台被打开提醒（支持多句随机）
 			$defKey['console_open_msg'][0] = '哈哈，你打开了控制台，是想要看看我的秘密吗？';
@@ -285,8 +293,8 @@ class live2D_Settings{
 			//看板娘隐藏提示语（支持多句随机）
 			$defKey['hidden_message'][0] = '我们还能再见面的吧…？';
 			//随机材质提示语（暂不支持多句）
-			$defKey['load_rand_textures'][0]='我还没有其他衣服呢';
-			$defKey['load_rand_textures'][1]='我的新衣服好看嘛?';
+			$defKey['load_rand_textures'][0] = '我还没有其他衣服呢';
+			$defKey['load_rand_textures'][1] = '我的新衣服好看嘛?';
 			//时间提示
 			$defKey['hour_tips'][0][0] = 't5-7';
 			$defKey['hour_tips'][0][1] = '早上好！一日之计在于晨，美好的一天就要开始了';
@@ -385,7 +393,7 @@ class live2D_Settings{
 			$defKey['mouseover_msg'][24]['selector'] = '.dropdown-toggle';
 			$defKey['mouseover_msg'][24]['text'] = '这里是菜单';
 			// 鼠标点击触发提示（根据 CSS 选择器，支持多句随机）
-			$defKey['click_selector']='.waifu #live2d';
+			$defKey['click_selector'] = '.waifu #live2d';
 			$defKey['click_msg'][0] = '是…是不小心碰到了吧';
 			$defKey['click_msg'][1] = '萝莉控是什么呀';
 			$defKey['click_msg'][2] = '你看到我的小熊了吗';
@@ -393,32 +401,30 @@ class live2D_Settings{
 			$defKey['click_msg'][4] = '110吗，这里有个变态一直在摸我(ó﹏ò｡)';
 			//节日提示（日期段，支持多句随机）
 			$defKey['seasons_msg'][0][0] = '01/01';
-			$defKey['seasons_msg'][0][1] ='<span style="{highlight}">元旦</span>了呢，新的一年又开始了，今年是{year}年~';
+			$defKey['seasons_msg'][0][1] = '<span style="{highlight}">元旦</span>了呢，新的一年又开始了，今年是{year}年~';
 			$defKey['seasons_msg'][1][0] = '02/14';
-			$defKey['seasons_msg'][1][1] ='又是一年<span style="{highlight}">情人节</span>，{year}年找到对象了嘛~';
+			$defKey['seasons_msg'][1][1] = '又是一年<span style="{highlight}">情人节</span>，{year}年找到对象了嘛~';
 			$defKey['seasons_msg'][2][0] = '03/08';
-			$defKey['seasons_msg'][2][1] ='今天是<span style="{highlight}">妇女节</span>！';
+			$defKey['seasons_msg'][2][1] = '今天是<span style="{highlight}">妇女节</span>！';
 			$defKey['seasons_msg'][3][0] = '03/12';
-			$defKey['seasons_msg'][3][1] ='今天是<span style="{highlight}">植树节</span>，要保护环境呀';
+			$defKey['seasons_msg'][3][1] = '今天是<span style="{highlight}">植树节</span>，要保护环境呀';
 			$defKey['seasons_msg'][4][0] = '04/01';
-			$defKey['seasons_msg'][4][1] ='悄悄告诉你一个秘密~<span style="background-color:#34495e;">今天是愚人节，不要被骗了哦~</span>';
+			$defKey['seasons_msg'][4][1] = '悄悄告诉你一个秘密~<span style="background-color:#34495e;">今天是愚人节，不要被骗了哦~</span>';
 			$defKey['seasons_msg'][5][0] = '05/01';
-			$defKey['seasons_msg'][5][1] ='今天是<span style="{highlight}">五一劳动节</span>，计划好假期去哪里了吗~';
+			$defKey['seasons_msg'][5][1] = '今天是<span style="{highlight}">五一劳动节</span>，计划好假期去哪里了吗~';
 			$defKey['seasons_msg'][6][0] = '06/01';
-			$defKey['seasons_msg'][6][1] ='<span style="{highlight}">儿童节</span>了呢，快活的时光总是短暂，要是永远长不大该多好啊…';
+			$defKey['seasons_msg'][6][1] = '<span style="{highlight}">儿童节</span>了呢，快活的时光总是短暂，要是永远长不大该多好啊…';
 			$defKey['seasons_msg'][7][0] = '09/03';
-			$defKey['seasons_msg'][7][1] ='<span style="{highlight}">中国人民抗日战争胜利纪念日</span>，铭记历史、缅怀先烈、珍爱和平、开创未来。';
+			$defKey['seasons_msg'][7][1] = '<span style="{highlight}">中国人民抗日战争胜利纪念日</span>，铭记历史、缅怀先烈、珍爱和平、开创未来。';
 			$defKey['seasons_msg'][8][0] = '09/10';
-			$defKey['seasons_msg'][8][1] ='<span style="{highlight}">教师节</span>，在学校要给老师问声好呀~';
+			$defKey['seasons_msg'][8][1] = '<span style="{highlight}">教师节</span>，在学校要给老师问声好呀~';
 			$defKey['seasons_msg'][9][0] = '10/01';
-			$defKey['seasons_msg'][9][1] ='<span style="{highlight}">国庆节</span>，新中国已经成立69年了呢';
+			$defKey['seasons_msg'][9][1] = '<span style="{highlight}">国庆节</span>，新中国已经成立69年了呢';
 			$defKey['seasons_msg'][10][0] = '11/05-11/12';
-			$defKey['seasons_msg'][10][1] ='今年的<span style="{highlight}">双十一</span>是和谁一起过的呢~';
+			$defKey['seasons_msg'][10][1] = '今年的<span style="{highlight}">双十一</span>是和谁一起过的呢~';
 			$defKey['seasons_msg'][11][0] = '12/20-12/31';
-			$defKey['seasons_msg'][11][1] ='这几天是<span style="{highlight}">圣诞节</span>，主人肯定又去剁手买买买了~';
-			add_option('live_2d_advanced_option_name',$defKey);
+			$defKey['seasons_msg'][11][1] = '这几天是<span style="{highlight}">圣诞节</span>，主人肯定又去剁手买买买了~';
+			add_option('live_2d_advanced_option_name', $defKey);
 		}
 	}
 }
-
-?>
