@@ -81,8 +81,7 @@ class live2D_Utils{
 			'content'	=> ''.
 			'<p>模型ID：您可以参考 <a target="_blank" href="https://cdn.jsdelivr.net/gh/fghrsh/live2d_api@1.0.1/model_list.json">model_list.json</a> 了解ID序号，如果您自己搭建模型API请酌情填写。 </p>'.
 			'<p>模型缩放倍数：您可以适当调节模型在容器中的缩放比例。</p>'.
-			'<p>moc3模型自定义动作：SDK3.3版本的model3.json中没有明确指定“动作”，需要用户自定义，目前已知的触碰位置有touch_body、touch_head、touch_special，请在使用时为触碰位置明确动作文件。
-			例如："touch_head.motion3.json"请在输入框中输入touch_head</p>'
+			'<p>在您使用moc3模型时可以通过缩放X轴和Y轴, 将其上半身显示, 避免过小导致看不清</p>'
 		) );
 
 		$screen->add_help_tab( array(
@@ -100,6 +99,19 @@ class live2D_Utils{
 			</ul>
 			<p>设置高亮的规则：'.esc_attr('<span style="{highlight}"></span>').'，您可以在任意一个style中增加{highlight}标记，高亮颜色请前往【提示消息选项】中查看</p>
 			<p>如果您想恢复初始设置，可以删除插件后重新安装，所有内容会恢复初始化。</p>'
+		) );
+	}
+
+	public static function workshop_help_tab(){
+		$screen = get_current_screen();
+		// 设置帮助文档
+		$screen->add_help_tab( array(
+			'id'	=> 'workshop_pay_tab',
+			'title'	=> __('创意工坊帮助','live-2d'),
+			'content'	=> ''.
+			'<p>您可以在 <a target="_blank" href="https://www.live2dweb.com/Model/Workshop">插件官网</a> 中，通过模型库获取模型。</p>'.
+			'<p>将模型加入库之后，在此页面下方进行下载，将其下载至您的站点中。</p>'.
+			'<p>在插件设置页面，选择创意工坊API后，您可以选择在库中的模型。</p>'
 		) );
 	}
 }

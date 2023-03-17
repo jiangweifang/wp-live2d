@@ -36,7 +36,7 @@ class live2D
 			array($this, 'live_2d__create_admin_page') // function
 		);
 		$shop_title = __('Live 2D 创意工坊', 'live-2d');
-		add_menu_page(
+		$workshop_page = add_menu_page(
 			$shop_title, // page_title
 			$shop_title, // menu_title
 			'manage_options', // capability
@@ -44,6 +44,7 @@ class live2D
 			array(new live2d_Shop(), 'live2d_shop_init') // function
 		);
 		add_action('load-' . $my_admin_page, array('live2D_Utils', 'live_2D_help_tab'));
+		add_action('load-' . $workshop_page, array('live2D_Utils', 'workshop_help_tab'));
 	}
 
 	public function live_2d__create_admin_page()
