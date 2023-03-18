@@ -20,7 +20,14 @@ class live2d_Shop
         $this->userInfo = get_option('live_2d_settings_user_token');
     }
     public function live2d_shop_init()
-    {
+    { 
+        wp_enqueue_style('live2d_admin', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu.css'); //css
+        wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) .'/assets/waifu-admin.min.js');
+		wp_localize_script('admin_js', 'settings', array(
+			'userInfo' => get_option('live_2d_settings_user_token'),
+			'homeUrl' => get_home_url(),
+			'settings'=> get_option('live_2d_settings_option_name'),
+		));
         add_action('admin_footer', 'model_shop_scripts');
 ?>
         <div id="live2d-shop">
