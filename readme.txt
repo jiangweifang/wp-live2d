@@ -1,23 +1,49 @@
 === Live2DWebCanvas ===
 
 Contributors: Weifang Chiang
-Donate link: https://www.live2dweb.com/
+Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.1
 Requires at least: 5.5
-Stable tag: 1.8.6
+Stable tag: 1.9.1
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
-= 1.9.0 更新预告 =
-- 本次更新没有任何内容, 只是告诉各位用户我已经在做下一个版本1.9.0了, 不继续1.8.x的开发, 这是一个新的里程碑.
-- 将会新增一个简化的创意工坊, 后续继续对创意工坊升级
-- 付费用户可以通过创意工坊下载更多的皮肤到本地, 免去自己搭建服务器的困扰.
-- 对Live2D Cubism 4 SDK for Web R6 进行支持 [変更履歴](https://docs.live2d.com/cubism-sdk-manual/cubism-web-framework-changelog/)
-- 对老版本(Pio等模型)的SDK 进行解耦拆分, 完全与新的版本隔离, 避免代码混乱.
+= 1.9.1 =
 - 前端JS 完全抛弃jQuery 独立运行, 避免某些WP站点样式夺取wordpress官方的指定钩子(hook), 导致无法加载jQuery.
-- ChatGPT我还在等一个新模型, `gpt-3.5-turbo`, 在服务端接口尚未完成之前, 此功能目前暂时不继续开放.
+- 由于拖拽之前使用jQuery UI, 脱离jQuery后, 拖拽功能使用interactjs, 拖拽有惯性效果出现, 您可以给看板娘扔出去(回不来的话再后台设置一下不保存就回来了)
+- ChatGPT使用了`gpt-3.5-turbo`模型, 但是去掉了上下文理解, 每一次提问都是一个新的问题, 她不会对之前的问题结合回覆了.
+- 新增创意工坊, 站长可以通过下载到本地, 省去了部署服务的困扰.
+- 您在使用创意工坊之前, 需要先去插件网站选择自己的模型, 然后在WP的创意工坊中下载才可以使用.
+- 新增: 在您使用创意工坊API的时候, 系统可以通过下拉选项选择皮肤, 不是让您去猜测到底有什么了.
+- 对老版本(Pio等模型)的SDK 进行解耦拆分, 完全与新的版本隔离, 避免代码混乱, 此模型SDK未来不会增加新的功能.
+- 对Live2D Cubism 4 SDK for Web R6 进行支持 [変更履歴](https://docs.live2d.com/cubism-sdk-manual/cubism-web-framework-changelog/)
+- Cubism 4 SDK for Web R6 支持高精度蒙版。
+- 服务端取消了回滚功能, 这玩意有点太没有用了.
+- api.live2dweb.com/model/v2 不再提供模型服务, 请自建或使用创意工坊.
+
+= 1.8-1.9版本Bug修复情况 =
+- 拖拽异常问题感谢(qwqpap.xyz)[https://qwqpap.xyz] 协助测试。
+- 后台JS冲突问题已修复，感谢(ovololi.com)[https://www.ovololi.com/] 协助测试。
+- 还有一个切换问题，后续我会再试试，因为最近工作较忙，没有来得及做这个测试。感谢Dream N_About(QQ:25********19) 协助测试.
+- 同样上一条, 在联想浏览器中会出现错误, 暂时也没有时间修复(其实是太麻烦了, 我还得再看看, 我担心时间会很长.)
+- 还修复了十余个没有人报告的BUG, 通过对js的重构发现的.
+- Tips有的时候它一闪一闪的, 看起来很奇怪, 已经修复了.
+
+= 还未完成的部分： =
+- 创意工坊预制Live2D官方MOC3模型, 未来您可以通过 https://www.live2dweb.com/ 上传自己的模型, 并向其他人出售或分享.
+
+= 1.8.7 =
+- 在ovololi站点中发现了一个问题. 在waifu-tips.ts文件中 第347行有一个错误 已经修复了
+- 错误会导致看板娘无法显示。同样的错误也发生在flysheep6中。
+- ChatGPT功能已恢复，暂时没有配额限制，后续将对站长进行配额限制，避免各位流量不对等。
+- 各位可能有人已经看到插件官网增加了新的1.9.0功能，但是需要插件更新后才可以使用，目前还在自测中，等测试差不多了再给各位发。
+- 另外，使用最新模型的站长和玩家，应该可以看到Live2D官网有一个安全公告，请勿使用篡改过了moc3模型，会导致出现安全漏洞，不过我发现好像没什么人再用MOC3模型。
+- 本次更新插件价格将调整为49元CNY，早期购买者无需补款，并再次感谢各位的支持。
+
+= 1.8.6 =
+- 更新了一个说明文件
 
 = 1.8.5 =
 - 为不能登录的用户开启了一个新的功能;
@@ -225,7 +251,6 @@ License: GPLv3
 ## 特性
 - 与株式会社Live2D（ Live2D Inc. ）签订合约, 本软件是使用Cubism 4 SDK for Web核心制作的可扩展性应用程序, 本软件为正版授权。
 - 使用 Cubism 4 生成的模型必须购买此插件才可以使用。
-- 付费后如果没有反应请及时联系我的QQ：85838607， 我会尽快给你解决
 - 插件可以通过后台直接对Live2D进行设置，无需复杂的修改代码。
 - 可视化设置并生成waifu-tips.json，避免手动修改JSON
 
@@ -341,6 +366,10 @@ License: GPLv3
 7. 使用CDN加速的朋友请注意，更新插件后记得刷新CDN加速缓存
 8. live2d.js 无需JS压缩，如果压缩后出现错误，请自行查看是否已排除。
 9. 内网用户，请使用公网IP访问您的网站，并配置好域名，可以是花生壳免费域名。本地测试，插件无法保存。
+10. 您可以在[nizima](https://nizima.com/) 中购买到正版MOC3模型。
+11. 您可以在官方 [https://www.live2d.jp/](https://www.live2d.jp/showcase/live2dwebcanvas/) 中看到我的插件介绍。
+12. 更新日志将会于[https://weibo.com/nagatosaki](https://weibo.com/nagatosaki) 或[bilibili](https://space.bilibili.com/70444) 更新。
+13. 付费后如果没有反应请及时联系我的QQ：85838607， 我会尽快给你解决
 
 == Screenshots ==
 None

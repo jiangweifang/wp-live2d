@@ -71,70 +71,6 @@ class live2D_Utils{
 		}
     }
 
-    public function advanced_json($value) {
-		$result = array();
-	
-		$result["waifu"] = $this->waifuMsg_Json($value);
-		
-		$result["mouseover"] = $this->mouseOverMsg_Json($value['mouseover_msg']);
-		
-		$result["click"] = $this->clickMsg_Json($value['click_selector'],$value['click_msg']);
-		
-		$result["seasons"] = $this->seasonsMsg_Json($value['seasons_msg']);
-		
-		return $result;
-	}
-	
-	// waifu节点组装，此节点主要是提示消息
-	public function waifuMsg_Json($value){
-		$msg = array();
-		$msg["console_open_msg"] = $value['console_open_msg'];
-		$msg["copy_message"] = $value['copy_message'];
-		$msg["screenshot_message"] = $value['screenshot_message'];
-		$msg["hidden_message"] = $value['hidden_message'];
-		$msg["load_rand_textures"] = $value['load_rand_textures'];
-		$msg["hour_tips"] = $this->tips_Array($value['hour_tips']);
-		$msg["referrer_message"] = $this->tips_Array($value['referrer_message']);
-		$msg["referrer_hostname"] = $this->tips_Array($value['referrer_hostname']);
-		$msg["hitokoto_api_message"] = $this->tips_Array($value['hitokoto_api_message']);
-		return $msg;
-	}
-	
-	// 把提示重组
-	public function tips_Array($arr){
-		$arrayTips = array();
-		foreach($arr as $value){
-			$arrayTips[$value[0]]=array($value[1]);
-		}
-		return $arrayTips;
-	}
-	
-	// 鼠标浮动事件（可自定义）
-	public function mouseOverMsg_Json($arrOpt){
-		$mouseOverMsg = array();
-		foreach($arrOpt as $key=> $value){
-			$mouseOverMsg[$key]["selector"]= $value["selector"];
-			$mouseOverMsg[$key]["text"]= $value["text"];
-		}
-		return $mouseOverMsg;
-	}
-	// 鼠标点击事件（可自定义）
-	public function clickMsg_Json($selector,$textArr){
-		$clickMsg = array();
-		$clickMsg[0]["selector"]=$selector;
-		$clickMsg[0]["text"] = $textArr;
-		return $clickMsg;
-	}
-	
-	// 节日事件（可自定义）
-	public function seasonsMsg_Json($arr){
-		$seasonsMsg = array();
-		foreach($arr as $key=> $value){
-			$seasonsMsg[$key]["date"]= $value[0];
-			$seasonsMsg[$key]["text"]= $value[1];
-		}
-		return $seasonsMsg;
-	}
 
 	public static function live_2D_help_tab(){
 		$screen = get_current_screen();
@@ -145,8 +81,7 @@ class live2D_Utils{
 			'content'	=> ''.
 			'<p>模型ID：您可以参考 <a target="_blank" href="https://cdn.jsdelivr.net/gh/fghrsh/live2d_api@1.0.1/model_list.json">model_list.json</a> 了解ID序号，如果您自己搭建模型API请酌情填写。 </p>'.
 			'<p>模型缩放倍数：您可以适当调节模型在容器中的缩放比例。</p>'.
-			'<p>moc3模型自定义动作：SDK3.3版本的model3.json中没有明确指定“动作”，需要用户自定义，目前已知的触碰位置有touch_body、touch_head、touch_special，请在使用时为触碰位置明确动作文件。
-			例如："touch_head.motion3.json"请在输入框中输入touch_head</p>'
+			'<p>在您使用moc3模型时可以通过缩放X轴和Y轴, 将其上半身显示, 避免过小导致看不清</p>'
 		) );
 
 		$screen->add_help_tab( array(
@@ -164,6 +99,19 @@ class live2D_Utils{
 			</ul>
 			<p>设置高亮的规则：'.esc_attr('<span style="{highlight}"></span>').'，您可以在任意一个style中增加{highlight}标记，高亮颜色请前往【提示消息选项】中查看</p>
 			<p>如果您想恢复初始设置，可以删除插件后重新安装，所有内容会恢复初始化。</p>'
+		) );
+	}
+
+	public static function workshop_help_tab(){
+		$screen = get_current_screen();
+		// 设置帮助文档
+		$screen->add_help_tab( array(
+			'id'	=> 'workshop_pay_tab',
+			'title'	=> __('创意工坊帮助','live-2d'),
+			'content'	=> ''.
+			'<p>您可以在 <a target="_blank" href="https://www.live2dweb.com/Model/Workshop">插件官网</a> 中，通过模型库获取模型。</p>'.
+			'<p>将模型加入库之后，在此页面下方进行下载，将其下载至您的站点中。</p>'.
+			'<p>在插件设置页面，选择创意工坊API后，您可以选择在库中的模型。</p>'
 		) );
 	}
 }
