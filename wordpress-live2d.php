@@ -1,12 +1,12 @@
 <?php
 /*
  * Plugin Name: Live 2D
- * Plugin URI: https://github.com/jiangweifang/wp-live2d
+ * Plugin URI: https://www.live2dweb.com/
  * Description: 看板娘插件
- * Version: 1.9.0
+ * Version: 1.9.1
  * Requires PHP: 7.4
  * Author: Weifang Chiang
- * Author URI: https://www.live2dweb.com/
+ * Author URI: https://github.com/jiangweifang/wp-live2d
  * Text Domain: live-2d
  * Domain Path: /languages
  */
