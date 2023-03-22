@@ -6,6 +6,10 @@
 ![1](https://user-images.githubusercontent.com/38683169/216086597-6acf9f5e-f694-4c14-85cc-08cbbdfbfd4c.png)
 
 ### 更新
+= 1.9.2 =
+- 修复了一些bug
+- 纠正ChatGPT被唤醒的时候样式的一些问题.
+
 = 1.9.1 =
 - 前端JS 完全抛弃jQuery 独立运行, 避免某些WP站点样式夺取wordpress官方的指定钩子(hook), 导致无法加载jQuery.
 - 由于拖拽之前使用jQuery UI, 脱离jQuery后, 拖拽功能使用interactjs, 拖拽有惯性效果出现, 您可以给看板娘扔出去(回不来的话再后台设置一下不保存就回来了)
