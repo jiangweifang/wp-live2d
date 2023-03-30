@@ -3,13 +3,18 @@
 Contributors: Weifang Chiang
 Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
-Tested up to: 6.1
+Tested up to: 6.2
 Requires at least: 5.5
-Stable tag: 1.9.2
+Stable tag: 1.9.3
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+= 1.9.3 =
+- 修复moc3模型加载有点吃cpu的问题, 感谢 https://tajourney.games/ 提供的模型测试
+- 去掉了老版本SDK的控制台提示. 污染控制台人人有责
+- 我在做什么: 正在开发Chrome插件.
+
 = 1.9.2 =
 - 修复了一些bug
 - 纠正ChatGPT被唤醒的时候样式的一些问题.
