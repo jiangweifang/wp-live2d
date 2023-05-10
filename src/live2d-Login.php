@@ -39,9 +39,11 @@ class live2D_Login {
 
 	public function live_2d_login_sanitize($input) {
 		$sanitary_values = array();
-        $tokenArrCount = count($this -> live_2d_user_token);
-        if($tokenArrCount > 0 && $this-> live_2d_user_token['sign'] == $input['sign']){
-            return $this-> live_2d_user_token;
+        if(is_array($this->live_2d_user_token)){
+            $tokenArrCount = count($this -> live_2d_user_token);
+            if($this-> live_2d_user_token['sign'] == $input['sign']){
+                return $this-> live_2d_user_token;
+            }
         }
 		if ( isset($input['sign']) && $input["sign"] != '' ) {
             try{

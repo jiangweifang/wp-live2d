@@ -1,5 +1,5 @@
 <?php
-require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/wp-admin/includes/plugin.php');
+require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 require(dirname(__FILE__)  . '/jwt/JWT.php');
 require(dirname(__FILE__)  . '/jwt/Key.php');
 $dir = explode('/', plugin_dir_url(dirname(__FILE__)));
