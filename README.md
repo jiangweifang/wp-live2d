@@ -7,6 +7,12 @@
 
 ### 更新
 == Changelog ==
+
+= 1.9.4 =
+- 本次更新修改JS文件, 请注意CDN缓存
+- 更新后支持在Wordpress购买域名并直接搭建的用户, 感谢[夏颜](https://talilla.com/) 这位出色的设计师创作了新的Live2D MOC3模型.
+- 增加回车按钮回复ChatGPT.
+
 = 1.9.3 =
 - 修复moc3模型加载有点吃cpu的问题, 感谢 https://tajourney.games/ 提供的模型测试
 - 去掉了老版本SDK的控制台提示. 污染控制台人人有责
