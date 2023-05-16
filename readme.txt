@@ -5,7 +5,7 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.2
 Requires at least: 5.5
-Stable tag: 1.9.4
+Stable tag: 1.9.5
 Requires PHP: 7.4
 License: GPLv3
 
