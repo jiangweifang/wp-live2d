@@ -5,11 +5,18 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.2
 Requires at least: 5.5
-Stable tag: 1.9.5
+Stable tag: 1.9.6
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+= 1.9.6 = 
+- 为了感谢各位付费用户这段时间的支持，我专款专用提升了API的CDN性能，改为全站CDN加速
+- 修复了一个MOC3模型文件清单的问题，我发现很多人都在将model.json作为清单，我不再判断是否是model3.json文件。
+
+= 1.9.5 = 
+- 修复已知问题。
+
 = 1.9.4 =
 - 本次更新修改JS文件, 请注意CDN缓存
 - 更新后支持在Wordpress购买域名并直接搭建的用户, 感谢[夏颜](https://talilla.com/) 这位出色的设计师创作了新的Live2D MOC3模型.
