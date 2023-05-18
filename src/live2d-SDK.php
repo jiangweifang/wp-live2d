@@ -1,7 +1,11 @@
 <?php
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-require(dirname(__FILE__)  . '/jwt/JWT.php');
-require(dirname(__FILE__)  . '/jwt/Key.php');
+require_once(__DIR__  . '/jwt/SignatureInvalidException.php');
+require_once(__DIR__  . '/jwt/JWT.php');
+require_once(__DIR__  . '/jwt/Key.php');
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Firebase\JWT\SignatureInvalidException;
 $dir = explode('/', plugin_dir_url(dirname(__FILE__)));
 $dir_len = count($dir);
 define('IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2] . "/wordpress-live2d.php")); //补丁启用
@@ -208,9 +212,13 @@ class live2d_SDK
 
     public function Get_Jwt($sign)
     {
-        $pub_key = new Firebase\JWT\Key($this->GetPem(), 'RS256');
-        $setArr = (array)Firebase\JWT\JWT::decode($sign, $pub_key);
-        return $setArr;
+        $pub_key = new Key($this->GetPem(), 'RS256');
+        try{
+            $setArr = (array)JWT::decode($sign, $pub_key);
+            return $setArr;
+        }catch(ex){
+            return null;
+        }
     }
 
     public function DoPost($param, $api_name, $jwt)
@@ -297,7 +305,7 @@ class live2d_SDK
 
     private function GetPem()
     {
-        $publicKeyFile = plugin_dir_path(dirname(__FILE__)) . 'assets/client.pem';
+        $publicKeyFile = plugin_dir_path(__DIR__) . 'assets/client.pem';
         $publicKey = openssl_pkey_get_public(
             file_get_contents($publicKeyFile)
         );
