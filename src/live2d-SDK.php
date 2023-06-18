@@ -216,8 +216,8 @@ class live2d_SDK
         try{
             $setArr = (array)JWT::decode($sign, $pub_key);
             return $setArr;
-        }catch(ex){
-            return null;
+        }catch(Exception $e){
+            return false;
         }
     }
 

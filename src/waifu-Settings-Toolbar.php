@@ -21,7 +21,7 @@ class live2D_Settings_Toolbar {
         );
 
         add_settings_field(
-            'canCloseLive2d', // id
+            'isBotButton', // id
             __('ChatGPT按钮','live-2d'), // title
             array( $this, 'isBotButton_callback' ), // callback
             'live-2d-settings-toolbar', // page
