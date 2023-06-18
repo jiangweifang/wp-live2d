@@ -60,6 +60,10 @@ class live2D_Settings
 			$sanitary_values['showToolMenu'] = (bool)$input['showToolMenu'];
 		}
 
+		if (isset($input['isBotButton'])) {
+			$sanitary_values['isBotButton'] = (bool)$input['isBotButton'];
+		}
+
 		if (isset($input['canCloseLive2d'])) {
 			$sanitary_values['canCloseLive2d'] = (bool)$input['canCloseLive2d'];
 		}
@@ -235,6 +239,7 @@ class live2D_Settings
 			$defValue['modelPoint']['y'] = 0;
 			$defValue['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
 			$defValue['showToolMenu'] = true;
+			$defValue['isBotButton'] = true;
 			$defValue['canCloseLive2d'] = true;
 			$defValue['canSwitchModel'] = true;
 			$defValue['canSwitchTextures'] = true;

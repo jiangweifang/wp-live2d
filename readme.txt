@@ -5,11 +5,15 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.2
 Requires at least: 5.5
-Stable tag: 1.9.6
+Stable tag: 1.9.7
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+
+= 1.9.7 = 
+- 增加ChatGPT的开关功能，如果上传Moc3模型不知道传到哪里，可以在补丁文件夹中创建一个文件夹进行指向。
+
 = 1.9.6 = 
 - 为了感谢各位付费用户这段时间的支持，我专款专用提升了API的CDN性能，改为全站CDN加速
 - 修复了一个MOC3模型文件清单的问题，我发现很多人都在将model.json作为清单，我不再判断是否是model3.json文件。

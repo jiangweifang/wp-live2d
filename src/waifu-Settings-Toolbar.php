@@ -22,6 +22,14 @@ class live2D_Settings_Toolbar {
 
         add_settings_field(
             'canCloseLive2d', // id
+            __('ChatGPT按钮','live-2d'), // title
+            array( $this, 'isBotButton_callback' ), // callback
+            'live-2d-settings-toolbar', // page
+            'live_2d_setting_toolbar_section' // section
+        );
+
+        add_settings_field(
+            'canCloseLive2d', // id
             __('关闭看板娘按钮','live-2d'), // title
             array( $this, 'canCloseLive2d_callback' ), // callback
             'live-2d-settings-toolbar', // page
@@ -142,6 +150,13 @@ class live2D_Settings_Toolbar {
         <label for="showToolMenu-0"><input type="radio" name="live_2d_settings_option_name[showToolMenu]" id="showToolMenu-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('显示','live-2d') ?></label><br>
         <?php $checked = ( isset( $this->live_2d__options['showToolMenu'] ) && $this->live_2d__options['showToolMenu'] === false ) ? 'checked' : '' ; ?>
         <label for="showToolMenu-1"><input type="radio" name="live_2d_settings_option_name[showToolMenu]" id="showToolMenu-1" value="0" <?php echo $checked; ?>> <?php esc_html_e('隐藏','live-2d') ?></label></fieldset> <?php
+    }
+
+    public function isBotButton_callback(){
+        ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['isBotButton'] ) && $this->live_2d__options['isBotButton'] === true ) ? 'checked' : '' ; ?>
+        <label for="isBotButton-0"><input type="radio" name="live_2d_settings_option_name[isBotButton]" id="isBotButton-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('显示','live-2d') ?></label><br>
+        <?php $checked = ( isset( $this->live_2d__options['isBotButton'] ) && $this->live_2d__options['isBotButton'] === false ) ? 'checked' : '' ; ?>
+        <label for="isBotButton-1"><input type="radio" name="live_2d_settings_option_name[isBotButton]" id="isBotButton-1" value="0" <?php echo $checked; ?>> <?php esc_html_e('隐藏','live-2d') ?></label></fieldset> <?php
     }
 
     public function canCloseLive2d_callback() {
