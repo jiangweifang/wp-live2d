@@ -1,11 +1,13 @@
 <?php
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 require_once(__DIR__  . '/jwt/SignatureInvalidException.php');
+require_once(__DIR__  . '/jwt/BeforeValidException.php');
 require_once(__DIR__  . '/jwt/JWT.php');
 require_once(__DIR__  . '/jwt/Key.php');
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
+use Firebase\JWT\BeforeValidException;
 $dir = explode('/', plugin_dir_url(dirname(__FILE__)));
 $dir_len = count($dir);
 define('IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2] . "/wordpress-live2d.php")); //补丁启用
