@@ -3,7 +3,7 @@
  * Plugin Name: Live 2D
  * Plugin URI: https://www.live2dweb.com/
  * Description: 看板娘插件
- * Version: 1.9.7
+ * Version: 1.9.8
  * Requires PHP: 7.4
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
@@ -40,7 +40,6 @@ function live2D_style()
     ));
 }
 add_action('wp_head', 'live2D_style', 1);
-
 // 启用插件
 register_activation_hook(__FILE__, 'live_2d_install');
 function live_2d_install()
@@ -87,11 +86,13 @@ add_action('rest_api_init', function () {
     $sdk = new live2d_SDK();
     register_rest_route('live2d/v1', '/token', array(
         'methods' => 'POST',
-        'callback' => array($sdk, 'user_login')
+        'callback' => array($sdk, 'user_login'),
+        'permission_callback' => '__return_true'
     ));
     register_rest_route('live2d/v1', '/rollback_set', array(
         'methods' => 'POST',
-        'callback' => array($sdk, 'rollback_set')
+        'callback' => array($sdk, 'rollback_set'),
+        'permission_callback' => '__return_true'
     ));
 });
 

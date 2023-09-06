@@ -1,13 +1,21 @@
 <?php
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-require_once(__DIR__  . '/jwt/SignatureInvalidException.php');
 require_once(__DIR__  . '/jwt/BeforeValidException.php');
+require_once(__DIR__  . '/jwt/CachedKeySet.php');
+require_once(__DIR__  . '/jwt/ExpiredException.php');
+require_once(__DIR__  . '/jwt/JWK.php');
 require_once(__DIR__  . '/jwt/JWT.php');
 require_once(__DIR__  . '/jwt/Key.php');
+require_once(__DIR__  . '/jwt/SignatureInvalidException.php');
+
+use Firebase\JWT\BeforeValidException;
+use Firebase\JWT\CachedKeySet;
+use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
+use Firebase\JWT\JWK;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
-use Firebase\JWT\BeforeValidException;
+
 $dir = explode('/', plugin_dir_url(dirname(__FILE__)));
 $dir_len = count($dir);
 define('IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2] . "/wordpress-live2d.php")); //补丁启用
@@ -40,14 +48,18 @@ class live2d_SDK
             if ($homeUrl == $signInfo["aud"] && IS_PLUGIN_ACTIVE) {
                 update_option('live_2d_settings_user_token', $userInfo);
                 echo "1";
+                error_log('用户登录结果:true');
             } else {
                 echo "0";
+                error_log('用户登录结果:false');
             }
         } else {
             if ($errCode) {
                 echo $errCode;
+                error_log('用户登录结果:false '.$errCode);
             } else {
                 echo "1005";
+                error_log('用户登录结果:false [1005]');
             }
         }
     }
@@ -67,6 +79,7 @@ class live2d_SDK
                         'errorCode' => 9500,
                         'errorMsg' => '文件夹创建失败'
                     ));
+                    error_log('DownloadModel:[9500]文件夹创建失败');
                 }
                 $curl = curl_init();
                 curl_setopt($curl, CURLOPT_URL, $result["fileUrl"]);
@@ -104,6 +117,7 @@ class live2d_SDK
                         'errorCode' => $httpCode,
                         'errorMsg' => '服务器未授权此访问'
                     ));
+                    error_log('DownloadModel:['.$httpCode.']服务器未授权此访问');
                 }
             } else {
                 echo json_encode($result);
@@ -113,6 +127,7 @@ class live2d_SDK
                 'errorCode' => 9500,
                 'errorMsg' => '没有登录信息'
             ));
+            error_log('DownloadModel:[9500]没有登录信息');
         }
         wp_die();
     }
@@ -219,6 +234,7 @@ class live2d_SDK
             $setArr = (array)JWT::decode($sign, $pub_key);
             return $setArr;
         }catch(Exception $e){
+            error_log('Get_Jwt:签名错误'.$e,5);
             return false;
         }
     }
@@ -243,12 +259,14 @@ class live2d_SDK
             $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             curl_close($curl);
             if ($httpCode === 401 || $httpCode === 403) {
+                error_log('DoPost:授权错误, 登录不正确, 请检查是否和域名匹配'.$httpCode,5);
                 return array(
                     'errorCode' => $httpCode,
                     'errorMsg' => '登录不正确, 请检查是否和域名匹配'
                 );
             } else {
                 if (!$response) {
+                    error_log('DoPost:['.$httpCode.']'.curl_error($curl),5);
                     return array(
                         'errorCode' => $httpCode,
                         'errorMsg' => curl_error($curl)
@@ -258,6 +276,7 @@ class live2d_SDK
                 }
             }
         } catch (Exception $e) {
+            error_log('DoPost:[9500]异常'.$e,5);
             return array(
                 'errorCode' => 9500,
                 'errorMsg' => $e
@@ -283,12 +302,14 @@ class live2d_SDK
             $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             curl_close($curl);
             if ($httpCode === 401 || $httpCode === 403) {
+                error_log('DoGet:授权错误, 登录不正确, 请检查是否和域名匹配'.$httpCode,5);
                 return array(
                     'errorCode' => $httpCode,
                     'errorMsg' => '登录不正确, 请检查是否和域名匹配'
                 );
             } else {
                 if (!$response) {
+                    error_log('DoGet:['.$httpCode.']'.curl_error($curl),5);
                     return array(
                         'errorCode' => $httpCode,
                         'errorMsg' => curl_error($curl)
@@ -298,6 +319,7 @@ class live2d_SDK
                 }
             }
         } catch (Exception $e) {
+            error_log('DoGet:[9500]异常'.$e,5);
             return array(
                 'errorCode' => 9500,
                 'errorMsg' => $e

@@ -5,11 +5,20 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.2
 Requires at least: 5.5
-Stable tag: 1.9.7
+Stable tag: 1.9.8
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+
+= 1.9.8 = 
+- ChatGPT功能增强：支持GPT4。GPT4需要您自己申请。
+- 您可以在https://www.live2dweb.com/ 中配置您自己的OpenAI API接口。
+- 不再支持text-davinci-003，因为他太贵了，性价比很差。
+- 现在看板娘可以记住最近的5轮对话，您不能设置我的预设，但是可以通过自己配置API来增加对话轮次。
+- 显示的内容是Token限制，因为我免费提供功能，所以MaxToken是100，您可以通过接口自己设置最大数量，最大不能超过4000。
+- 感情从0.5提升至0.8。
+- 解决模型加载慢和服务器过载的问题。
 
 = 1.9.7 = 
 - 增加ChatGPT的开关功能。
