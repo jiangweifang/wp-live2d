@@ -5,11 +5,16 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.2
 Requires at least: 5.5
-Stable tag: 1.9.8
+Stable tag: 1.9.9
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+
+= 1.9.9 =
+- 对异常情况增加捕获。
+- 修复：'函数 register_rest_route 的调用方法不正确。'
+- 修复`waifu-tool`的样式错误，感谢[peko](https://pekolove.com/) 的反馈。
 
 = 1.9.8 = 
 - ChatGPT功能增强：支持GPT4。GPT4需要您自己申请。
