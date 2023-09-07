@@ -324,7 +324,7 @@ License: GPLv3
 
 
 ### 我该怎么做
-- 查看帮助：https://github.com/jiangweifang/wp-live2d/wiki 
+- 查看帮助：[https://github.com/jiangweifang/wp-live2d/wiki](https://github.com/jiangweifang/wp-live2d/wiki)
 1. 请在理解相对路径等基础知识之后与我探讨如何指向moc3模型，作为一个Wordpress用户，请不要做伸手党。
 2. 如果上传Moc3模型不知道传到哪里，可以在补丁文件夹中创建一个文件夹进行指向。
 3. 1.8版本的插件请付费后使用, 如果中间遇到问题, 随时和我联系QQ：85838607, 我很愿意帮你解决。
