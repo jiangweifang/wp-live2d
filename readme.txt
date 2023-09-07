@@ -324,14 +324,10 @@ License: GPLv3
 
 
 ### 我该怎么做
-
-1. 在WordPress后台添加插件压缩包安装
-2. 点击启用按钮开始使用看板娘。
-3. 付费后请您可以在启用插件的状态下，进入[https://www.live2dweb.com/Sites](https://www.live2dweb.com/Sites) 对您的站点进行同步。同步时插件无需登录也可。
-4. 您可以通过[https://www.live2dweb.com/Sites/Settings](https://www.live2dweb.com/Sites/Settings) 对站点进行设置的回溯。
-5. 请在理解相对路径等基础知识之后与我探讨如何指向moc3模型，作为一个Wordpress用户，请不要做伸手党。
-6. 如果上传Moc3模型不知道传到哪里，可以在补丁文件夹中创建一个文件夹进行指向。
-7. 1.8版本的插件请付费后使用, 如果中间遇到问题, 随时和我联系QQ：85838607, 我很愿意帮你解决。
+- 查看帮助：https://github.com/jiangweifang/wp-live2d/wiki 
+1. 请在理解相对路径等基础知识之后与我探讨如何指向moc3模型，作为一个Wordpress用户，请不要做伸手党。
+2. 如果上传Moc3模型不知道传到哪里，可以在补丁文件夹中创建一个文件夹进行指向。
+3. 1.8版本的插件请付费后使用, 如果中间遇到问题, 随时和我联系QQ：85838607, 我很愿意帮你解决。
 
 
 ### 设置参数
