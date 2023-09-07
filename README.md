@@ -9,6 +9,7 @@
 == Changelog ==
 
 = 1.9.9 =
+- framework 升级到 Cubism 5 SDK for Web R1 beta1
 - 对异常情况增加捕获。
 - 修复：函数 `register_rest_route` 的调用方法不正确。
 - 修复`waifu-tool`的样式错误，感谢[peko](https://pekolove.com/) 的反馈。
