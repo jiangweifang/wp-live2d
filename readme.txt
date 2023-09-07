@@ -15,6 +15,7 @@ License: GPLv3
 - 对异常情况增加捕获。
 - 修复：'函数 register_rest_route 的调用方法不正确。'
 - 修复`waifu-tool`的样式错误，感谢[peko](https://pekolove.com/) 的反馈。
+- 修复V3模型触摸问题。
 
 = 1.9.8 = 
 - ChatGPT功能增强：支持GPT4。GPT4需要您自己申请。
