@@ -3,6 +3,8 @@
 - 基于Live2D 看板娘前端 HTML 源码改写
 - 插件可在WordPress后台通过插件搜索获得 https://wordpress.org/plugins/live-2d/ 记得给个好评！
 
+[![Static Badge](https://img.shields.io/badge/Live2D-v5.r1.bate.1-blue?color=%23ff6e2d)](https://www.live2d.com/download/cubism-sdk/download-web/)
+
 ![1](https://user-images.githubusercontent.com/38683169/216086597-6acf9f5e-f694-4c14-85cc-08cbbdfbfd4c.png)
 
 ### 更新
