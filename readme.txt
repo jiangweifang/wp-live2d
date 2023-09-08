@@ -290,32 +290,25 @@ License: GPLv3
 支持moc和moc3模型的插件。
 
 ## 特性
-- 与株式会社Live2D（ Live2D Inc. ）签订合约, 本软件是使用Cubism 4 SDK for Web核心制作的可扩展性应用程序, 本软件为正版授权。
-- 使用 Cubism 4 生成的模型必须购买此插件才可以使用。
+- 与株式会社Live2D（ Live2D Inc. ）签订合约, 本软件是使用Cubism SDK for Web核心制作的可扩展性应用程序, 本软件为正版授权。
+- 使用 Cubism 4+ 生成的模型必须购买此插件才可以使用。
 - 插件可以通过后台直接对Live2D进行设置，无需复杂的修改代码。
 - 可视化设置并生成waifu-tips.json，避免手动修改JSON
 
 
 ## 版权声明
 
-[Flat UI Free][1]  
 [live2d_src / ©journey-ad / GPL v2.0][2]  
-[fghrsh.net][3]  
 
-  [1]: https://designmodo.com/flat-free/ "Flat UI Free"
   [2]: https://github.com/journey-ad/live2d_src "基于 #fea64e4 的修改版"
-  [3]: https://www.fghrsh.net/post/123.html "fghrsh.net"
   
 - 请遵循GPL v3.0授权协议
-- Live2DWebCanvas 插件不属于 Live2D Inc. 它是一个非官方产品
+- Live2D Web Canvas - WordPress 插件不属于 Live2D Inc. 它是一个非官方产品
 
 ## 软件许可协议
 
-[Live2D Proprietary Software License Agreement][4]  
-[Live2D Open Software License Agreement][5]  
-
-  [4]: https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html
-  [5]: https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html
+[![Proprietary Software](https://img.shields.io/badge/license-Live2D%20Proprietary%20Software-blue)](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html)
+[![Open Software](https://img.shields.io/badge/license-Live2D%20Open%20Software-blue)](https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html)
 
 == Installation ==
 
