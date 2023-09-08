@@ -11,7 +11,7 @@
 == Changelog ==
 
 = 1.9.9 =
-- framework 升级到 Cubism 5 SDK for Web R1 beta1
+- framework 升级到 Cubism 5 SDK for Web R1 beta1 支持融合变形，[了解SDK版本区别](https://docs.live2d.com/zh-CHS/cubism-sdk-manual/cubism-5-new-functions/)
 - 对异常情况增加捕获。
 - 修复：函数 `register_rest_route` 的调用方法不正确。
 - 修复`waifu-tool`的样式错误，感谢[peko](https://pekolove.com/) 的反馈。
