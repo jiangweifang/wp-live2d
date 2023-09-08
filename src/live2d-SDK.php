@@ -56,7 +56,7 @@ class live2d_SDK
         } else {
             if ($errCode) {
                 echo $errCode;
-                error_log('用户登录结果:false '.$errCode);
+                error_log('用户登录结果:false ' . $errCode);
             } else {
                 echo "1005";
                 error_log('用户登录结果:false [1005]');
@@ -69,10 +69,9 @@ class live2d_SDK
     public function DownloadModel()
     {
         $modelId = intval($_POST["modelId"]);
-        $userInfo = $this->userInfo;
-        if (!empty($userInfo["sign"])) {
+        if (!empty($this->userInfo["sign"])) {
             $param = ['id' => $modelId];
-            $result = $this->DoPost($param, "Model/ModelInfo", $userInfo["sign"]);
+            $result = $this->DoPost($param, "Model/ModelInfo", $this->userInfo["sign"]);
             if (isset($result) && !empty($result["modelName"])) {
                 if (!file_exists(DOWNLOAD_DIR) && !mkdir(DOWNLOAD_DIR, 0777, true)) {
                     echo json_encode(array(
@@ -86,7 +85,7 @@ class live2d_SDK
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($curl, CURLOPT_HTTPGET, true); //GET数据
                 curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                    'Authorization: Bearer ' . $userInfo["sign"],
+                    'Authorization: Bearer ' . $this->userInfo["sign"],
                     'Origin: ' . get_home_url(),
                 ));
                 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  //禁用后cURL将终止从服务端进行验证
@@ -117,7 +116,7 @@ class live2d_SDK
                         'errorCode' => $httpCode,
                         'errorMsg' => '服务器未授权此访问'
                     ));
-                    error_log('DownloadModel:['.$httpCode.']服务器未授权此访问');
+                    error_log('DownloadModel:[' . $httpCode . ']服务器未授权此访问');
                 }
             } else {
                 echo json_encode($result);
@@ -137,8 +136,7 @@ class live2d_SDK
      */
     public function GetModelList()
     {
-        $userInfo = $this->userInfo;
-        $result = $this->DoGet([], "Model/List", $userInfo["sign"]);
+        $result = $this->DoGet([], "Model/List", $this->userInfo["sign"]);
         foreach ($result as &$value) {
             $fileName = str_replace(array('/', '.'), '_', $value["name"]);
             $filePath = DOWNLOAD_DIR . $fileName;
@@ -150,9 +148,8 @@ class live2d_SDK
 
     public function GetTextureList()
     {
-        $userInfo = $this->userInfo;
         $param = ['modelId' => $_POST["modelId"]];
-        $result = $this->DoGet($param, "Model/Textures", $userInfo["sign"]);
+        $result = $this->DoGet($param, "Model/Textures", $this->userInfo["sign"]);
         echo json_encode($result);
         wp_die();
     }
@@ -181,7 +178,7 @@ class live2d_SDK
     {
         $modelId = intval($_POST["modelId"]);
         $param = ['id' => $modelId];
-        $result = $this->DoPost($param, "Model/Downloaded", $userInfo["sign"]);
+        $result = $this->DoPost($param, "Model/Downloaded", $this->userInfo["sign"]);
         echo json_encode($result);
         wp_die();
     }
@@ -205,13 +202,27 @@ class live2d_SDK
     //排查错误使用
     public function Save_Options($value)
     {
-        $userInfo = $this->userInfo;
-        if (!empty($userInfo["sign"])) {
+        if (!empty($this->userInfo["sign"])) {
             $param = [
                 'new_value' => json_encode($value)
             ];
-            $result = $this->DoPost($param, "Options/UpdateOpt", $userInfo["sign"]);
+            $result = $this->DoPost($param, "Options/UpdateOpt", $this->userInfo["sign"]);
+            error_log('Save_Options:设置保存完成' . print_r($result));
+        } else {
+            error_log('Save_Options:设置保存完成, 但是用户没有登陆。');
         }
+        /*$modelAPI = $this->HttpGet($value['modelAPI']);
+        if ($modelAPI) {
+            if ($modelAPI['Version']) {
+                $value['modelVersion'] = $modelAPI['Version'];
+            } else if ($modelAPI['version']) {
+                $value['modelVersion'] = $modelAPI['version'];
+            } else {
+                error_log("调用的是创意工坊模型");
+            }
+        } else {
+            error_log("没有正确的调用API");
+        }*/
     }
 
     /**
@@ -219,9 +230,8 @@ class live2d_SDK
      */
     public function Update_Options($value, $old_value)
     {
-        $userInfo = $this->userInfo;
         $url = $value["modelAPI"];
-        if (preg_match('/^https:\/\/api\.live2dweb\.com/i', $url) && empty($userInfo["sign"])) {
+        if (preg_match('/^https:\/\/api\.live2dweb\.com/i', $url) && empty($this->userInfo["sign"])) {
             add_settings_error('live_2d_sdk_error', 500, '保存成功，但是您必须登录才可以使用官方API。');
         }
         return $value;
@@ -230,11 +240,11 @@ class live2d_SDK
     public function Get_Jwt($sign)
     {
         $pub_key = new Key($this->GetPem(), 'RS256');
-        try{
+        try {
             $setArr = (array)JWT::decode($sign, $pub_key);
             return $setArr;
-        }catch(Exception $e){
-            error_log('Get_Jwt:签名错误'.$e,5);
+        } catch (Exception $e) {
+            error_log('Get_Jwt:签名错误' . $e, 5);
             return false;
         }
     }
@@ -243,6 +253,7 @@ class live2d_SDK
     {
         try {
             $url = API_URL . "/" . $api_name;
+            error_log('HttpPost请求URL：' . $url);
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -252,31 +263,30 @@ class live2d_SDK
                 'Origin: ' . get_home_url(),
             ));
             curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($param));
-            //curl_setopt($curl, CURLOPT_TIMEOUT,20);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  //禁用后cURL将终止从服务端进行验证
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  //不验证证书是否存在
+            curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
             $response = curl_exec($curl);
             $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($curl);
             curl_close($curl);
             if ($httpCode === 401 || $httpCode === 403) {
-                error_log('DoPost:授权错误, 登录不正确, 请检查是否和域名匹配'.$httpCode,5);
+                error_log('DoPost:授权错误, 登录不正确, 请检查是否和域名匹配' . $httpCode, 5);
                 return array(
                     'errorCode' => $httpCode,
                     'errorMsg' => '登录不正确, 请检查是否和域名匹配'
                 );
             } else {
                 if (!$response) {
-                    error_log('DoPost:['.$httpCode.']'.curl_error($curl),5);
+                    error_log('DoPost:[' . $httpCode . ']' . $curlError, 5);
                     return array(
                         'errorCode' => $httpCode,
-                        'errorMsg' => curl_error($curl)
+                        'errorMsg' => $curlError
                     );
                 } else {
                     return json_decode($response, true);
                 }
             }
         } catch (Exception $e) {
-            error_log('DoPost:[9500]异常'.$e,5);
+            error_log('DoPost:[9500]异常' . $e, 5);
             return array(
                 'errorCode' => 9500,
                 'errorMsg' => $e
@@ -286,40 +296,48 @@ class live2d_SDK
 
     public function DoGet($param, $api_name, $jwt)
     {
+        $url = API_URL . "/" . $api_name . "/?" . http_build_query($param);
+        return $this->HttpGet($url, $jwt);
+    }
+
+    public function HttpGet($url, $jwt = null)
+    {
         try {
-            $url = API_URL . "/" . $api_name ."/?". http_build_query($param);
+            error_log('HttpGet请求URL：' . $url);
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_HTTPGET, true); //POST数据
-            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                'Authorization: Bearer ' . $jwt,
-                'Origin: ' . get_home_url(),
-            ));
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  //禁用后cURL将终止从服务端进行验证
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  //不验证证书是否存在
+            curl_setopt($curl, CURLOPT_HTTPGET, true); //GET数据
+            if ($jwt !== null) {
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                    'Authorization: Bearer ' . $jwt,
+                    'Origin: ' . get_home_url(),
+                ));
+            }
+            curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
             $response = curl_exec($curl);
             $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($curl);
             curl_close($curl);
             if ($httpCode === 401 || $httpCode === 403) {
-                error_log('DoGet:授权错误, 登录不正确, 请检查是否和域名匹配'.$httpCode,5);
+                error_log('DoGet:授权错误, 登录不正确, 请检查是否和域名匹配' . $httpCode, 5);
                 return array(
                     'errorCode' => $httpCode,
                     'errorMsg' => '登录不正确, 请检查是否和域名匹配'
                 );
             } else {
                 if (!$response) {
-                    error_log('DoGet:['.$httpCode.']'.curl_error($curl),5);
+                    error_log('DoGet:[' . $httpCode . ']' . $curlError, 5);
                     return array(
                         'errorCode' => $httpCode,
-                        'errorMsg' => curl_error($curl)
+                        'errorMsg' => $curlError
                     );
                 } else {
                     return json_decode($response, true);
                 }
             }
         } catch (Exception $e) {
-            error_log('DoGet:[9500]异常'.$e,5);
+            error_log('DoGet:[9500]异常' . $e, 5);
             return array(
                 'errorCode' => 9500,
                 'errorMsg' => $e
