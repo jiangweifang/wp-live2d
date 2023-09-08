@@ -211,18 +211,17 @@ class live2d_SDK
         } else {
             error_log('Save_Options:设置保存完成, 但是用户没有登陆。');
         }
-        /*$modelAPI = $this->HttpGet($value['modelAPI']);
-        if ($modelAPI) {
-            if ($modelAPI['Version']) {
+        $modelAPI = $this->HttpRequest($value['modelAPI'], null, "GET", null);
+        if (!empty($modelAPI)) {
+            if (!empty($modelAPI['Version'])) {
                 $value['modelVersion'] = $modelAPI['Version'];
-            } else if ($modelAPI['version']) {
-                $value['modelVersion'] = $modelAPI['version'];
+                $value['modelMotions'] = $modelAPI['FileReferences']["Motions"];
             } else {
-                error_log("调用的是创意工坊模型");
+                error_log("没有正确的调用模型文件清单model3.json");
             }
         } else {
-            error_log("没有正确的调用API");
-        }*/
+            error_log("没有正确的调用模型文件清单model3.json");
+        }
     }
 
     /**
@@ -251,83 +250,52 @@ class live2d_SDK
 
     public function DoPost($param, $api_name, $jwt)
     {
-        try {
-            $url = API_URL . "/" . $api_name;
-            error_log('HttpPost请求URL：' . $url);
-            $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_POST, true); //POST数据
-            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                'Authorization: Bearer ' . $jwt,
-                'Origin: ' . get_home_url(),
-            ));
-            curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($param));
-            curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
-            $response = curl_exec($curl);
-            $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            $curlError = curl_error($curl);
-            curl_close($curl);
-            if ($httpCode === 401 || $httpCode === 403) {
-                error_log('DoPost:授权错误, 登录不正确, 请检查是否和域名匹配' . $httpCode, 5);
-                return array(
-                    'errorCode' => $httpCode,
-                    'errorMsg' => '登录不正确, 请检查是否和域名匹配'
-                );
-            } else {
-                if (!$response) {
-                    error_log('DoPost:[' . $httpCode . ']' . $curlError, 5);
-                    return array(
-                        'errorCode' => $httpCode,
-                        'errorMsg' => $curlError
-                    );
-                } else {
-                    return json_decode($response, true);
-                }
-            }
-        } catch (Exception $e) {
-            error_log('DoPost:[9500]异常' . $e, 5);
-            return array(
-                'errorCode' => 9500,
-                'errorMsg' => $e
-            );
-        }
+        $url = API_URL . "/" . $api_name;
+        return $this->HttpRequest($url, $param, "POST", $jwt);
     }
 
     public function DoGet($param, $api_name, $jwt)
     {
-        $url = API_URL . "/" . $api_name . "/?" . http_build_query($param);
-        return $this->HttpGet($url, $jwt);
+        $url = API_URL . "/" . $api_name . "/";
+        return $this->HttpRequest($url, $param, "GET", $jwt);
     }
 
-    public function HttpGet($url, $jwt = null)
+    private function HttpRequest(string $url, $param, $method = "POST" | "GET", $jwt = null)
     {
         try {
-            error_log('HttpGet请求URL：' . $url);
             $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_HTTPGET, true); //GET数据
-            if ($jwt !== null) {
+            if ($method === "POST") {
+                curl_setopt($curl, CURLOPT_POST, true); //POST数据
+                curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($param));
+            } else {
+                curl_setopt($curl, CURLOPT_HTTPGET, true); //GET数据
+                if (!empty($param)) {
+                    $url = $url . '?' . http_build_query($param);
+                }
+            }
+            if (!empty($url)) {
                 curl_setopt($curl, CURLOPT_HTTPHEADER, array(
                     'Authorization: Bearer ' . $jwt,
                     'Origin: ' . get_home_url(),
                 ));
             }
+            error_log('Http[' . $method . ']请求URL：' . $url);
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
             $response = curl_exec($curl);
             $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             $curlError = curl_error($curl);
             curl_close($curl);
             if ($httpCode === 401 || $httpCode === 403) {
-                error_log('DoGet:授权错误, 登录不正确, 请检查是否和域名匹配' . $httpCode, 5);
+                error_log('HttpRequest:授权错误, 登录不正确, 请检查是否和域名匹配' . $httpCode, 5);
                 return array(
                     'errorCode' => $httpCode,
                     'errorMsg' => '登录不正确, 请检查是否和域名匹配'
                 );
             } else {
                 if (!$response) {
-                    error_log('DoGet:[' . $httpCode . ']' . $curlError, 5);
+                    error_log('HttpRequest:[' . $httpCode . ']' . $curlError, 5);
                     return array(
                         'errorCode' => $httpCode,
                         'errorMsg' => $curlError
@@ -337,7 +305,7 @@ class live2d_SDK
                 }
             }
         } catch (Exception $e) {
-            error_log('DoGet:[9500]异常' . $e, 5);
+            error_log('HttpRequest:[9500]异常' . $e, 5);
             return array(
                 'errorCode' => 9500,
                 'errorMsg' => $e
