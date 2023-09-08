@@ -179,42 +179,10 @@
 - 字体颜色：#32373c
 - 高亮提醒颜色：#0099cc
 
-### 特性
-
-- 基于 API 加载模型，支持 定制 提示语
-- 增加：可通过WordPress后台进行参数设置，易用性++
-- 增加：可后台设置看板娘样式，可直接设置宽高度等
-- 支持多种一言接口，基于 JQuery UI 实现拖拽，JQuery UI引用WordPress内置，无需担心加载延迟
-- 增加：可视化设置并生成waifu-tips.json，避免手动修改JSON
-
-### FAQ
-
-- 1.7版本已更新完成，下面讲解如何使用moc3（最高支持到live2D 4.0）模型
-1. 将你准备好的moc3模型上传至目录当中，如果您准备存放github中，可以直接存储至Public项目。
-2. 然后请了解存放路径，并给材质API选项中填写此路径至*.model3.json。例如：https://cdn.jsdelivr.net/gh/jiangweifang/live2d_api@live2d_api_v4/model/kiritan/kiritan.model3.json
-3. 刷新页面后，您将会看到moc3模型展示至前台。
-4. moc3的缩放比例可能会比较小，所以您需要将模型缩放比例调整至合适大小，建议2.0，我没有进行控制是因为如果我在代码中写入2.0，其计算方式将会x2 ，例如1.1 实际计算结果将会是2.2。
-
-- 为了不打扰您的使用，除严重bug外，版本更新每周进行一次，感谢各位的支持。
-
-- 1.8版本将进行繁体中文版本开发。从而便于多语言支持
-
-### 食用方法
-
-1. 在WordPress后台添加插件压缩包安装
-2. 点击启用按钮开始使用看板娘。
-
-
 ## 版权声明
 
-- [Flat UI Free][1]  
-- [live2d_src / ©journey-ad / GPL v2.0][2]  
-- [fghrsh.net][3]  
-
-  [1]: https://designmodo.com/flat-free/ "Flat UI Free"
-  [2]: https://github.com/journey-ad/live2d_src "基于 #fea64e4 的修改版"
-  [3]: https://www.fghrsh.net/post/123.html "fghrsh.net"
-  
+- [live2d_src / ©journey-ad / GPL v2.0][1]  
+  [1]: https://github.com/journey-ad/live2d_src "基于 #fea64e4 的修改版"
 - WordPress Live 2D 插件不属于 Live2D Inc. 它是一个非官方产品
 
 ## 软件许可协议
