@@ -201,14 +201,7 @@ class live2d_SDK
 
     public function GetModelMotions()
     {
-        const $groupName = $_POST["groupName"];
-        if (!empty($value['modelVersion'])) {
-            const $modelApi = $value['modelVersion'];
-            const $motions = $value['modelMotions'];
-            return $motions;
-        }else{
-            return null;
-        }
+        $url = $value["modelAPI"];
     }
 
     //排查错误使用

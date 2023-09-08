@@ -5,14 +5,19 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.2
 Requires at least: 5.5
-Stable tag: 1.9.9
+Stable tag: 1.9.10
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
 
+= 1.9.10 =
+- 修复review代码时发现的一些PHP错误，并对其重用性进行优化，因为PHP我实在是有点苦手，工程量一大了我就有点晕头。
+- 本次更新不会修改live2d.js中的内容
+- 下个版本将增加热点触发功能，你可以通过CSS选择器，让新模型摆出特定的Motions中的动作。我觉得这样解释各位专业的Live2D模型制作者可以理解。
+
 = 1.9.9 =
-- framework 升级到 Cubism 5 SDK for Web R1 beta1
+- framework 升级到 Cubism 5 SDK for Web R1 beta1 支持融合变形，[了解SDK版本区别](https://docs.live2d.com/zh-CHS/cubism-sdk-manual/cubism-5-new-functions/)
 - 对异常情况增加捕获。
 - 修复：函数 `register_rest_route` 的调用方法不正确。
 - 修复`waifu-tool`的样式错误，感谢[peko](https://pekolove.com/) 的反馈。

@@ -8,7 +8,10 @@
 <img src='https://user-images.githubusercontent.com/38683169/216086597-6acf9f5e-f694-4c14-85cc-08cbbdfbfd4c.png' width='300px' />
 
 ### 更新
-== Changelog ==
+= 1.9.10 =
+- 修复review代码时发现的一些PHP错误，并对其重用性进行优化，因为PHP我实在是有点苦手，工程量一大了我就有点晕头。
+- 本次更新不会修改live2d.js中的内容
+- 下个版本将增加热点触发功能，你可以通过CSS选择器，让新模型摆出特定的Motions中的动作。我觉得这样解释各位专业的Live2D模型制作者可以理解。
 
 = 1.9.9 =
 - framework 升级到 Cubism 5 SDK for Web R1 beta1 支持融合变形，[了解SDK版本区别](https://docs.live2d.com/zh-CHS/cubism-sdk-manual/cubism-5-new-functions/)
