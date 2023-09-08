@@ -1,4 +1,4 @@
-# Live2D Web Canvas - Live2D WordPress 插件
+# Live2D Web Canvas - WordPress 插件
 
 - 基于Live2D 看板娘前端 HTML 源码改写
 - 插件可在WordPress后台通过插件搜索获得 https://wordpress.org/plugins/live-2d/ 记得给个好评！
