@@ -303,12 +303,15 @@ License: GPLv3
   [2]: https://github.com/journey-ad/live2d_src "基于 #fea64e4 的修改版"
   
 - 请遵循GPL v3.0授权协议
-- Live2D Web Canvas - WordPress 插件不属于 Live2D Inc. 它是一个非官方产品
+- Live2DWebCanvas 插件不属于 Live2D Inc. 它是一个非官方产品
 
 ## 软件许可协议
 
-[![Proprietary Software](https://img.shields.io/badge/license-Live2D%20Proprietary%20Software-blue)](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html)
-[![Open Software](https://img.shields.io/badge/license-Live2D%20Open%20Software-blue)](https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html)
+[Live2D Proprietary Software License Agreement][4]  
+[Live2D Open Software License Agreement][5]  
+
+  [4]: https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html
+  [5]: https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html
 
 == Installation ==
 
