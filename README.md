@@ -1,11 +1,11 @@
 # Live2D Web Canvas - WordPress 插件
 
+[![Static Badge](https://img.shields.io/badge/Live2D-v5.r1.bate.1-blue?color=%23ff6e2d)](https://www.live2d.com/download/cubism-sdk/download-web/)  [![Static Badge](https://img.shields.io/badge/Live2D-Live2dWebCanvas-blue)](https://www.live2d.jp/showcase/live2dwebcanvas/)  [![Static Badge](https://img.shields.io/badge/Wordpress-v1.9.9-blue)](https://wordpress.org/plugins/live-2d/)
+
 - 基于Live2D 看板娘前端 HTML 源码改写
 - 插件可在WordPress后台通过插件搜索获得 https://wordpress.org/plugins/live-2d/ 记得给个好评！
 
-[![Static Badge](https://img.shields.io/badge/Live2D-v5.r1.bate.1-blue?color=%23ff6e2d)](https://www.live2d.com/download/cubism-sdk/download-web/) [![Static Badge](https://img.shields.io/badge/Wordpress-v1.9.9-blue)](https://wordpress.org/plugins/live-2d/)
-
-![1](https://user-images.githubusercontent.com/38683169/216086597-6acf9f5e-f694-4c14-85cc-08cbbdfbfd4c.png)
+<img src='https://user-images.githubusercontent.com/38683169/216086597-6acf9f5e-f694-4c14-85cc-08cbbdfbfd4c.png' width='300px' />
 
 ### 更新
 == Changelog ==
@@ -188,6 +188,5 @@
 - Live2D Web Canvas - WordPress 插件不属于 Live2D Inc. 它是一个非官方产品
 
 ## 软件许可协议
-
-- [Live2D Proprietary Software License Agreement](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html) 
-- [Live2D Open Software License Agreement](https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html)
+[![Static Badge](https://img.shields.io/badge/license-Live2D%20Proprietary%20Software-blue)](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html)
+[![Static Badge](https://img.shields.io/badge/license-Live2D%20Open%20Software-blue)](https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html)
