@@ -199,6 +199,18 @@ class live2d_SDK
         wp_die();
     }
 
+    public function GetModelMotions()
+    {
+        const $groupName = $_POST["groupName"];
+        if (!empty($value['modelVersion'])) {
+            const $modelApi = $value['modelVersion'];
+            const $motions = $value['modelMotions'];
+            return $motions;
+        }else{
+            return null;
+        }
+    }
+
     //排查错误使用
     public function Save_Options($value)
     {
@@ -210,17 +222,6 @@ class live2d_SDK
             error_log('Save_Options:设置保存完成' . print_r($result));
         } else {
             error_log('Save_Options:设置保存完成, 但是用户没有登陆。');
-        }
-        $modelAPI = $this->HttpRequest($value['modelAPI'], null, "GET", null);
-        if (!empty($modelAPI)) {
-            if (!empty($modelAPI['Version'])) {
-                $value['modelVersion'] = $modelAPI['Version'];
-                $value['modelMotions'] = $modelAPI['FileReferences']["Motions"];
-            } else {
-                error_log("没有正确的调用模型文件清单model3.json");
-            }
-        } else {
-            error_log("没有正确的调用模型文件清单model3.json");
         }
     }
 

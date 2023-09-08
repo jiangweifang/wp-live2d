@@ -12,6 +12,8 @@ add_action("wp_ajax_get_model_list", array(new live2d_SDK, 'GetModelList'));
 add_action("wp_ajax_get_texture_list", array(new live2d_SDK, 'GetTextureList'));
 //标记下载完成
 add_action("wp_ajax_downloaded", array(new live2d_SDK, 'Downloaded'));
+//获取新模型的可用动作列表
+add_action("wp_ajax_get_motions", array(new live2d_SDK, 'GetModelMotions'));
 class live2d_Shop
 {
     private $userInfo;
