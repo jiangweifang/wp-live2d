@@ -3,13 +3,21 @@
 Contributors: Weifang Chiang
 Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
-Tested up to: 6.3
+Tested up to: 6.7
 Requires at least: 5.5
-Stable tag: 1.9.10
+Stable tag: 1.9.12
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+
+= 1.9.12 = 
+- 修复Wordpress安全警告
+- 修复一个插件错误
+
+= 1.9.11 =
+- 服务器升级完成，由于最近比较忙乱，导致服务器升级出现了一些错误，如果支付失败请和我联系，我会尽快给你进行恢复。
+- 预计Unity WebGL将作为2.0版本对模型进行加密访问，保护你的模型版权。
 
 = 1.9.10 =
 - 修复review代码时发现的一些PHP错误，并对其重用性进行优化，因为PHP我实在是有点苦手，工程量一大了我就有点晕头。

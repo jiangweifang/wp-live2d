@@ -22,14 +22,14 @@ class live2d_Shop
         $this->userInfo = get_option('live_2d_settings_user_token');
     }
     public function live2d_shop_init()
-    { 
+    {
         wp_enqueue_style('live2d_admin', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu.css'); //css
-        wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) .'/assets/waifu-admin.min.js');
-		wp_localize_script('admin_js', 'settings', array(
-			'userInfo' => get_option('live_2d_settings_user_token'),
-			'homeUrl' => get_home_url(),
-			'settings'=> get_option('live_2d_settings_option_name'),
-		));
+        wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu-admin.min.js');
+        wp_localize_script('admin_js', 'settings', array(
+            'userInfo' => get_option('live_2d_settings_user_token'),
+            'homeUrl' => get_home_url(),
+            'settings' => get_option('live_2d_settings_option_name'),
+        ));
         add_action('admin_footer', 'model_shop_scripts');
 ?>
         <div id="live2d-shop">
@@ -52,9 +52,33 @@ class live2d_Shop
                 </div>
             <?php
             } else {
-            ?>
-                <div class="live2d-container"></div>
-            <?php
+                // 使用 PHP 获取模型列表
+                $sdk = new live2d_SDK();
+                $modelList = $sdk->GetModelListPHP(); // 获取模型列表
+                if (!empty($modelList)) {
+                    echo '<div class="live2d-container">';
+                    foreach ($modelList as $model) {
+                        echo '<div class="model-item">';
+                        // 缩略图
+                        echo '<div class="thumb">';
+                        echo '<img src="' . htmlspecialchars($model['imgUrl']) . '" alt="' . htmlspecialchars($model['name']) . '">';
+                        echo '</div>';
+                        // 标题
+                        echo '<div class="title">' . htmlspecialchars($model['name']) . '</div>';
+                        // 下载按钮
+                        echo '<div class="downBtn">';
+                        if ($model['downloaded']) {
+                            echo '<button class="install-now button button-disabled" disabled>已启用</button>';
+                        } else {
+                            echo '<button type="submit" class="install-now button" data-model-id="' . intval($model['id']) . '">下载</button>';
+                        }
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                    echo '</div>';
+                } else {
+                    echo '<div>没有可用的模型。</div>';
+                }
             }
             ?>
         </div>
@@ -67,7 +91,17 @@ function model_shop_scripts()
     ?>
     <script>
         jQuery(function() {
-            window.getModelList(settings)
+            jQuery('.install-now').on('click', function(e) {
+                e.preventDefault();
+                jQuery.post(ajaxurl, {
+                    action: 'download_model',
+                    modelId: jQuery(this).data('model-id'),
+                }, function(rsp) {
+                    if (rsp.errorCode === 200){
+                        console.log("下载完成");
+                    }
+                });
+            });
         });
     </script>
 <?php

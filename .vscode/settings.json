@@ -1,0 +1,4 @@
+{
+    "intelephense.diagnostics.undefinedFunctions": false,
+    "intelephense.diagnostics.undefinedConstants": false
+}

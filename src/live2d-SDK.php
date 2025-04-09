@@ -96,20 +96,23 @@ class live2d_SDK
                 if ($httpCode === 200) {
                     $modelName = str_replace(array('/', '.'), '_', $result["modelName"]);
                     $fileName = urlencode($modelName) . ".zip";
-                    $localFile = @fopen(DOWNLOAD_DIR . $fileName, 'a');
+
+                    $sanfilename = sanitize_file_name($fileName);
+
+                    $localFile = @fopen(DOWNLOAD_DIR . $sanfilename, 'a');
                     fwrite($localFile, $content);
                     fclose($localFile);
-                    chmod(DOWNLOAD_DIR . $fileName, 0777);
+                    chmod(DOWNLOAD_DIR . $sanfilename, 0777);
                     unset($content);
                     //验证文件MD5是否正确
-                    $downloaded_file = DOWNLOAD_DIR . $fileName;
+                    $downloaded_file = DOWNLOAD_DIR . $sanfilename;
                     $downloaded_md5 = md5_file($downloaded_file);
                     if ($result["fileMd5"] === $downloaded_md5) {
                     } else {
                     }
                     echo json_encode(array(
                         'errorCode' => 200,
-                        'fileName' => $fileName
+                        'fileName' => $sanfilename
                     ));
                 } else {
                     echo json_encode(array(
@@ -139,11 +142,28 @@ class live2d_SDK
         $result = $this->DoGet([], "Model/List", $this->userInfo["sign"]);
         foreach ($result as &$value) {
             $fileName = str_replace(array('/', '.'), '_', $value["name"]);
-            $filePath = DOWNLOAD_DIR . $fileName;
+            $sanfilename = sanitize_file_name($fileName);
+            $filePath = DOWNLOAD_DIR . $sanfilename;
             $value["downloaded"] = file_exists($filePath);
         }
         echo json_encode($result);
         wp_die();
+    }
+
+    public function GetModelListPHP()
+    {
+        if (!empty($this->userInfo["sign"])) {
+            $result = $this->DoGet([], "Model/List", $this->userInfo["sign"]);
+            foreach ($result as &$value) {
+                $fileName = str_replace(array('/', '.'), '_', $value["name"]);
+                $sanfilename = sanitize_file_name($fileName);
+                $filePath = DOWNLOAD_DIR . $sanfilename;
+                $value["downloaded"] = file_exists($filePath);
+            }
+            return $result;
+        } else {
+            return [];
+        }
     }
 
     public function GetTextureList()
@@ -160,7 +180,8 @@ class live2d_SDK
     public function OpenZip()
     {
         $zip = new ZipArchive;
-        $zipFile = DOWNLOAD_DIR . $_POST["fileName"];
+        $sanfilename = sanitize_file_name($_POST["fileName"]);
+        $zipFile = DOWNLOAD_DIR . $sanfilename;
         $zipFileName = pathinfo($zipFile, PATHINFO_FILENAME);
         $res = $zip->open($zipFile);
         if ($res === TRUE) {
@@ -189,7 +210,12 @@ class live2d_SDK
      */
     public function ClearFiles()
     {
-        $filePath = DOWNLOAD_DIR . $_POST["fileName"];
+        if (!current_user_can("delete_plugins")) {
+            echo 0;
+            wp_die();
+        }
+        $sanfilename = sanitize_file_name($_POST["fileName"]);
+        $filePath = DOWNLOAD_DIR . $sanfilename;
         if (file_exists($filePath)) {
             unlink($filePath);
             echo 1;
