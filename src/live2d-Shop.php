@@ -93,11 +93,13 @@ function model_shop_scripts()
         jQuery(function() {
             jQuery('.install-now').on('click', function(e) {
                 e.preventDefault();
+                const modelId = jQuery(this).data('model-id');
                 jQuery.post(ajaxurl, {
                     action: 'download_model',
-                    modelId: jQuery(this).data('model-id'),
+                    modelId: modelId,
                 }, function(rsp) {
-                    if (rsp.errorCode === 200){
+                    const rspInfo = JSON.parse(rsp);
+                    if (rspInfo.errorCode === 200) {
                         console.log("下载完成");
                     }
                 });

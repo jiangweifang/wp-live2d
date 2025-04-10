@@ -80,8 +80,11 @@ class live2d_SDK
                     ));
                     error_log('DownloadModel:[9500]文件夹创建失败');
                 }
+                $fileUrl = $result["fileUrl"];
                 $curl = curl_init();
-                curl_setopt($curl, CURLOPT_URL, $result["fileUrl"]);
+                error_log('DownloadModel:[开始下载 ' . $fileUrl . ']');
+                error_log('DownloadModel:[Origin ' . get_home_url() . ']');
+                curl_setopt($curl, CURLOPT_URL, $fileUrl);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($curl, CURLOPT_HTTPGET, true); //GET数据
                 curl_setopt($curl, CURLOPT_HTTPHEADER, array(
