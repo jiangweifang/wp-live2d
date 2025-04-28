@@ -15,6 +15,8 @@ class live2D
 		add_action('admin_init', array($this, 'live_2d_waifu_page_init'));
 		// 保存设置JSON的钩子 在执行update_option_live_2d_advanced_option_name之后进行
 		add_filter("pre_update_option_live_2d_settings_option_name", array(new live2D_SDK(), 'Update_Options'), 10, 3);
+		add_filter("pre_update_option_live_2d_advanced_option_name", array(new live2D_SDK(), 'Update_Advanced_Options'), 10, 3);
+		add_filter("pre_update_option_live_2d_settings_user_token", array(new live2D_SDK(), 'Update_Login_Options'), 10, 3);
 		add_action('updated_option', array($this, 'live2D_Advanced_Save'), 10, 3);
 	}
 
@@ -57,11 +59,11 @@ class live2D
 			'jQuery( function() { jQuery( ".color-picker" ).wpColorPicker(); } );'
 		);
 		wp_enqueue_script('wp-color-picker-alpha');
-		wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) .'/assets/waifu-admin.min.js');
+		wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu-admin.min.js');
 		wp_localize_script('admin_js', 'settings', array(
 			'userInfo' => get_option('live_2d_settings_user_token'),
 			'homeUrl' => get_home_url(),
-			'settings'=> get_option('live_2d_settings_option_name'),
+			'settings' => get_option('live_2d_settings_option_name'),
 		));
 		wp_add_inline_script(
 			'admin_js',
@@ -80,7 +82,9 @@ class live2D
 			<?php get_settings_errors('live_2d_advanced_option_saveFiles'); ?>
 			<?php get_settings_errors('live_2d_sdk_error'); ?>
 			<form method="post" action="options.php">
-				<?php settings_fields('live_2d_settings_base_group'); ?>
+				<?php
+				settings_fields('live_2d_settings_base_group');
+				?>
 				<div id="settings" class="group">
 					<?php
 					do_settings_sections('live-2d-settings-base');
@@ -120,7 +124,7 @@ class live2D
 					<?php
 					settings_fields('live_2d_login_option_group');
 					do_settings_sections('live-2d-login-admin');
-					submit_button('', 'primary', 'submit_advanced');
+					submit_button('', 'primary', 'submit_login');
 					?>
 				</form>
 			</div>

@@ -3,13 +3,17 @@
 Contributors: Weifang Chiang
 Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
-Tested up to: 6.7
+Tested up to: 6.8
 Requires at least: 5.5
-Stable tag: 1.9.12
+Stable tag: 1.9.13
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+
+= 1.9.13 = 
+- 修复Wordpress安全警告
+- 使用了新的访问API方式
 
 = 1.9.12 = 
 - 修复Wordpress安全警告

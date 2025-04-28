@@ -81,48 +81,59 @@ class live2d_SDK
                     error_log('DownloadModel:[9500]文件夹创建失败');
                 }
                 $fileUrl = $result["fileUrl"];
-                $curl = curl_init();
+
                 error_log('DownloadModel:[开始下载 ' . $fileUrl . ']');
                 error_log('DownloadModel:[Origin ' . get_home_url() . ']');
-                curl_setopt($curl, CURLOPT_URL, $fileUrl);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($curl, CURLOPT_HTTPGET, true); //GET数据
-                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                    'Authorization: Bearer ' . $this->userInfo["sign"],
-                    'Origin: ' . get_home_url(),
+
+                $response = wp_safe_remote_get($fileUrl, array(
+                    'headers' => array(
+                        'Authorization' => 'Bearer ' . $this->userInfo["sign"],
+                        'Origin' =>  get_home_url(),
+                        'Host' => 'download.live2dweb.com',
+                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+                        'Accept' => '*/*',
+                        'Accept-Encoding' => 'gzip, deflate, br',
+                        'Connection' => 'keep-alive',
+                    ),
                 ));
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  //禁用后cURL将终止从服务端进行验证
-                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  //不验证证书是否存在
-                $content = curl_exec($curl);
-                $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                curl_close($curl);
-                if ($httpCode === 200) {
-                    $modelName = str_replace(array('/', '.'), '_', $result["modelName"]);
-                    $fileName = urlencode($modelName) . ".zip";
 
-                    $sanfilename = sanitize_file_name($fileName);
-
-                    $localFile = @fopen(DOWNLOAD_DIR . $sanfilename, 'a');
-                    fwrite($localFile, $content);
-                    fclose($localFile);
-                    chmod(DOWNLOAD_DIR . $sanfilename, 0777);
-                    unset($content);
-                    //验证文件MD5是否正确
-                    $downloaded_file = DOWNLOAD_DIR . $sanfilename;
-                    $downloaded_md5 = md5_file($downloaded_file);
-                    if ($result["fileMd5"] === $downloaded_md5) {
-                    } else {
-                    }
+                if (is_wp_error($response)) {
                     echo json_encode(array(
-                        'errorCode' => 200,
-                        'fileName' => $sanfilename
+                        'errorCode' => 500,
+                        'errorMsg' => $response->get_error_message()
                     ));
+                    error_log('DownloadModel:[请求失败: ' . $response->get_error_message() . ']');
                 } else {
-                    echo json_encode(array(
-                        'errorCode' => $httpCode,
-                        'errorMsg' => '服务器未授权此访问'
-                    ));
-                    error_log('DownloadModel:[' . $httpCode . ']服务器未授权此访问');
+                    $httpCode = wp_remote_retrieve_response_code($response);
+                    if ($httpCode === 401 || $httpCode === 403) {
+                        echo json_encode(array(
+                            'errorCode' => $httpCode,
+                            'errorMsg' => '服务器未授权此访问'
+                        ));
+                        error_log('DownloadModel:[请求失败: ' . $httpCode . ']服务器未授权此访问');
+                    } elseif ($httpCode === 200) {
+                        $body = wp_remote_retrieve_body($response);
+                        $modelName = str_replace(array('/', '.'), '_', $result["modelName"]);
+                        $fileName = urlencode($modelName) . ".zip";
+
+                        $sanfilename = sanitize_file_name($fileName);
+
+                        $localFile = @fopen(DOWNLOAD_DIR . $sanfilename, 'a');
+                        fwrite($localFile, $body);
+                        fclose($localFile);
+                        chmod(DOWNLOAD_DIR . $sanfilename, 0777);
+                        unset($content);
+                        //验证文件MD5是否正确
+                        $downloaded_file = DOWNLOAD_DIR . $sanfilename;
+                        $downloaded_md5 = md5_file($downloaded_file);
+                        if ($result["fileMd5"] === $downloaded_md5) {
+                        } else {
+                        }
+                        echo json_encode(array(
+                            'errorCode' => 200,
+                            'fileName' => $sanfilename
+                        ));
+                    }
                 }
             } else {
                 echo json_encode($result);
@@ -228,10 +239,7 @@ class live2d_SDK
         wp_die();
     }
 
-    public function GetModelMotions()
-    {
-        $url = $value["modelAPI"];
-    }
+    public function GetModelMotions() {}
 
     //排查错误使用
     public function Save_Options($value)
@@ -252,9 +260,31 @@ class live2d_SDK
      */
     public function Update_Options($value, $old_value)
     {
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'live_2d_settings_base_group-options')) {
+            add_settings_error('live_2d_sdk_error', 500, '保存失败，非法操作。');
+            return $old_value; // 验证失败，返回旧值
+        }
         $url = $value["modelAPI"];
         if (preg_match('/^https:\/\/api\.live2dweb\.com/i', $url) && empty($this->userInfo["sign"])) {
             add_settings_error('live_2d_sdk_error', 500, '保存成功，但是您必须登录才可以使用官方API。');
+        }
+        return $value;
+    }
+
+    public function Update_Advanced_Options($value, $old_value)
+    {
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'live_2d_advanced_option_group-options')) {
+            add_settings_error('live_2d_sdk_error', 500, '保存失败，非法操作。');
+            return $old_value; // 验证失败，返回旧值
+        }
+        return $value;
+    }
+
+    public function Update_Login_Options($value, $old_value)
+    {
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'live_2d_login_option_group-options')) {
+            add_settings_error('live_2d_sdk_error', 500, '保存失败，非法操作。');
+            return $old_value; // 验证失败，返回旧值
         }
         return $value;
     }
@@ -273,67 +303,70 @@ class live2d_SDK
 
     public function DoPost($param, $api_name, $jwt)
     {
-        $url = API_URL . "/" . $api_name;
-        return $this->HttpRequest($url, $param, "POST", $jwt);
+        $bare_url = API_URL . "/" . $api_name;
+        $complete_url = wp_nonce_url($bare_url);
+        error_log('DoPost:请求地址: ' . $complete_url);
+        $response = wp_remote_post($complete_url, array(
+            'body' => $param,
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $jwt,
+                'Origin' =>  get_home_url(),
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ),
+        ));
+
+        if (is_wp_error($response)) {
+            error_log($complete_url . '请求失败: ' . $response->get_error_message());
+            return array(
+                'errorCode' => 500,
+                'errorMsg'  => $response->get_error_message(),
+            );
+        }
+        $httpCode = wp_remote_retrieve_response_code($response);
+        if ($httpCode === 401 || $httpCode === 403) {
+            error_log('DoPost:授权错误, 登录不正确, 请检查是否和域名匹配' . $httpCode, 5);
+            return array(
+                'errorCode' => $httpCode,
+                'errorMsg' => '登录不正确, 请检查是否和域名匹配'
+            );
+        }
+        $body = wp_remote_retrieve_body($response);
+        return json_decode($body, true);
     }
 
     public function DoGet($param, $api_name, $jwt)
     {
-        $url = API_URL . "/" . $api_name . "/";
-        return $this->HttpRequest($url, $param, "GET", $jwt);
-    }
+        $bare_url = API_URL . "/" . $api_name . "/";
 
-    private function HttpRequest(string $url, $param, $method = "POST" | "GET", $jwt = null)
-    {
-        try {
-            $curl = curl_init();
-            if ($method === "POST") {
-                curl_setopt($curl, CURLOPT_POST, true); //POST数据
-                curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($param));
-            } else {
-                curl_setopt($curl, CURLOPT_HTTPGET, true); //GET数据
-                if (!empty($param)) {
-                    $url = $url . '?' . http_build_query($param);
-                }
-            }
-            if (!empty($url)) {
-                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                    'Authorization: Bearer ' . $jwt,
-                    'Origin: ' . get_home_url(),
-                ));
-            }
-            error_log('Http[' . $method . ']请求URL：' . $url);
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
-            $response = curl_exec($curl);
-            $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            $curlError = curl_error($curl);
-            curl_close($curl);
-            if ($httpCode === 401 || $httpCode === 403) {
-                error_log('HttpRequest:授权错误, 登录不正确, 请检查是否和域名匹配' . $httpCode, 5);
-                return array(
-                    'errorCode' => $httpCode,
-                    'errorMsg' => '登录不正确, 请检查是否和域名匹配'
-                );
-            } else {
-                if (!$response) {
-                    error_log('HttpRequest:[' . $httpCode . ']' . $curlError, 5);
-                    return array(
-                        'errorCode' => $httpCode,
-                        'errorMsg' => $curlError
-                    );
-                } else {
-                    return json_decode($response, true);
-                }
-            }
-        } catch (Exception $e) {
-            error_log('HttpRequest:[9500]异常' . $e, 5);
+        if (!empty($param)) {
+            $bare_url = add_query_arg($param, $bare_url);
+        }
+        $complete_url = wp_nonce_url($bare_url);
+        error_log('DoGet:请求地址: ' . $complete_url);
+        $response = wp_remote_get($complete_url, array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $jwt,
+                'Origin' =>  get_home_url(),
+            ),
+        ));
+
+        if (is_wp_error($response)) {
+            error_log($complete_url . '请求失败: ' . $response->get_error_message());
             return array(
-                'errorCode' => 9500,
-                'errorMsg' => $e
+                'errorCode' => 500,
+                'errorMsg'  => $response->get_error_message(),
             );
         }
+        $httpCode = wp_remote_retrieve_response_code($response);
+        if ($httpCode === 401 || $httpCode === 403) {
+            error_log('DoGet:授权错误, 登录不正确, 请检查是否和域名匹配' . $httpCode, 5);
+            return array(
+                'errorCode' => $httpCode,
+                'errorMsg' => '登录不正确, 请检查是否和域名匹配'
+            );
+        }
+        $body = wp_remote_retrieve_body($response);
+        return json_decode($body, true);
     }
 
     private function GetPem()
