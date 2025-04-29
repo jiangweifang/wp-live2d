@@ -38,6 +38,7 @@ function live2D_style()
         'waifuTips' => get_option('live_2d_advanced_option_name'),
         'settings' => $live2dSettings,
         'localPath' => plugin_dir_url(__FILE__) . 'model',
+        'currentPage'=> array('get_the_id'=>get_the_id(),'is_home'=>is_front_page(),'is_single'=>is_single())
     ));
 }
 add_action('wp_head', 'live2D_style', 1);
