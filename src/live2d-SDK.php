@@ -20,6 +20,7 @@ $dir = explode('/', plugin_dir_url(dirname(__FILE__)));
 $dir_len = count($dir);
 define('IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2] . "/wordpress-live2d.php")); //补丁启用
 define('API_URL', "https://api.live2dweb.com"); //API地址
+define('DOMAIN', "https://www.live2dweb.com"); //API地址
 define('DOWNLOAD_DIR', plugin_dir_path(dirname(__FILE__)) . 'model/'); //服务器下载的路径
 class live2d_SDK
 {
@@ -299,6 +300,27 @@ class live2d_SDK
             error_log('Get_Jwt:签名错误' . $e, 5);
             return false;
         }
+    }
+
+    public function JwtEncode($key)
+    {
+        $issuedAt = time(); // 当前时间作为 iat
+        $notBefore = $issuedAt; // JWT 立即生效
+        $expire = $issuedAt + 7200; // 1 小时后过期
+        $payload = [
+            'iss' => DOMAIN,
+            'aud' => get_home_url(),
+            'iat' => $issuedAt,
+            'nbf' => $notBefore,
+            'exp' => $expire,
+            'email' => $this->userInfo["userName"],
+            'role' => intval($this->userInfo["role"]),
+            'certserialnumber' => intval($this->userInfo["certserialnumber"]),
+            'http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata' => intval($this->userInfo["userLevel"]),
+        ];
+        $jwt = JWT::encode($payload, $key, 'HS256');
+        error_log('JWT DEBUG: ' .json_encode($key). '$payload: ' . json_encode($payload));
+        return $jwt;
     }
 
     public function DoPost($param, $api_name, $jwt)
