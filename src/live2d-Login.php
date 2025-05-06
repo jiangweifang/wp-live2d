@@ -28,6 +28,14 @@ class live2D_Login {
             'live_2d_login_setting_section' // section
         );
 
+        add_settings_field(
+            'key', // id
+            __('请输入key','live-2d'), // title
+            array( $this, 'live2dKey_callback' ), // callback
+            'live-2d-login-admin', // page
+            'live_2d_login_setting_section' // section
+        );
+
 		add_settings_field(
 			'sign', // id
 			__('请输入license','live-2d'), // title
@@ -39,17 +47,14 @@ class live2D_Login {
 
 	public function live_2d_login_sanitize($input) {
 		$sanitary_values = array();
-        if(is_array($this->live_2d_user_token)){
-            $tokenArrCount = count($this -> live_2d_user_token);
-            if($this-> live_2d_user_token['sign'] == $input['sign']){
-                return $this-> live_2d_user_token;
-            }
-        }
-		if ( isset($input['sign']) && $input["sign"] != '' ) {
+        $live2dSDK = new live2d_SDK();
+        if ( isset($input['key']) && $input["key"] != '' ) {
+            $sanitary_values['key'] = $input['key'];
+            $sign = $live2dSDK -> GetToken($input['key']);
+            $signInfo = $live2dSDK -> JwtDecode($sign, $input['key']);
+            error_log("signInfo: " . json_encode($signInfo));
             try{
-                $live2dSDK = new live2d_SDK();
-                $signInfo = $live2dSDK -> Get_Jwt($input["sign"]);
-                $sanitary_values['sign'] = $input['sign'] ;
+                $sanitary_values['sign'] = $sign;
                 $sanitary_values["userName"] = $signInfo["email"];
                 $sanitary_values["role"] = intval($signInfo["role"]);
                 $sanitary_values["certserialnumber"] = intval($signInfo["certserialnumber"]);
@@ -59,11 +64,19 @@ class live2D_Login {
             } catch(Exception $e){
                 add_settings_error('live_2d_sdk_error',500, '保存失败, 登录信息无法解析');
             }
-		}else{
+        }else{
             add_settings_error('live_2d_sdk_error',500, '保存失败, 登录信息为空');
         }
-		return $sanitary_values;
+        return $sanitary_values;
 	}
+
+    public function live2dKey_callback() {
+        printf(
+            ' <p>如果您无法解决链接问题，请在<a href="https://www.live2dweb.com/Sites" target="_blank">官方网站登录</a>，查看Key后将其复制到下方，保存后就可以登录成功了！</p><br />
+            <input class="regular-text" style="width: 700px;" name="live_2d_settings_user_token[key]" value="%s" />',
+            isset( $this-> live_2d_user_token['key'] ) ? esc_attr( $this-> live_2d_user_token['key']) : ''
+        );
+    }
 
     public function sign_callback(){
         printf(

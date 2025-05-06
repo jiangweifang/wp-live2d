@@ -302,8 +302,21 @@ class live2d_SDK
         }
     }
 
-    public function JwtEncode($key)
+    public function JwtDecode($jwt, $key)
     {
+        $pub_key = new Key( $key, 'HS256');
+        try {
+            $setArr = (array)JWT::decode($jwt, $pub_key);
+            return $setArr;
+        } catch (Exception $e) {
+            error_log('JwtDecode:签名错误' . $e, 5);
+            return false;
+        }
+    }
+
+    public function JwtEncode()
+    {
+        $key = $this->userInfo['key'];
         $issuedAt = time(); // 当前时间作为 iat
         $notBefore = $issuedAt; // JWT 立即生效
         $expire = $issuedAt + 7200; // 1 小时后过期
@@ -319,14 +332,31 @@ class live2d_SDK
             'http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata' => intval($this->userInfo["userLevel"]),
         ];
         $jwt = JWT::encode($payload, $key, 'HS256');
-        error_log('JWT DEBUG: ' .json_encode($key). '$payload: ' . json_encode($payload));
+        error_log('JWT DEBUG: ' .json_encode($key). '$payload: ' . json_encode($payload). ' $jwt: ' . $jwt);
         return $jwt;
+    }
+
+    public function GetToken($key){
+        if (empty($key)) {
+            $key = $this->userInfo["key"];
+        }
+        $bare_url = API_URL . "/Verify/GetToken";
+        $param = ['key' => $key];
+        $complete_url = add_query_arg($param, $bare_url);
+        error_log('GetToken:请求地址: ' . $complete_url);
+        $response = wp_remote_get($complete_url,array(
+            'headers' => array(
+                'referer' => get_home_url()
+            )
+        ));
+        $body = wp_remote_retrieve_body($response);
+        error_log('GetToken:回复: ' . $body);
+        return $body;
     }
 
     public function DoPost($param, $api_name, $jwt)
     {
-        $bare_url = API_URL . "/" . $api_name;
-        $complete_url = wp_nonce_url($bare_url);
+        $complete_url = API_URL . "/" . $api_name;
         error_log('DoPost:请求地址: ' . $complete_url);
         $response = wp_remote_post($complete_url, array(
             'body' => $param,
@@ -363,9 +393,9 @@ class live2d_SDK
         if (!empty($param)) {
             $bare_url = add_query_arg($param, $bare_url);
         }
-        $complete_url = wp_nonce_url($bare_url);
-        error_log('DoGet:请求地址: ' . $complete_url);
-        $response = wp_remote_get($complete_url, array(
+        
+        error_log('DoGet:请求地址: ' . $bare_url);
+        $response = wp_remote_get($bare_url, array(
             'headers' => array(
                 'Authorization' => 'Bearer ' . $jwt,
                 'Origin' =>  get_home_url(),
@@ -373,7 +403,7 @@ class live2d_SDK
         ));
 
         if (is_wp_error($response)) {
-            error_log($complete_url . '请求失败: ' . $response->get_error_message());
+            error_log($bare_url . '请求失败: ' . $response->get_error_message());
             return array(
                 'errorCode' => 500,
                 'errorMsg'  => $response->get_error_message(),

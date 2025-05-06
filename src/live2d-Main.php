@@ -51,6 +51,7 @@ class live2D
 
 	public function live_2d__create_admin_page()
 	{
+		$live2dUserInfo = get_option('live_2d_settings_user_token');
 		wp_enqueue_style('wp-color-picker');
 		wp_enqueue_style('live2d_admin', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu.css'); //css
 		wp_register_script('wp-color-picker-alpha', plugin_dir_url(dirname(__FILE__)) . '/assets/wp-color-picker-alpha.min.js', array('wp-color-picker'));
@@ -61,7 +62,11 @@ class live2D
 		wp_enqueue_script('wp-color-picker-alpha');
 		wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu-admin.min.js');
 		wp_localize_script('admin_js', 'settings', array(
-			'userInfo' => get_option('live_2d_settings_user_token'),
+			'userInfo' => array(
+				'sign' => $live2dUserInfo["sign"],
+				'userName' => $live2dUserInfo["userName"],
+				'certserialnumber' => intval($live2dUserInfo["certserialnumber"]),
+			),
 			'homeUrl' => get_home_url(),
 			'settings' => get_option('live_2d_settings_option_name'),
 		));

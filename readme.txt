@@ -5,11 +5,15 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.8
 Requires at least: 5.5
-Stable tag: 1.9.13
+Stable tag: 1.9.14
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+
+= 1.9.14 = 
+- 简化验证过程，新增了key，您可以通过访问 https://www.live2dweb.com/ 来获取Key来代替Token，下个版本我会全面改为使用Key验证，请各位尽快升级。
+- 隐私增强，修复了一些隐私数据暴露的问题。
 
 = 1.9.13 = 
 - 修复Wordpress安全警告

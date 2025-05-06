@@ -14,6 +14,7 @@ add_action("wp_ajax_get_texture_list", array(new live2d_SDK, 'GetTextureList'));
 add_action("wp_ajax_downloaded", array(new live2d_SDK, 'Downloaded'));
 //获取新模型的可用动作列表
 add_action("wp_ajax_get_motions", array(new live2d_SDK, 'GetModelMotions'));
+
 class live2d_Shop
 {
     private $userInfo;
@@ -26,7 +27,11 @@ class live2d_Shop
         wp_enqueue_style('live2d_admin', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu.css'); //css
         wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu-admin.min.js');
         wp_localize_script('admin_js', 'settings', array(
-            'userInfo' => get_option('live_2d_settings_user_token'),
+            'userInfo' => array(
+                'sign' => $this->userInfo["sign"],
+                'userName' => $this->userInfo["userName"],
+                'certserialnumber' => intval($this->userInfo["certserialnumber"]),
+            ),
             'homeUrl' => get_home_url(),
             'settings' => get_option('live_2d_settings_option_name'),
         ));

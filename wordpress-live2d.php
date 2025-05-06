@@ -3,7 +3,7 @@
  * Plugin Name: Live 2D
  * Plugin URI: https://www.live2dweb.com/
  * Description: 看板娘插件
- * Version: 1.9.13
+ * Version: 1.9.14
  * Requires PHP: 7.4
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
@@ -26,6 +26,7 @@ include_once(dirname(__FILE__)  . '/src/live2d-SDK.php');
 function live2D_style()
 {
     $live2dSettings = get_option('live_2d_settings_option_name');
+    $live2dUserInfo = get_option('live_2d_settings_user_token');
     wp_enqueue_style('waifu_css', LIVE2D_ASSETS . "waifu.css"); //css
     wp_enqueue_style('fontawesome_css', LIVE2D_ASSETS . "fontawesome/css/all.min.css"); //css
     wp_enqueue_script('moment', LIVE2D_ASSETS . 'moment.min.js'); //
@@ -34,7 +35,11 @@ function live2D_style()
     wp_enqueue_script('live2dv2sdk', LIVE2D_ASSETS . 'live2dv2.min.js',array('live2dv2core'));
     wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'live2dv2sdk', 'moment'));
     wp_localize_script('live2dweb', 'live2d_settings', array(
-        'userInfo' => get_option('live_2d_settings_user_token'),
+        'userInfo' => array(
+            'sign' => $live2dUserInfo["sign"],
+            'userName' => $live2dUserInfo["userName"],
+            'certserialnumber'=> intval($live2dUserInfo["certserialnumber"]),
+        ),
         'waifuTips' => get_option('live_2d_advanced_option_name'),
         'settings' => $live2dSettings,
         'localPath' => plugin_dir_url(__FILE__) . 'model',
