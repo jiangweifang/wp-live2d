@@ -35,25 +35,17 @@ class live2D_Login {
             'live-2d-login-admin', // page
             'live_2d_login_setting_section' // section
         );
-
-		add_settings_field(
-			'sign', // id
-			__('请输入license','live-2d'), // title
-			array( $this, 'sign_callback' ), // callback
-			'live-2d-login-admin', // page
-			'live_2d_login_setting_section' // section
-		);
+		
 	}
 
 	public function live_2d_login_sanitize($input) {
 		$sanitary_values = array();
         $live2dSDK = new live2d_SDK();
         if ( isset($input['key']) && $input["key"] != '' ) {
-            $sanitary_values['key'] = $input['key'];
-            $sign = $live2dSDK -> GetToken($input['key']);
-            $signInfo = $live2dSDK -> JwtDecode($sign, $input['key']);
-            error_log("signInfo: " . json_encode($signInfo));
             try{
+                $sanitary_values['key'] = $input['key'];
+                $sign = $live2dSDK -> GetToken($input['key']);
+                $signInfo = $live2dSDK -> JwtDecode($sign, $input['key']);
                 $sanitary_values['sign'] = $sign;
                 $sanitary_values["userName"] = $signInfo["email"];
                 $sanitary_values["role"] = intval($signInfo["role"]);
@@ -78,23 +70,20 @@ class live2D_Login {
         );
     }
 
-    public function sign_callback(){
-        printf(
-            ' <p>如果您无法解决链接问题，请在<a href="https://www.live2dweb.com/Sites" target="_blank">官方网站登录</a>，查看Token后将其复制到下方，保存后就可以登录成功了！</p><br />
-            <textarea class="regular-text" style="width: 700px;" rows="10" name="live_2d_settings_user_token[sign]">%s</textarea>',
-            isset( $this-> live_2d_user_token['sign'] ) ? esc_attr( $this-> live_2d_user_token['sign']) : ''
-        );
-    }
-
 	public function live2dLogin_callback() {
         $userInfo = $this->live_2d_user_token;
         $homeUrl = get_home_url();
-        ?>
-        <buttom id="btnLogin" class="button button-primary">登录</buttom> 
-        <p id="labLogined" class="lgoined" style="display:none"></p>
-        <br /> 
-        <a id="signOut" class="lgoined">如要退出登陆请停用再启用插件</a>
-        <?php
+        if(empty($userInfo['userName'])){
+            ?>
+            <buttom id="btnLogin" class="button button-primary">登录</buttom> 
+            <?php
+        }else{
+            ?>
+            <p id="labLogined" class="lgoined">已登录, 用户名: <?php echo $userInfo['userName']; ?></p>
+            <br /> 
+            <a id="signOut" class="lgoined">如要退出登陆请停用再启用插件</a>
+            <?php
+        }
         if(!empty($userInfo)){
             if($userInfo["hosts"] != $homeUrl){
                 ?>
