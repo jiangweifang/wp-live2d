@@ -14,6 +14,7 @@ License: GPLv3
 = 1.9.14 = 
 - 简化验证过程，新增了key，您可以通过访问 https://www.live2dweb.com/ 来获取Key来代替Token，下个版本我会全面改为使用Key验证，请各位尽快升级。
 - 隐私增强，修复了一些隐私数据暴露的问题。
+- Semantic Kernel 搜索集成，现在可以通过机器人图标和Live2D 问当前页面的问题。
 
 = 1.9.13 = 
 - 修复Wordpress安全警告
