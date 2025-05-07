@@ -12,7 +12,8 @@
 = 1.9.14 = 
 - 简化验证过程，新增了key，您可以通过访问 https://www.live2dweb.com/ 来获取Key来代替Token
 - 隐私增强，修复了一些隐私数据暴露的问题。
-- Semantic Kernel 搜索集成，现在可以通过机器人图标和Live2D 问当前页面的问题。
+- Semantic Kernel 搜索集成，现在可以通过机器人图标和Live2D 问当前页面的问题。由于服务器改为上海，所以没有办法访问OPENAI了，各位之前维护的KEY我会删除。
+- 关于OPENAI：目前我使用的是个人的Azure OPENAI，暂时没有考虑使用DeepSeek 因为DS的思考过程较长，对话框容不下。
 
 = 1.9.13 = 
 - 修复Wordpress安全警告
