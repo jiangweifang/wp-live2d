@@ -39,15 +39,19 @@ class live2d_SDK
     {
         $homeUrl = get_home_url();
         $errCode = intval($request["errorCode"]);
-        if (!empty($request["sign"]) && $errCode === 200) {
-            $signInfo = $this->Get_Jwt($request["sign"]);
+        $sign = $request["sign"];
+        $key = $request["key"];
+        
+        if (!empty($sign) && !empty($key) && $errCode === 200) {
+            $signInfo = $this->JwtDecode($sign, $key);
             $userInfo = array();
-            $userInfo["sign"] = $request["sign"];
+            $userInfo["key"] = $key;
+            $userInfo["sign"] = $sign;
             $userInfo["userName"] = $signInfo["email"];
             $userInfo["role"] = intval($signInfo["role"]);
             $userInfo["certserialnumber"] = intval($signInfo["certserialnumber"]);
             $userInfo["userLevel"] = intval($signInfo["http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata"]);
-            $userInfo["errorCode"] = intval($request["errorCode"]);
+            $userInfo["errorCode"] = $errCode;
             $userInfo["hosts"] = $signInfo["aud"];
             if ($homeUrl == $signInfo["aud"] && IS_PLUGIN_ACTIVE) {
                 update_option('live_2d_settings_user_token', $userInfo);
@@ -67,6 +71,14 @@ class live2d_SDK
             }
         }
     }
+
+    public function rollback_set($request){
+        $homeUrl = get_home_url();
+        $errCode = intval($request["errorCode"]);
+        $sign = $request["sign"];
+        $key = $request["key"];
+    }
+
     /**
      * 下载一个指定ID的模型
      */
