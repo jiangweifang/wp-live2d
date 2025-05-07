@@ -21,9 +21,6 @@ class live2d_Shop
     public function __construct()
     {
         $this->userInfo = get_option('live_2d_settings_user_token');
-        if (!is_array($this->userInfo)) {
-            $this->userInfo = array(); // 确保 $this->userInfo 是一个数组
-        }
     }
     public function live2d_shop_init()
     {
@@ -47,7 +44,7 @@ class live2d_Shop
             </div>
             <?php
             $userInfo = $this->userInfo;
-            if (isset($userInfo) && empty($userInfo["sign"]) && empty($userInfo["userLevel"])) {
+            if (!isset($userInfo) && empty($userInfo["sign"]) && empty($userInfo["userLevel"])) {
             ?>
                 <div>
                     您需要登陆并付费才可以使用此功能。
