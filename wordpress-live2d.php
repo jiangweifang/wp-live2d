@@ -36,9 +36,9 @@ function live2D_style()
     wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'live2dv2sdk', 'moment'));
     wp_localize_script('live2dweb', 'live2d_settings', array(
         'userInfo' => array(
-            'sign' => $live2dUserInfo["sign"],
-            'userName' => $live2dUserInfo["userName"],
-            'certserialnumber'=> intval($live2dUserInfo["certserialnumber"]),
+            'sign' => isset($live2dUserInfo["sign"]) ? $live2dUserInfo["sign"] : '',
+            'userName' => isset($live2dUserInfo["userName"]) ? $live2dUserInfo["userName"] : '',
+            'certserialnumber' => isset($live2dUserInfo["certserialnumber"]) ? intval($live2dUserInfo["certserialnumber"]) : 0,
         ),
         'waifuTips' => get_option('live_2d_advanced_option_name'),
         'settings' => $live2dSettings,

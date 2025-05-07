@@ -28,6 +28,9 @@ class live2d_SDK
     public function __construct()
     {
         $this->userInfo = get_option('live_2d_settings_user_token');
+        if (!is_array($this->userInfo)) {
+            $this->userInfo = array(); // 确保 $this->userInfo 是一个数组
+        }
     }
     /**
      * 获取用户登录结果

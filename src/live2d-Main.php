@@ -63,9 +63,9 @@ class live2D
 		wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu-admin.min.js');
 		wp_localize_script('admin_js', 'settings', array(
 			'userInfo' => array(
-				'sign' => $live2dUserInfo["sign"],
-				'userName' => $live2dUserInfo["userName"],
-				'certserialnumber' => intval($live2dUserInfo["certserialnumber"]),
+				'sign' => isset($live2dUserInfo["sign"]) ? $live2dUserInfo["sign"] : '',
+				'userName' => isset($live2dUserInfo["userName"]) ? $live2dUserInfo["userName"] : '',
+				'certserialnumber' => isset($live2dUserInfo["certserialnumber"]) ? intval($live2dUserInfo["certserialnumber"]) : 0,
 			),
 			'homeUrl' => get_home_url(),
 			'settings' => get_option('live_2d_settings_option_name'),
