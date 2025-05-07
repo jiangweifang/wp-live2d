@@ -97,9 +97,10 @@ class live2d_SDK
                     error_log('DownloadModel:[9500]文件夹创建失败');
                 }
                 $fileUrl = $result["fileUrl"];
-
+                $tmpfname = wp_tempnam($fileUrl);
                 error_log('DownloadModel:[开始下载 ' . $fileUrl . ']');
                 error_log('DownloadModel:[Origin ' . get_home_url() . ']');
+                error_log('DownloadModel:[临时文件 ' . $tmpfname . ']');
 
                 $response = wp_safe_remote_get($fileUrl, array(
                     'headers' => array(
@@ -111,6 +112,9 @@ class live2d_SDK
                         'Accept-Encoding' => 'gzip, deflate, br',
                         'Connection' => 'keep-alive',
                     ),
+                    'timeout' => 300,
+                    'stream' => true,
+                    'filename' => $tmpfname
                 ));
 
                 if (is_wp_error($response)) {
@@ -128,23 +132,25 @@ class live2d_SDK
                         ));
                         error_log('DownloadModel:[请求失败: ' . $httpCode . ']服务器未授权此访问');
                     } elseif ($httpCode === 200) {
-                        $body = wp_remote_retrieve_body($response);
+                        // 文件已自动保存到$tmpfname，无需再手动写入
                         $modelName = str_replace(array('/', '.'), '_', $result["modelName"]);
                         $fileName = urlencode($modelName) . ".zip";
-
                         $sanfilename = sanitize_file_name($fileName);
 
-                        $localFile = @fopen(DOWNLOAD_DIR . $sanfilename, 'a');
-                        fwrite($localFile, $body);
-                        fclose($localFile);
+                        // 将临时文件移动到目标位置
+                        rename($tmpfname, DOWNLOAD_DIR . $sanfilename);
+                        error_log('DownloadModel:[文件保存到 ' . DOWNLOAD_DIR . $sanfilename . ']');
+                        // 设置文件权限
                         chmod(DOWNLOAD_DIR . $sanfilename, 0777);
-                        unset($content);
-                        //验证文件MD5是否正确
-                        $downloaded_file = DOWNLOAD_DIR . $sanfilename;
-                        $downloaded_md5 = md5_file($downloaded_file);
+
+                        // 验证文件MD5是否正确
+                        $downloaded_md5 = md5_file(DOWNLOAD_DIR . $sanfilename);
                         if ($result["fileMd5"] === $downloaded_md5) {
+                            error_log('DownloadModel:[文件MD5校验成功]');
                         } else {
+                            error_log('DownloadModel:[文件MD5校验失败]');
                         }
+
                         echo json_encode(array(
                             'errorCode' => 200,
                             'fileName' => $sanfilename
@@ -163,24 +169,12 @@ class live2d_SDK
         }
         wp_die();
     }
+    
     /**
      * 去服务器获取列表, 被ts中 getModelList 方法调用
      * 这个方法可以通过PHP过滤已下载的路径, 避免前端重复下载
      */
     public function GetModelList()
-    {
-        $result = $this->DoGet([], "Model/List", $this->userInfo["sign"]);
-        foreach ($result as &$value) {
-            $fileName = str_replace(array('/', '.'), '_', $value["name"]);
-            $sanfilename = sanitize_file_name($fileName);
-            $filePath = DOWNLOAD_DIR . $sanfilename;
-            $value["downloaded"] = file_exists($filePath);
-        }
-        echo json_encode($result);
-        wp_die();
-    }
-
-    public function GetModelListPHP()
     {
         if (!empty($this->userInfo["sign"])) {
             $result = $this->DoGet([], "Model/List", $this->userInfo["sign"]);
@@ -319,7 +313,7 @@ class live2d_SDK
 
     public function JwtDecode($jwt, $key)
     {
-        $pub_key = new Key( $key, 'HS256');
+        $pub_key = new Key($key, 'HS256');
         try {
             $setArr = (array)JWT::decode($jwt, $pub_key);
             return $setArr;
@@ -347,11 +341,12 @@ class live2d_SDK
             'http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata' => intval($this->userInfo["userLevel"]),
         ];
         $jwt = JWT::encode($payload, $key, 'HS256');
-        error_log('JWT DEBUG: ' .json_encode($key). '$payload: ' . json_encode($payload). ' $jwt: ' . $jwt);
+        error_log('JWT DEBUG: ' . json_encode($key) . '$payload: ' . json_encode($payload) . ' $jwt: ' . $jwt);
         return $jwt;
     }
 
-    public function GetToken($key){
+    public function GetToken($key)
+    {
         if (empty($key)) {
             $key = $this->userInfo["key"];
         }
@@ -359,7 +354,7 @@ class live2d_SDK
         $param = ['key' => $key];
         $complete_url = add_query_arg($param, $bare_url);
         error_log('GetToken:请求地址: ' . $complete_url);
-        $response = wp_remote_get($complete_url,array(
+        $response = wp_remote_get($complete_url, array(
             'headers' => array(
                 'referer' => get_home_url()
             )
@@ -408,7 +403,7 @@ class live2d_SDK
         if (!empty($param)) {
             $bare_url = add_query_arg($param, $bare_url);
         }
-        
+
         error_log('DoGet:请求地址: ' . $bare_url);
         $response = wp_remote_get($bare_url, array(
             'headers' => array(

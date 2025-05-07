@@ -6,8 +6,6 @@ add_action("wp_ajax_download_model", array(new live2d_SDK, 'DownloadModel'));
 add_action("wp_ajax_zip_model", array(new live2d_SDK, 'OpenZip'));
 //清理文件ajax
 add_action("wp_ajax_clear_files", array(new live2d_SDK, 'ClearFiles'));
-//获取下方列表的ajax
-add_action("wp_ajax_get_model_list", array(new live2d_SDK, 'GetModelList'));
 //获取下方材质的ajax
 add_action("wp_ajax_get_texture_list", array(new live2d_SDK, 'GetTextureList'));
 //标记下载完成
@@ -59,7 +57,7 @@ class live2d_Shop
             } else {
                 // 使用 PHP 获取模型列表
                 $sdk = new live2d_SDK();
-                $modelList = $sdk->GetModelListPHP(); // 获取模型列表
+                $modelList = $sdk->GetModelList(); // 获取模型列表
                 if (!empty($modelList)) {
                     echo '<div class="live2d-container">';
                     foreach ($modelList as $model) {
@@ -95,17 +93,45 @@ function model_shop_scripts()
 {
     ?>
     <script>
-        jQuery(function() {
-            jQuery('.install-now').on('click', function(e) {
+        const $ = jQuery;
+        const thisAjaxUrl = ajaxurl;
+        $(function() {
+            $('.install-now').on('click', function(e) {
                 e.preventDefault();
-                const modelId = jQuery(this).data('model-id');
-                jQuery.post(ajaxurl, {
+                const modelId = $(this).data('model-id');
+                const installBtn = $(this);
+                installBtn.addClass("updating-message").text("正在下载...").prop("disabled", true);
+                $.post(thisAjaxUrl, {
                     action: 'download_model',
                     modelId: modelId,
                 }, function(rsp) {
                     const rspInfo = JSON.parse(rsp);
                     if (rspInfo.errorCode === 200) {
                         console.log("下载完成");
+                        installBtn.text("正在解压...");
+                        $.post(thisAjaxUrl, {
+                            'action': 'zip_model',
+                            'fileName': rspInfo.fileName
+                        }, function(zipRsp) {
+                            if (Number(zipRsp) === 1) {
+                                $.post(thisAjaxUrl, {
+                                    'action': 'downloaded',
+                                    'modelId': element.id
+                                }, (rmRsp) => {
+                                    console.log("下载完成", rmRsp);
+                                })
+                            } else {
+                                $.post(thisAjaxUrl, {
+                                    'action': 'clear_files',
+                                    'fileName': rsp.fileName
+                                }, (rmRsp) => {
+                                    console.log("已清理不存在的文件", rmRsp);
+                                })
+                                alert("文件不存在");
+                                installBtn.removeClass('updating-message').prop("disabled", false);
+                                installBtn.text('下载');
+                            }
+                        });
                     }
                 });
             });
