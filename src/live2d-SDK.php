@@ -89,13 +89,13 @@ class live2d_SDK
             if ($token["errorCode"] == 200) {
                 $this->userInfo["sign"] = $token["errorMsg"];
                 update_option('live_2d_settings_user_token', $this->userInfo);
-                wp_die('OK', '', array('response' => 200));
+                status_header(200);
             } else {
                 // 这里应该是错误的处理 但是目前做200处理
-                wp_die('OK', '', array('response' => 200));
+                status_header(200);
             }
         } else {
-            wp_die('OK', '', array('response' => 200));
+            status_header(200);
         }
     }
 
@@ -103,8 +103,8 @@ class live2d_SDK
     {
         $auth_header = $request->get_header('Authorization');
         if (empty($auth_header)) {
-            wp_die('forbidden', '', array('response' => 403));
-            return;
+            status_header(403);
+            exit;
         }
         // 通常 Authorization 的格式为 "Bearer token"
         if (preg_match('/Bearer\s(\S+)/', $auth_header, $matches)) {
@@ -113,16 +113,16 @@ class live2d_SDK
             // 使用你的密钥解码 JWT
             $decoded = $this->JwtDecode($token, $this->apiKey);
             if (!$decoded || $decoded === 0) {
-                wp_die('forbidden', '', array('response' => 403));
-                return;
+                status_header(403);
+                exit;
             }
             if (is_array($decoded)) {
-                wp_die('OK', '', array('response' => 200));
+                status_header(200);
             } else {
-                wp_die('forbidden', '', array('response' => 403));
+                status_header(403);
             }
         } else {
-            wp_die('forbidden', '', array('response' => 400));
+            status_header(400);
         }
     }
 
