@@ -438,13 +438,4 @@ class live2d_SDK
         $body = wp_remote_retrieve_body($response);
         return json_decode($body, true);
     }
-
-    private function GetPem()
-    {
-        $publicKeyFile = plugin_dir_path(__DIR__) . 'assets/client.pem';
-        $publicKey = openssl_pkey_get_public(
-            file_get_contents($publicKeyFile)
-        );
-        return $publicKey;
-    }
 }
