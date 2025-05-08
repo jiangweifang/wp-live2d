@@ -25,12 +25,11 @@ define('DOWNLOAD_DIR', plugin_dir_path(dirname(__FILE__)) . 'model/'); //服务�
 class live2d_SDK
 {
     private $userInfo;
+    private $apiKey;
     public function __construct()
     {
         $this->userInfo = get_option('live_2d_settings_user_token');
-        if (!is_array($this->userInfo)) {
-            $this->userInfo = array(); // 确保 $this->userInfo 是一个数组
-        }
+        $this->apiKey = $this->userInfo["key"];
     }
     /**
      * 获取用户登录结果
@@ -77,6 +76,21 @@ class live2d_SDK
         $errCode = intval($request["errorCode"]);
         $sign = $request["sign"];
         $key = $request["key"];
+    }
+
+    public function refresh_token($request){
+        $sign = $request["sign"]; 
+        $key = $this->apiKey;
+        $signInfo = $this-> JwtDecode($sign, $key);
+        error_log('refresh_token: ' . json_encode($signInfo));
+        if($signInfo === 0){
+            $token = $this->DoGet(['key' => $key], "Verify/RefreshToken", $sign);
+            error_log('refresh_token: ' . json_encode($token));
+            $this->userInfo["sign"] = $token;
+            update_option('live_2d_settings_user_token', $this->userInfo);
+        } else {
+            http_response_code(200);
+        }
     }
 
     /**
@@ -299,24 +313,14 @@ class live2d_SDK
         return $value;
     }
 
-    public function Get_Jwt($sign)
-    {
-        $pub_key = new Key($this->GetPem(), 'RS256');
-        try {
-            $setArr = (array)JWT::decode($sign, $pub_key);
-            return $setArr;
-        } catch (Exception $e) {
-            error_log('Get_Jwt:签名错误' . $e, 5);
-            return false;
-        }
-    }
-
     public function JwtDecode($jwt, $key)
     {
-        $pub_key = new Key($key, 'HS256');
         try {
-            $setArr = (array)JWT::decode($jwt, $pub_key);
+            $setArr = (array)JWT::decode($jwt, new Key($key, 'HS256'));
             return $setArr;
+        } catch (ExpiredException $e) {
+            error_log("Token 已过期: " . $e->getMessage());
+            return 0;
         } catch (Exception $e) {
             error_log('JwtDecode:签名错误' . $e, 5);
             return false;

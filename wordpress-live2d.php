@@ -97,9 +97,16 @@ add_action('rest_api_init', function () {
         'callback' => array($sdk, 'user_login'),
         'permission_callback' => '__return_true'
     ));
+    
     register_rest_route('live2d/v1', '/rollback_set', array(
         'methods' => 'POST',
         'callback' => array($sdk, 'rollback_set'),
+        'permission_callback' => '__return_true'
+    ));
+
+    register_rest_route('live2d/v1', '/refresh_token', array(
+        'methods' => 'POST',
+        'callback' => array($sdk, 'refresh_token'),
         'permission_callback' => '__return_true'
     ));
 });
