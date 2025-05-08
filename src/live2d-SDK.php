@@ -40,7 +40,7 @@ class live2d_SDK
         $errCode = intval($request["errorCode"]);
         $sign = $request["sign"];
         $key = $request["key"];
-        
+
         if (!empty($sign) && !empty($key) && $errCode === 200) {
             $signInfo = $this->JwtDecode($sign, $key);
             $userInfo = array();
@@ -71,23 +71,27 @@ class live2d_SDK
         }
     }
 
-    public function rollback_set($request){
+    public function rollback_set($request)
+    {
         $homeUrl = get_home_url();
         $errCode = intval($request["errorCode"]);
         $sign = $request["sign"];
         $key = $request["key"];
     }
 
-    public function refresh_token($request){
-        $sign = $request["sign"]; 
+    public function refresh_token($request)
+    {
+        $sign = $request["sign"];
         $key = $this->apiKey;
-        $signInfo = $this-> JwtDecode($sign, $key);
-        error_log('refresh_token: ' . json_encode($signInfo));
-        if($signInfo === 0){
+        $signInfo = $this->JwtDecode($sign, $key);
+        if ($signInfo === 0) {
             $token = $this->DoGet(['key' => $key], "Verify/RefreshToken", $sign);
-            error_log('refresh_token: ' . json_encode($token));
-            $this->userInfo["sign"] = $token;
-            update_option('live_2d_settings_user_token', $this->userInfo);
+            if ($token["errorCode"] == 200) {
+                $this->userInfo["sign"] = $token["errorMsg"];
+                update_option('live_2d_settings_user_token', $this->userInfo);
+            } else {
+                http_response_code(200);
+            }
         } else {
             http_response_code(200);
         }
@@ -183,7 +187,7 @@ class live2d_SDK
         }
         wp_die();
     }
-    
+
     /**
      * 去服务器获取列表, 被ts中 getModelList 方法调用
      * 这个方法可以通过PHP过滤已下载的路径, 避免前端重复下载
