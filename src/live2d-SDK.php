@@ -89,11 +89,40 @@ class live2d_SDK
             if ($token["errorCode"] == 200) {
                 $this->userInfo["sign"] = $token["errorMsg"];
                 update_option('live_2d_settings_user_token', $this->userInfo);
+                wp_die('OK', '', array('response' => 200));
             } else {
-                http_response_code(200);
+                // 这里应该是错误的处理 但是目前做200处理
+                wp_die('OK', '', array('response' => 200));
             }
         } else {
-            http_response_code(200);
+            wp_die('OK', '', array('response' => 200));
+        }
+    }
+
+    public function verify_token($request)
+    {
+        $auth_header = $request->get_header('Authorization');
+        if (empty($auth_header)) {
+            wp_die('forbidden', '', array('response' => 403));
+            return;
+        }
+        // 通常 Authorization 的格式为 "Bearer token"
+        if (preg_match('/Bearer\s(\S+)/', $auth_header, $matches)) {
+            $token = $matches[1];
+            error_log('verify_token:token: ' . $token);
+            // 使用你的密钥解码 JWT
+            $decoded = $this->JwtDecode($token, $this->apiKey);
+            if (!$decoded || $decoded === 0) {
+                wp_die('forbidden', '', array('response' => 403));
+                return;
+            }
+            if (is_array($decoded)) {
+                wp_die('OK', '', array('response' => 200));
+            } else {
+                wp_die('forbidden', '', array('response' => 403));
+            }
+        } else {
+            wp_die('forbidden', '', array('response' => 400));
         }
     }
 
@@ -185,7 +214,6 @@ class live2d_SDK
             ));
             error_log('DownloadModel:[9500]没有登录信息');
         }
-        wp_die();
     }
 
     /**
@@ -213,7 +241,6 @@ class live2d_SDK
         $param = ['modelId' => $_POST["modelId"]];
         $result = $this->DoGet($param, "Model/Textures", $this->userInfo["sign"]);
         echo json_encode($result);
-        wp_die();
     }
 
     /**
@@ -234,7 +261,6 @@ class live2d_SDK
         } else {
             echo 0;
         }
-        wp_die();
     }
 
     public function Downloaded()
@@ -243,7 +269,6 @@ class live2d_SDK
         $param = ['id' => $modelId];
         $result = $this->DoPost($param, "Model/Downloaded", $this->userInfo["sign"]);
         echo json_encode($result);
-        wp_die();
     }
 
     /**
@@ -254,7 +279,6 @@ class live2d_SDK
     {
         if (!current_user_can("delete_plugins")) {
             echo 0;
-            wp_die();
         }
         $sanfilename = sanitize_file_name($_POST["fileName"]);
         $filePath = DOWNLOAD_DIR . $sanfilename;
@@ -264,7 +288,6 @@ class live2d_SDK
         } else {
             echo 0;
         }
-        wp_die();
     }
 
     public function GetModelMotions() {}

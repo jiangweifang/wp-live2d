@@ -109,6 +109,12 @@ add_action('rest_api_init', function () {
         'callback' => array($sdk, 'refresh_token'),
         'permission_callback' => '__return_true'
     ));
+
+    register_rest_route('live2d/v1', '/verify_token', array(
+        'methods' => 'POST',
+        'callback' => array($sdk, 'verify_token'),
+        'permission_callback' => '__return_true'
+    ));
 });
 
 // 初始化加载
