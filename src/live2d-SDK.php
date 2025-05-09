@@ -33,6 +33,7 @@ class live2d_SDK
     }
     /**
      * 获取用户登录结果
+     * 用这个方法可以通过key获取到token
      */
     public function user_login($request)
     {
@@ -78,19 +79,18 @@ class live2d_SDK
         $sign = $request["sign"];
         $key = $request["key"];
     }
-
+    /**
+     * 刷新token
+     * 通过或这个方法更新token, 目前是2小时过期
+     */
     public function refresh_token($request)
     {
         $sign = $request["sign"];
-        $key = $this->apiKey;
-        $signInfo = $this->JwtDecode($sign, $key);
+        $signInfo = $this->JwtDecode($sign, $this->apiKey);
         if ($signInfo === 0) {
-            $token = $this->DoGet(['key' => $key], "Verify/RefreshToken", $sign);
-            if ($token["errorCode"] == 200) {
-                $this->userInfo["sign"] = $token["errorMsg"];
-                update_option('live_2d_settings_user_token', $this->userInfo);
+            if($this->get_refresh_token($sign)){
                 status_header(200);
-            } else {
+            }else{
                 // 这里应该是错误的处理 但是目前做200处理
                 status_header(200);
             }
@@ -98,7 +98,10 @@ class live2d_SDK
             status_header(200);
         }
     }
-
+    /**
+     * JS验证token
+     * 这个方法是给前端使用的, 通过这个方法可以验证token是否过期
+     */
     public function verify_token($request)
     {
         $auth_header = $request->get_header('Authorization');
@@ -112,10 +115,21 @@ class live2d_SDK
             error_log('verify_token:token: ' . $token);
             // 使用你的密钥解码 JWT
             $decoded = $this->JwtDecode($token, $this->apiKey);
-            if (!$decoded || $decoded === 0) {
+            if (!$decoded) {
                 status_header(403);
                 exit;
             }
+
+            if($decoded === 0){
+                if($this->get_refresh_token($sign)){
+                    status_header(200);
+                }else{
+                    // 这里应该是错误的处理 但是目前做200处理
+                    status_header(403);
+                }
+                exit;
+            }
+
             if (is_array($decoded)) {
                 status_header(200);
             } else {
@@ -123,6 +137,18 @@ class live2d_SDK
             }
         } else {
             status_header(400);
+        }
+    }
+
+    private function get_refresh_token($sign)
+    {
+        $token = $this->DoGet(['key' => $this->apiKey], "Verify/RefreshToken", $sign);
+        if ($token["errorCode"] == 200) {
+            $this->userInfo["sign"] = $token["errorMsg"];
+            update_option('live_2d_settings_user_token', $this->userInfo);
+            return true;
+        } else {
+            return false;
         }
     }
 
