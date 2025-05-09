@@ -29,7 +29,9 @@ class live2d_SDK
     public function __construct()
     {
         $this->userInfo = get_option('live_2d_settings_user_token');
-        $this->apiKey = $this->userInfo["key"];
+        if(isset($this->userInfo["key"])){
+            $this->apiKey = $this->userInfo["key"];
+        }
     }
     /**
      * 获取用户登录结果
