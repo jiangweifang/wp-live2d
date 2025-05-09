@@ -88,14 +88,17 @@ class live2d_SDK
         $sign = $request["sign"];
         $signInfo = $this->JwtDecode($sign, $this->apiKey);
         if ($signInfo === 0) {
-            if($this->get_refresh_token($sign)){
-                status_header(200);
+            $newToken = $this->get_refresh_token($sign);
+            if(!$newToken){
+                status_header(403);
             }else{
-                // 这里应该是错误的处理 但是目前做200处理
                 status_header(200);
+                echo $newToken;
             }
+            exit;
         } else {
             status_header(200);
+            echo $sign;
         }
     }
     /**
@@ -121,17 +124,19 @@ class live2d_SDK
             }
 
             if($decoded === 0){
-                if($this->get_refresh_token($sign)){
-                    status_header(200);
-                }else{
-                    // 这里应该是错误的处理 但是目前做200处理
+                $newToken = $this->get_refresh_token($token);
+                if(!$newToken){
                     status_header(403);
+                }else{
+                    status_header(200);
+                    echo $newToken;
                 }
                 exit;
             }
 
             if (is_array($decoded)) {
                 status_header(200);
+                echo $token;
             } else {
                 status_header(403);
             }
@@ -146,7 +151,7 @@ class live2d_SDK
         if ($token["errorCode"] == 200) {
             $this->userInfo["sign"] = $token["errorMsg"];
             update_option('live_2d_settings_user_token', $this->userInfo);
-            return true;
+            return $token["errorMsg"];
         } else {
             return false;
         }
