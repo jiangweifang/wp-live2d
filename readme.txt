@@ -5,11 +5,17 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.8
 Requires at least: 5.5
-Stable tag: 1.9.14
+Stable tag: 1.9.15
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+
+= 1.9.15 = 
+- 本次更新将会把验证转移给Wordpress服务端。
+- 请确保您的REST API功能是开启的，它是默认开启的，如果您安装某些插件导致其关闭，您将会无法使用此插件。
+- 由于在上个版本中，你获取了新的Key，通过Key将会自行处理token，您不会频繁依赖请求我的服务。
+- Semantic Kernel 搜索集成增强，她可以通过关键词搜索整个站点中的所有内容。
 
 = 1.9.14 = 
 - 简化验证过程，新增了key，您可以通过访问 https://www.live2dweb.com/ 来获取Key来代替Token，下个版本我会全面改为使用Key验证，请各位尽快升级。
