@@ -115,7 +115,6 @@ class live2d_SDK
         // 通常 Authorization 的格式为 "Bearer token"
         if (preg_match('/Bearer\s(\S+)/', $auth_header, $matches)) {
             $token = $matches[1];
-            error_log('verify_token:token: ' . $token);
             // 使用你的密钥解码 JWT
             $decoded = $this->JwtDecode($token, $this->apiKey);
             if (!$decoded) {
@@ -124,10 +123,13 @@ class live2d_SDK
             }
 
             if($decoded === 0){
+                error_log('JS验证成功但是已经过期');
                 $newToken = $this->get_refresh_token($token);
                 if(!$newToken){
+                    error_log('JS验证失败Token获取时出错。');
                     status_header(403);
                 }else{
+                    error_log('JS验证成功已获取到新Token: ' . $newToken);
                     status_header(200);
                     echo $newToken;
                 }
@@ -135,23 +137,28 @@ class live2d_SDK
             }
 
             if (is_array($decoded)) {
+                error_log('JS验证成功 Token: ' . $token);
                 status_header(200);
                 echo $token;
             } else {
+                error_log('JS验证失败 Token: ' . $token);
                 status_header(403);
             }
         } else {
+            error_log('JS验证收到不正确的请求。');
             status_header(400);
         }
     }
 
     private function get_refresh_token($sign)
     {
-        $token = $this->DoGet(['key' => $this->apiKey], "Verify/RefreshToken", $sign);
-        if ($token["errorCode"] == 200) {
-            $this->userInfo["sign"] = $token["errorMsg"];
+        $result = $this->DoGet(['key' => $this->apiKey], "Verify/RefreshToken", $sign);
+        if ($result["errorCode"] == 200) {
+            $token = $result["errorMsg"];
+            $this->userInfo["sign"] = $token;
             update_option('live_2d_settings_user_token', $this->userInfo);
-            return $token["errorMsg"];
+            error_log('verify_token:token: ' . $token);
+            return $token;
         } else {
             return false;
         }
