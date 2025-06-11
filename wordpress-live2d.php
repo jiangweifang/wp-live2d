@@ -32,7 +32,7 @@ function live2D_style()
     wp_enqueue_script('moment', LIVE2D_ASSETS . 'moment.min.js'); //
     wp_enqueue_script('live2dv1core', LIVE2D_ASSETS . 'live2dv1.min.js');
     wp_enqueue_script('live2dv2core', $live2dSettings["sdkUrl"]);
-    wp_enqueue_script('live2dv2sdk', LIVE2D_ASSETS . 'live2dv2.min.js',array('live2dv2core'));
+    wp_enqueue_script('live2dv2sdk', LIVE2D_ASSETS . 'live2dv2.min.js', array('live2dv2core'));
     wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'live2dv2sdk', 'moment'));
     wp_localize_script('live2dweb', 'live2d_settings', array(
         'userInfo' => array(
@@ -43,7 +43,7 @@ function live2D_style()
         'waifuTips' => get_option('live_2d_advanced_option_name'),
         'settings' => $live2dSettings,
         'localPath' => plugin_dir_url(__FILE__) . 'model',
-        'currentPage'=> array('get_the_id'=>get_the_id(),'is_home'=>is_front_page(),'is_single'=>is_single())
+        'currentPage' => array('get_the_id' => get_the_id(), 'is_home' => is_front_page(), 'is_single' => is_single())
     ));
 }
 add_action('wp_head', 'live2D_style', 1);
@@ -97,7 +97,7 @@ add_action('rest_api_init', function () {
         'callback' => array($sdk, 'user_login'),
         'permission_callback' => '__return_true'
     ));
-    
+
     register_rest_route('live2d/v1', '/rollback_set', array(
         'methods' => 'POST',
         'callback' => array($sdk, 'rollback_set'),
@@ -161,7 +161,15 @@ function live2D_DefMod()
             <span class="fui-info-circle"><i class="fa-solid fa-circle-info"></i></span>
             <span class="fui-cross"><i class="fa-solid fa-circle-xmark"></i></span>
         </div>
-        <div class="gptInput"><input type="text" id="live2dChatText" /><span><button class="wp-element-button" id="live2dSend">发送</button></span></div>
+        <div class="gptInput">
+            <input type="text" id="live2dChatText" />
+            <span>
+                <button class="wp-element-button" id="live2dSend">发送</button>
+            </span>
+            <span style="width: 30px;font-size: 15px;display: flex;justify-content: center;align-items: center;">
+                <i id="live2dSendClose" class="fa-solid fa-circle-xmark"></i>
+            </span>
+        </div>
     </div>
     <script type="text/javascript">
         window.onload = initLive2dWeb();
