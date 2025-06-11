@@ -29,7 +29,7 @@ class live2d_SDK
     public function __construct()
     {
         $this->userInfo = get_option('live_2d_settings_user_token');
-        if(isset($this->userInfo["key"])){
+        if (isset($this->userInfo["key"])) {
             $this->apiKey = $this->userInfo["key"];
         }
     }
@@ -91,9 +91,9 @@ class live2d_SDK
         $signInfo = $this->JwtDecode($sign, $this->apiKey);
         if ($signInfo === 0) {
             $newToken = $this->get_refresh_token($sign);
-            if(!$newToken){
+            if (!$newToken) {
                 status_header(403);
-            }else{
+            } else {
                 status_header(200);
                 echo $newToken;
             }
@@ -124,13 +124,13 @@ class live2d_SDK
                 exit;
             }
 
-            if($decoded === 0){
+            if ($decoded === 0) {
                 error_log('JS验证成功但是已经过期');
                 $newToken = $this->get_refresh_token($token);
-                if(!$newToken){
+                if (!$newToken) {
                     error_log('JS验证失败Token获取时出错。');
                     status_header(403);
-                }else{
+                } else {
                     error_log('JS验证成功已获取到新Token: ' . $newToken);
                     status_header(200);
                     echo $newToken;
@@ -264,13 +264,18 @@ class live2d_SDK
     {
         if (!empty($this->userInfo["sign"])) {
             $result = $this->DoGet([], "Model/List", $this->userInfo["sign"]);
-            foreach ($result as &$value) {
-                $fileName = str_replace(array('/', '.'), '_', $value["name"]);
-                $sanfilename = sanitize_file_name($fileName);
-                $filePath = DOWNLOAD_DIR . $sanfilename;
-                $value["downloaded"] = file_exists($filePath);
+            if (is_array($result)) {
+                foreach ($result as &$value) {
+                    $fileName = str_replace(array('/', '.'), '_', $value["name"]);
+                    $sanfilename = sanitize_file_name($fileName);
+                    $filePath = DOWNLOAD_DIR . $sanfilename;
+                    $value["downloaded"] = file_exists($filePath);
+                }
+                return $result;
+            } else {
+                // 返回空数组或错误信息
+                return [];
             }
-            return $result;
         } else {
             return [];
         }

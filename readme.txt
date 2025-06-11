@@ -5,11 +5,16 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.8
 Requires at least: 5.5
-Stable tag: 1.9.15
+Stable tag: 1.9.16
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+
+= 1.9.16 = 
+- 对GPT API和样式进行了一些调整，GPT对话的时候不会因为鼠标事件导致消息被冲掉。
+- 由于服务端升级，所以旧版本将会出现严重重复的问题，只能更新到16版本才可以解决。
+- 感谢[kpoi](http://kpoi.cn/) 的反馈，一言难尽的错误已修复。
 
 = 1.9.15 = 
 - 本次更新将会把验证转移给Wordpress服务端。
