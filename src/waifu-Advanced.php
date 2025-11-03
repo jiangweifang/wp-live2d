@@ -21,6 +21,14 @@ class live2D_Advanced {
 		);
 
 		add_settings_field(
+			'idle_motion', // id
+			__('待机动画文件名','live-2d'), // title
+			array( $this, 'idle_motion_callback' ), // callback
+			'live-2d-advanced-admin', // page
+			'live_2d_advanced_setting_section' // section
+		);
+
+		add_settings_field(
 			'console_open_msg', // id
 			__('打开控制台提示','live-2d'), // title
 			array( $this, 'console_open_msg_callback' ), // callback
@@ -127,6 +135,11 @@ class live2D_Advanced {
 
 	public function live_2d_advanced_sanitize($input) {
 		$sanitary_values = array();
+
+		if ( isset( $input['idle_motion'] ) ) {
+			$sanitary_values['idle_motion'] = $input['idle_motion'] ;
+		}
+
 		if ( isset( $input['console_open_msg'] ) ) {
 			$sanitary_values['console_open_msg'] = $input['console_open_msg'] ;
 		}
@@ -185,6 +198,13 @@ class live2D_Advanced {
 
 		return $sanitary_values;
 	}
+
+	//待机动画文件名
+	public function idle_motion_callback() {
+		live2D_Utils::loopMsg('idle_motion','List');
+		echo '<p>'.esc_html__('待机动画文件名, 文件是*.motion3.json','live-2d').'</p>';
+	}
+
 	//控制台被打开提醒（支持多句随机）
 	public function console_open_msg_callback() {
 		live2D_Utils::loopMsg('console_open_msg','List');
