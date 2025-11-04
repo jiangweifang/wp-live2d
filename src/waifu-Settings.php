@@ -24,6 +24,11 @@ class live2D_Settings
 			$sanitary_values['modelAPI'] = "https://live2d.fghrsh.net/api/";
 		}
 
+		if (isset($input['modelDir'])) {
+			$sanitary_values['modelDir'] = $input['modelDir'];
+		} 
+
+
 		if (isset($input['tipsMessage'])) {
 			$sanitary_values['tipsMessage'] = sanitize_text_field($input['tipsMessage']);
 		}

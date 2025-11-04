@@ -148,8 +148,6 @@ class live2D_Settings_Base
             echo '<p>' . esc_html__('使用 Cubism Editor 4.2 或更高版本制作的模型请填写到模型根目录。','live-2d').'</p>';
             echo '<p>' . esc_html__('例如：https://live2dweb.domain.com/{此处是你的模型名称}/{模型名称}.model3.json','live-2d').'</p>';
             echo '<p>' . esc_html__('应填写为：https://live2dweb.domain.com/ ','live-2d').'</p>';
-        ?>
-        <?php
         } else {
         ?>
             <p>请完成登录后此项才可显示</p>
@@ -164,6 +162,7 @@ class live2D_Settings_Base
             isset($this->live_2d__options['modelId']) ? esc_attr($this->live_2d__options['modelId']) : ''
         );
         echo '<p>' . esc_html__('您可以在此处直接填写模型ID', 'live-2d') . '</p>';
+        echo '<p>' . esc_html__('使用旧版本 Cubism Editor 制作的模型请填写此项。','live-2d').'</p>';
     }
 
     public function modelTexturesId_callback()
@@ -173,6 +172,7 @@ class live2D_Settings_Base
             isset($this->live_2d__options['modelTexturesId']) ? esc_attr($this->live_2d__options['modelTexturesId']) : ''
         );
         echo '<p>' . esc_html__('您可以在此处直接填写皮肤ID', 'live-2d') . '</p>';
+        echo '<p>' . esc_html__('使用旧版本 Cubism Editor 制作的模型请填写此项。','live-2d').'</p>';
     }
 
     public function modelDir_callback()
