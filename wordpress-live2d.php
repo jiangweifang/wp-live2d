@@ -31,7 +31,8 @@ function live2D_style()
     wp_enqueue_style('fontawesome_css', LIVE2D_ASSETS . "fontawesome/css/all.min.css"); //css
     wp_enqueue_script('moment', LIVE2D_ASSETS . 'moment.min.js'); //
     wp_enqueue_script('live2dv1core', LIVE2D_ASSETS . 'live2dv1.min.js');
-    wp_enqueue_script('live2dv2core', $live2dSettings["sdkUrl"]);
+    //wp_enqueue_script('live2dv2core', $live2dSettings["sdkUrl"]);
+    wp_enqueue_script('live2dv2core', LIVE2D_ASSETS . 'r5b2-core/live2dcubismcore.min.js');
     wp_enqueue_script('live2dv2sdk', LIVE2D_ASSETS . 'live2dv2.min.js', array('live2dv2core'));
     wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'live2dv2sdk', 'moment'));
     wp_localize_script('live2dweb', 'live2d_settings', array(
