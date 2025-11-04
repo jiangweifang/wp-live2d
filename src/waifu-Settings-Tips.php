@@ -13,9 +13,9 @@ class live2D_Settings_Tips {
         );
 
         add_settings_field(
-            'showHitokoto', // id
+            'hitokoto_delay', // id
             __('启用一言','live-2d'), // title
-            array( $this, 'showHitokoto_callback' ), // callback
+            array( $this, 'hitokoto_delay_callback' ), // callback
             'live-2d-settings-tips', // page
             'live_2d_setting_tips_section' // section
         );
@@ -29,28 +29,20 @@ class live2D_Settings_Tips {
         );
 
         add_settings_field(
-            'showF12Status', // id
-            __('显示加载状态','live-2d'), // title
-            array( $this, 'showF12Status_callback' ), // callback
-            'live-2d-settings-tips', // page
-            'live_2d_setting_tips_section' // section
-        );
+			'idle_motion_delay', // id
+			__('待机动画延迟时间（毫秒）','live-2d'), // title
+			array( $this, 'idle_motion_delay_callback' ), // callback
+			'live-2d-settings-tips', // page
+			'live_2d_setting_tips_section' // section
+		);
 
         add_settings_field(
-            'showF12Message', // id
-            __('显示看板娘消息','live-2d'), // title
-            array( $this, 'showF12Message_callback' ), // callback
-            'live-2d-settings-tips', // page
-            'live_2d_setting_tips_section' // section
-        );
-
-        add_settings_field(
-            'showF12OpenMsg', // id
-            __('显示控制台打开提示','live-2d'), // title
-            array( $this, 'showF12OpenMsg_callback' ), // callback
-            'live-2d-settings-tips', // page
-            'live_2d_setting_tips_section' // section
-        );
+			'idle_motion', // id
+			__('待机动画文件名','live-2d'), // title
+			array( $this, 'idle_motion_callback' ), // callback
+			'live-2d-settings-tips', // page
+			'live_2d_setting_tips_section' // section
+		);
 
         add_settings_field(
             'showCopyMessage', // id
@@ -136,11 +128,12 @@ class live2D_Settings_Tips {
         
     }
 
-    public function showHitokoto_callback() {
-        ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['showHitokoto'] ) && $this->live_2d__options['showHitokoto'] === true ) ? 'checked' : '' ; ?>
-        <label for="showHitokoto-0"><input type="radio" name="live_2d_settings_option_name[showHitokoto]" id="showHitokoto-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('启用','live-2d') ?></label><br>
-        <?php $checked = ( isset( $this->live_2d__options['showHitokoto'] ) && $this->live_2d__options['showHitokoto'] === false ) ? 'checked' : '' ; ?>
-        <label for="showHitokoto-1"><input type="radio" name="live_2d_settings_option_name[showHitokoto]" id="showHitokoto-1" value="0" <?php echo $checked; ?>> <?php esc_html_e('禁用','live-2d') ?></label></fieldset> <?php
+    public function hitokoto_delay_callback() {
+        printf(
+            '<input type="number" name="live_2d_settings_option_name[hitokoto_delay]" id="hitokoto_delay" value="%s" min = "0" max="3600" > '.esc_html__('秒','live-2d').'
+            <p>'.esc_html__('待机动画延迟时间，单位为秒，默认值为30秒。如果设置为0，则禁用待机动画。','live-2d').'</p>',
+            isset( $this->live_2d__options['hitokoto_delay'] ) ? esc_attr( $this->live_2d__options['hitokoto_delay']) : 30
+        );
     }
 
     public function hitokotoAPI_callback() {
@@ -154,26 +147,20 @@ class live2D_Settings_Tips {
         </select> <?php
     }
 
-    public function showF12Status_callback() {
-        ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['showF12Status'] ) && $this->live_2d__options['showF12Status'] === true ) ? 'checked' : '' ; ?>
-        <label for="showF12Status-0"><input type="radio" name="live_2d_settings_option_name[showF12Status]" id="showF12Status-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('显示','live-2d') ?></label><br>
-        <?php $checked = ( isset( $this->live_2d__options['showF12Status'] ) && $this->live_2d__options['showF12Status'] === false ) ? 'checked' : '' ; ?>
-        <label for="showF12Status-1"><input type="radio" name="live_2d_settings_option_name[showF12Status]" id="showF12Status-1" value="0" <?php echo $checked; ?>> <?php esc_html_e('隐藏','live-2d') ?></label></fieldset> <?php
+    //待机动画延迟时间
+    public function idle_motion_delay_callback() {
+        printf(
+            '<input type="number" name="live_2d_settings_option_name[idle_motion_delay]" id="idle_motion_delay" value="%s" min = "0" max="3600" > '.esc_html__('秒','live-2d').'
+            <p>'.esc_html__('待机动画延迟时间，单位为秒，默认值为30秒。如果设置为0，则禁用待机动画。','live-2d').'</p>',
+            isset( $this->live_2d__options['idle_motion_delay'] ) ? esc_attr( $this->live_2d__options['idle_motion_delay']) : 30
+        );
     }
 
-    public function showF12Message_callback() {
-        ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['showF12Message'] ) && $this->live_2d__options['showF12Message'] === true ) ? 'checked' : '' ; ?>
-        <label for="showF12Message-0"><input type="radio" name="live_2d_settings_option_name[showF12Message]" id="showF12Message-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('显示','live-2d') ?></label><br>
-        <?php $checked = ( isset( $this->live_2d__options['showF12Message'] ) && $this->live_2d__options['showF12Message'] === false ) ? 'checked' : '' ; ?>
-        <label for="showF12Message-1"><input type="radio" name="live_2d_settings_option_name[showF12Message]" id="showF12Message-1" value="0" <?php echo $checked; ?>> <?php esc_html_e('隐藏','live-2d') ?></label></fieldset> <?php
-    }
-
-    public function showF12OpenMsg_callback() {
-        ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['showF12OpenMsg'] ) && $this->live_2d__options['showF12OpenMsg'] === true ) ? 'checked' : '' ; ?>
-        <label for="showF12OpenMsg-0"><input type="radio" name="live_2d_settings_option_name[showF12OpenMsg]" id="showF12OpenMsg-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('显示','live-2d') ?></label><br>
-        <?php $checked = ( isset( $this->live_2d__options['showF12OpenMsg'] ) && $this->live_2d__options['showF12OpenMsg'] === false ) ? 'checked' : '' ; ?>
-        <label for="showF12OpenMsg-1"><input type="radio" name="live_2d_settings_option_name[showF12OpenMsg]" id="showF12OpenMsg-1" value="0" <?php echo $checked; ?>> <?php esc_html_e('隐藏','live-2d') ?></label></fieldset> <?php
-    }
+    //待机动画文件名
+	public function idle_motion_callback() {
+		live2D_Utils::loopMsg('idle_motion','List',true,'live_2d_settings_option_name');
+		echo '<p>'.esc_html__('待机动画文件名, 文件是*.motion3.json','live-2d').'</p>';
+	}
 
     public function showCopyMessage_callback() {
         ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['showCopyMessage'] ) && $this->live_2d__options['showCopyMessage'] === true ) ? 'checked' : '' ; ?>

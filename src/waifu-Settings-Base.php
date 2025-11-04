@@ -57,7 +57,17 @@ class live2D_Settings_Base
             'live-2d-settings-base', // page
             'live_2d_setting_base_section' // section
         );
+
         if (!empty($this->userInfo["userLevel"]) && intval($this->userInfo["userLevel"]) > 0) {
+
+            add_settings_field(
+                'modelDir', // id
+                __('模型目录', 'live-2d'), // title
+                array($this, 'modelDir_callback'), // callback
+                'live-2d-settings-base', // page
+                'live_2d_setting_base_section' // section
+            );
+
             add_settings_field(
                 'modelZoomNumberV2', // id
                 __('模型缩放倍数', 'live-2d'), // title
@@ -135,6 +145,9 @@ class live2D_Settings_Base
                 '<input class="regular-text" type="url" name="live_2d_settings_option_name[modelAPI]" id="modelAPI" value="%s">',
                 isset($this->live_2d__options['modelAPI']) ? esc_attr($this->live_2d__options['modelAPI']) : ''
             );
+            echo '<p>' . esc_html__('使用 Cubism Editor 4.2 或更高版本制作的模型请填写到模型根目录。','live-2d').'</p>';
+            echo '<p>' . esc_html__('例如：https://live2dweb.domain.com/{此处是你的模型名称}/{模型名称}.model3.json','live-2d').'</p>';
+            echo '<p>' . esc_html__('应填写为：https://live2dweb.domain.com/ ','live-2d').'</p>';
         ?>
         <?php
         } else {
@@ -160,6 +173,12 @@ class live2D_Settings_Base
             isset($this->live_2d__options['modelTexturesId']) ? esc_attr($this->live_2d__options['modelTexturesId']) : ''
         );
         echo '<p>' . esc_html__('您可以在此处直接填写皮肤ID', 'live-2d') . '</p>';
+    }
+
+    public function modelDir_callback()
+    {
+        live2D_Utils::loopMsg('modelDir','List',true,'live_2d_settings_option_name');
+        echo '<p>' . esc_html__('可切换的模型名称，程序会通过Model API来按顺序获取模型的信息，请保证模型目录的名称和 model3.json 一致','live-2d').'</p>';
     }
 
     public function modelZoomNumberV2_callback()

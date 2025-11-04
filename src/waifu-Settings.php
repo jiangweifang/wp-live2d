@@ -104,20 +104,16 @@ class live2D_Settings
 			$sanitary_values['modelTexturesRandMode'] = $input['modelTexturesRandMode'];
 		}
 
-		if (isset($input['showHitokoto'])) {
-			$sanitary_values['showHitokoto'] = (bool)$input['showHitokoto'];
+		if (isset($input['hitokoto_delay'])) {
+			$sanitary_values['hitokoto_delay'] = (int)$input['hitokoto_delay'];
 		}
 
-		if (isset($input['showF12Status'])) {
-			$sanitary_values['showF12Status'] = (bool)$input['showF12Status'];
+		if (isset($input['idle_motion_delay'])) {
+			$sanitary_values['idle_motion_delay'] = (int)$input['idle_motion_delay'];
 		}
 
-		if (isset($input['showF12Message'])) {
-			$sanitary_values['showF12Message'] = (bool)$input['showF12Message'];
-		}
-
-		if (isset($input['showF12OpenMsg'])) {
-			$sanitary_values['showF12OpenMsg'] = (bool)$input['showF12OpenMsg'];
+		if (isset($input['idle_motion'])) {
+			$sanitary_values['idle_motion'] = $input['idle_motion'];
 		}
 
 		if (isset($input['showCopyMessage'])) {
