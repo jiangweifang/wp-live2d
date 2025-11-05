@@ -184,8 +184,8 @@ class live2D_Settings_Base
     public function modelZoomNumberV2_callback()
     {
         printf(
-            '<input type="number" name="live_2d_settings_option_name[modelPoint][zoom]" id="modelZoomNumberV2" value="%s" step="0.1" min="1.0" max="10.0" />
-            <p>' . esc_html__('设置看板娘在画框中的缩放比例，最小1倍，最大10倍，可以有小数点', 'live-2d') . '</p>',
+            '<input type="number" name="live_2d_settings_option_name[modelPoint][zoom]" id="modelZoomNumberV2" value="%s" step="0.1" min="1.0" max="5.0" />
+            <p>' . esc_html__('设置看板娘在画框中的缩放比例，最小1倍，最大5倍，可以有小数点', 'live-2d') . '</p>',
             isset($this->live_2d__options['modelPoint']['zoom']) ? esc_attr($this->live_2d__options['modelPoint']['zoom']) : '1.0'
         );
     }
