@@ -7,11 +7,12 @@ add_action("wp_ajax_zip_model", array(new live2d_SDK, 'OpenZip'));
 //清理文件ajax
 add_action("wp_ajax_clear_files", array(new live2d_SDK, 'ClearFiles'));
 //获取下方材质的ajax
+add_action("wp_ajax_get_model_list", array(new live2d_SDK, 'GetModelMotions'));
+//获取下方材质的ajax
 add_action("wp_ajax_get_texture_list", array(new live2d_SDK, 'GetTextureList'));
 //标记下载完成
 add_action("wp_ajax_downloaded", array(new live2d_SDK, 'Downloaded'));
-//获取新模型的可用动作列表
-add_action("wp_ajax_get_motions", array(new live2d_SDK, 'GetModelMotions'));
+
 
 class live2d_Shop
 {

@@ -281,11 +281,17 @@ class live2d_SDK
         }
     }
 
+    public function GetModelMotions()
+    {
+        $result = $this->GetModelList();
+        wp_send_json($result);
+    }
+
     public function GetTextureList()
     {
         $param = ['modelId' => $_POST["modelId"]];
         $result = $this->DoGet($param, "Model/Textures", $this->userInfo["sign"]);
-        echo json_encode($result);
+        wp_send_json($result);
     }
 
     /**
@@ -334,8 +340,6 @@ class live2d_SDK
             echo 0;
         }
     }
-
-    public function GetModelMotions() {}
 
     //排查错误使用
     public function Save_Options($value)
