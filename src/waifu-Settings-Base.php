@@ -227,7 +227,7 @@ class live2D_Settings_Base
             '<input class="regular-text" type="text" name="live_2d_settings_option_name[shaderDir]" id="shaderDir" value="%s">',
             isset($this->live_2d__options['shaderDir']) ? esc_attr($this->live_2d__options['shaderDir']) : plugin_dir_url(dirname(__FILE__)) . 'Framework/Shaders/WebGL/'
         );
-        echo '<p>' . esc_html__('这个路径是 WebGLShader 代码的位置，请勿随意修改。', 'live-2d') .'<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGLShader" target="_blank">了解更多信息</a>'. '</p>';
+        echo '<p>' . esc_html__('这个路径是 WebGLShader 代码的位置，请勿随意修改。', 'live-2d') .'<a href="https://developer.mozilla.org/docs/Web/API/WebGLShader" target="_blank">了解更多信息</a>'. '</p>';
 
     }
 }
