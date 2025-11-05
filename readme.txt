@@ -5,11 +5,19 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.8
 Requires at least: 5.5
-Stable tag: 1.9.16
+Stable tag: 2.0.0
 Requires PHP: 7.4
 License: GPLv3
 
 == Changelog ==
+
+= 2.0.0 R5 beta2 = 
+- Live2D SDK 升级至 Cubism 5 SDK for Web R5 测试第二版
+- 本次升级后 Live2D 将会更积极的使用显卡进行驱动而不是使用CPU
+- 新增：Live2D Cubism Editor 5 以上版本的模型切换功能，点击`眼睛按钮`可以进行切换模型。
+- 新增：待机一段时间后（鼠标、键盘在 document 区域静止不动）模型会进入`可以设置的`待机状态。
+- 变更：使用 Live2D Cubism Editor 5 以上版本的模型API路径有所改变，请在设置时注意。
+- 需要注意：新测试版本SDK需要使用Shaders着色器，因为需要加载模型，所以需要一个相对路径，路径为：`./wp-content/plugins/live-2d/Framework/Shaders/WebGL/` 请勿变更插件保存的位置，请务必注意是否开启了全站 URLRewrite
 
 = 1.9.16 = 
 - 对GPT API和样式进行了一些调整，GPT对话的时候不会因为鼠标事件导致消息被冲掉。
