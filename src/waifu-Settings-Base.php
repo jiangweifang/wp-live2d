@@ -91,6 +91,14 @@ class live2D_Settings_Base
                 'live-2d-settings-base', // page
                 'live_2d_setting_base_section' // section
             );
+
+            add_settings_field(
+                'shaderDir', // id
+                __('WebGLShader 引用地址', 'live-2d'), // title
+                array($this, 'shaderDir_callback'), // callback
+                'live-2d-settings-base', // page
+                'live_2d_setting_base_section' // section
+            );
         }
     }
 
@@ -211,6 +219,16 @@ class live2D_Settings_Base
         <p>' . esc_html__('软件许可协议：', 'live-2d')
             . '<a href = "https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html" target="_blank">Live2D Proprietary Software License Agreement</a> 
         | <a href = "https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html" target="_blank">Live2D Open Software License Agreement</a> </p>';
+    }
+
+    public function shaderDir_callback()
+    {
+        printf(
+            '<input class="regular-text" type="text" name="live_2d_settings_option_name[shaderDir]" id="shaderDir" value="%s">',
+            isset($this->live_2d__options['shaderDir']) ? esc_attr($this->live_2d__options['shaderDir']) : plugin_dir_url(dirname(__FILE__)) . 'Framework/Shaders/WebGL/'
+        );
+        echo '<p>' . esc_html__('这个路径是 WebGLShader 代码的位置，请勿随意修改。', 'live-2d') .'<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGLShader" target="_blank">了解更多信息</a>'. '</p>';
+
     }
 }
 ?>

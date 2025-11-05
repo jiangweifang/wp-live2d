@@ -61,6 +61,12 @@ class live2D_Settings
 			$sanitary_values['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
 		}
 
+		if (isset($input['shaderDir'])) {
+			$sanitary_values['shaderDir'] = sanitize_text_field($input['shaderDir']);
+		} else {
+			$sanitary_values['shaderDir'] = plugin_dir_url(dirname(__FILE__)) . 'Framework/Shaders/WebGL/';
+		}
+
 		if (isset($input['showToolMenu'])) {
 			$sanitary_values['showToolMenu'] = (bool)$input['showToolMenu'];
 		}
