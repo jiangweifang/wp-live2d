@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
 require_once(dirname(__FILE__)  . '/waifu-Advanced.php');
 require_once(dirname(__FILE__)  . '/waifu-Settings.php');
 require_once(dirname(__FILE__)  . '/waifu-Settings-Style.php');
@@ -69,6 +72,7 @@ class live2D
 			),
 			'homeUrl' => get_home_url(),
 			'settings' => get_option('live_2d_settings_option_name'),
+			'nonce' => wp_create_nonce('live2d_shop_action'),
 		));
 		wp_add_inline_script(
 			'admin_js',

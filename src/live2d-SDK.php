@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit; // 阻止直接访问
+}
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 require_once(__DIR__  . '/jwt/BeforeValidException.php');
 require_once(__DIR__  . '/jwt/CachedKeySet.php');
@@ -22,6 +25,11 @@ define('IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2] . "/wordpress-liv
 define('API_URL', "https://api.live2dweb.com"); //API地址
 define('DOMAIN', "https://www.live2dweb.com"); //API地址
 define('DOWNLOAD_DIR', plugin_dir_path(dirname(__FILE__)) . 'model/'); //服务器下载的路径
+// V1 模型 zip 直链。对齐 Chromium 扩展 v1ModelCache.ts 的 ZIP_BASE:
+//   GET http://download.live2dweb.com/model/{modelName}.zip,需要 Bearer {sign}
+// 注意:下载域名是 http(不是 https),路径 model 全小写;与 api.live2dweb.com
+// 不是同一个服务,不要随手改回 https 或 /Model。
+define('LIVE2D_V1_ZIP_BASE', 'http://download.live2dweb.com/model');
 class live2d_SDK
 {
     private $userInfo;
@@ -76,10 +84,8 @@ class live2d_SDK
 
     public function rollback_set($request)
     {
-        $homeUrl = get_home_url();
-        $errCode = intval($request["errorCode"]);
-        $sign = $request["sign"];
-        $key = $request["key"];
+        // 预留接口, 当前未实现; 调用者不应依赖返回值.
+        return new WP_Error('not_implemented', 'rollback_set is not implemented', array('status' => 501));
     }
     /**
      * 刷新token
@@ -167,93 +173,155 @@ class live2d_SDK
     }
 
     /**
-     * 下载一个指定ID的模型
+     * V1 模型清单(对齐 Chromium 扩展 v1Catalog.ts 中的 V1_CATALOG)。
+     *  - name:与 download.live2dweb.com/model/{name}.zip 路由一致,
+     *         也是 *.textures.json 的文件前缀,严禁改写。
+     *  - label:UI 显示名。
+     *  - texturesJson:扩展自带 assets/v1/{name}.textures.json 时为 true。
+     *  - thumbnail:相对插件 assets/ 的预览图路径。
+     *  - skins:「1 ID 多皮肤」型(子目录区分独立模型)的可选项,与 texturesJson 互斥。
      */
-    public function DownloadModel()
+    public static function GetV1Catalog()
     {
-        $modelId = intval($_POST["modelId"]);
-        if (!empty($this->userInfo["sign"])) {
-            $param = ['id' => $modelId];
-            $result = $this->DoPost($param, "Model/ModelInfo", $this->userInfo["sign"]);
-            if (isset($result) && !empty($result["modelName"])) {
-                if (!file_exists(DOWNLOAD_DIR) && !mkdir(DOWNLOAD_DIR, 0777, true)) {
-                    echo json_encode(array(
-                        'errorCode' => 9500,
-                        'errorMsg' => '文件夹创建失败'
-                    ));
-                    error_log('DownloadModel:[9500]文件夹创建失败');
-                }
-                $fileUrl = $result["fileUrl"];
-                $tmpfname = wp_tempnam($fileUrl);
-                error_log('DownloadModel:[开始下载 ' . $fileUrl . ']');
-                error_log('DownloadModel:[Origin ' . get_home_url() . ']');
-                error_log('DownloadModel:[临时文件 ' . $tmpfname . ']');
+        return array(
+            array('name' => 'bilibili-live_22',       'label' => 'Bilibili 22 娘',                'texturesJson' => true,  'thumbnail' => 'v1/imgs/bilibili-live_22.png'),
+            array('name' => 'bilibili-live_33',       'label' => 'Bilibili 33 娘',                'texturesJson' => true,  'thumbnail' => 'v1/imgs/bilibili-live_33.png'),
+            array('name' => 'Potion-Maker_Pio',       'label' => 'Potion Maker · Pio',            'texturesJson' => true,  'thumbnail' => 'v1/imgs/Potion-Maker_Pio.png'),
+            array('name' => 'Potion-Maker_Tia',       'label' => 'Potion Maker · Tia',            'texturesJson' => true,  'thumbnail' => 'v1/imgs/Potion-Maker_Tia.png'),
+            array(
+                'name' => 'HyperdimensionNeptunia',
+                'label' => '超次元海莉娜 (Hyperdimension Neptunia)',
+                'texturesJson' => false,
+                'thumbnail' => 'v1/imgs/HyperdimensionNeptunia.png',
+                'skins' => array(
+                    'blanc_classic', 'blanc_normal', 'blanc_swimwear',
+                    'general', 'histoire', 'histoirenohover',
+                    'nepgear', 'nepgearswim', 'nepgear_extra',
+                    'nepmaid', 'nepnep', 'nepswim',
+                    'neptune_classic', 'neptune_santa',
+                    'noir', 'noireswim', 'noir_classic', 'noir_santa',
+                    'vert_classic', 'vert_normal', 'vert_swimwear',
+                ),
+            ),
+            array(
+                'name' => 'KantaiCollection',
+                'label' => '舰これ (Kantai Collection)',
+                'texturesJson' => false,
+                'thumbnail' => 'v1/imgs/KantaiCollection.png',
+                'skins' => array('murakumo'),
+            ),
+            array(
+                'name' => 'ShizukuTalk',
+                'label' => 'Shizuku Talk',
+                'texturesJson' => false,
+                'thumbnail' => 'v1/imgs/ShizukuTalk.png',
+                'skins' => array('shizuku-48', 'shizuku-pajama'),
+            ),
+        );
+    }
 
-                $response = wp_safe_remote_get($fileUrl, array(
-                    'headers' => array(
-                        'Authorization' => 'Bearer ' . $this->userInfo["sign"],
-                        'Origin' =>  get_home_url(),
-                        'Host' => 'download.live2dweb.com',
-                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
-                        'Accept' => '*/*',
-                        'Accept-Encoding' => 'gzip, deflate, br',
-                        'Connection' => 'keep-alive',
-                    ),
-                    'timeout' => 300,
-                    'stream' => true,
-                    'filename' => $tmpfname
-                ));
-
-                if (is_wp_error($response)) {
-                    echo json_encode(array(
-                        'errorCode' => 500,
-                        'errorMsg' => $response->get_error_message()
-                    ));
-                    error_log('DownloadModel:[请求失败: ' . $response->get_error_message() . ']');
-                } else {
-                    $httpCode = wp_remote_retrieve_response_code($response);
-                    if ($httpCode === 401 || $httpCode === 403) {
-                        echo json_encode(array(
-                            'errorCode' => $httpCode,
-                            'errorMsg' => '服务器未授权此访问'
-                        ));
-                        error_log('DownloadModel:[请求失败: ' . $httpCode . ']服务器未授权此访问');
-                    } elseif ($httpCode === 200) {
-                        // 文件已自动保存到$tmpfname，无需再手动写入
-                        $modelName = str_replace(array('/', '.'), '_', $result["modelName"]);
-                        $fileName = urlencode($modelName) . ".zip";
-                        $sanfilename = sanitize_file_name($fileName);
-
-                        // 将临时文件移动到目标位置
-                        rename($tmpfname, DOWNLOAD_DIR . $sanfilename);
-                        error_log('DownloadModel:[文件保存到 ' . DOWNLOAD_DIR . $sanfilename . ']');
-                        // 设置文件权限
-                        chmod(DOWNLOAD_DIR . $sanfilename, 0777);
-
-                        // 验证文件MD5是否正确
-                        $downloaded_md5 = md5_file(DOWNLOAD_DIR . $sanfilename);
-                        if ($result["fileMd5"] === $downloaded_md5) {
-                            error_log('DownloadModel:[文件MD5校验成功]');
-                        } else {
-                            error_log('DownloadModel:[文件MD5校验失败]');
-                        }
-
-                        echo json_encode(array(
-                            'errorCode' => 200,
-                            'fileName' => $sanfilename
-                        ));
-                    }
-                }
-            } else {
-                echo json_encode($result);
-            }
-        } else {
-            echo json_encode(array(
-                'errorCode' => 9500,
-                'errorMsg' => '没有登录信息'
-            ));
-            error_log('DownloadModel:[9500]没有登录信息');
+    /**
+     * V1 模型下载(对齐 Chromium 扩展 v1ModelCache.ts 的 downloadAndCacheV1Model 行为):
+     *   1. 由前端传入 catalog 中的 modelName,而不是 modelId,免去 Model/ModelInfo 一次往返。
+     *   2. 直接 GET LIVE2D_V1_ZIP_BASE/{name}.zip,Bearer 用本地保存的 sign。
+     *   3. zip 落到 DOWNLOAD_DIR/{name}.zip,等前端再发 zip_model 调 OpenZip 解压。
+     * 解压依旧由 PHP ZipArchive 处理,前端不做任何解压。
+     */
+    public function DownloadV1Model()
+    {
+        $this->verify_admin_ajax('live2d_shop_action');
+        $rawName = isset($_POST['modelName']) ? wp_unslash($_POST['modelName']) : '';
+        $modelName = $this->ResolveV1ModelName($rawName);
+        if ($modelName === '') {
+            wp_send_json(array('errorCode' => 9400, 'errorMsg' => '未知的 V1 模型名'));
+            return;
         }
+        if (empty($this->userInfo['sign'])) {
+            wp_send_json(array('errorCode' => 9500, 'errorMsg' => '没有登录信息'));
+            error_log('DownloadV1Model:[9500]没有登录信息');
+            return;
+        }
+        if (!file_exists(DOWNLOAD_DIR) && !mkdir(DOWNLOAD_DIR, 0777, true)) {
+            wp_send_json(array('errorCode' => 9500, 'errorMsg' => '文件夹创建失败'));
+            error_log('DownloadV1Model:[9500]文件夹创建失败');
+            return;
+        }
+
+        $fileUrl = LIVE2D_V1_ZIP_BASE . '/' . rawurlencode($modelName) . '.zip';
+        $tmpfname = wp_tempnam($fileUrl);
+        error_log('DownloadV1Model:[开始下载 ' . $fileUrl . ']');
+        error_log('DownloadV1Model:[Origin ' . get_home_url() . ']');
+        error_log('DownloadV1Model:[临时文件 ' . $tmpfname . ']');
+
+        $response = wp_safe_remote_get($fileUrl, array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $this->userInfo['sign'],
+                'Origin'        => get_home_url(),
+                'Host'          => 'download.live2dweb.com',
+                'User-Agent'    => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+                'Accept'        => '*/*',
+                'Connection'    => 'keep-alive',
+            ),
+            'timeout'  => 300,
+            'stream'   => true,
+            'filename' => $tmpfname,
+        ));
+
+        if (is_wp_error($response)) {
+            @unlink($tmpfname);
+            wp_send_json(array('errorCode' => 500, 'errorMsg' => $response->get_error_message()));
+            error_log('DownloadV1Model:[请求失败: ' . $response->get_error_message() . ']');
+            return;
+        }
+        $httpCode = wp_remote_retrieve_response_code($response);
+        if ($httpCode === 401 || $httpCode === 403) {
+            @unlink($tmpfname);
+            wp_send_json(array('errorCode' => $httpCode, 'errorMsg' => '服务器未授权此访问'));
+            error_log('DownloadV1Model:[请求失败: ' . $httpCode . ']服务器未授权此访问');
+            return;
+        }
+        if ($httpCode !== 200) {
+            @unlink($tmpfname);
+            wp_send_json(array('errorCode' => $httpCode, 'errorMsg' => '下载失败 HTTP ' . $httpCode));
+            error_log('DownloadV1Model:[请求失败: HTTP ' . $httpCode . ']');
+            return;
+        }
+
+        // 写到 model/{name}.zip,与 OpenZip 的入参约定保持一致(zip 同名 + 解压目录同名)。
+        $sanfilename = sanitize_file_name($modelName . '.zip');
+        $targetPath  = DOWNLOAD_DIR . $sanfilename;
+        if (!@rename($tmpfname, $targetPath)) {
+            @unlink($tmpfname);
+            wp_send_json(array('errorCode' => 9501, 'errorMsg' => '保存文件失败'));
+            error_log('DownloadV1Model:[9501]保存文件失败 ' . $targetPath);
+            return;
+        }
+        @chmod($targetPath, 0777);
+        error_log('DownloadV1Model:[文件保存到 ' . $targetPath . ']');
+
+        wp_send_json(array(
+            'errorCode' => 200,
+            'fileName'  => $sanfilename,
+            'modelName' => $modelName,
+        ));
+    }
+
+    /**
+     * 把前端传入的 modelName 校验为 V1 catalog 中的合法条目,防止任意 URL 拼接。
+     * 通过则返回 catalog 中的精确 name(大小写敏感),否则返回空串。
+     */
+    private function ResolveV1ModelName($candidate)
+    {
+        $candidate = is_string($candidate) ? trim($candidate) : '';
+        if ($candidate === '') {
+            return '';
+        }
+        foreach (self::GetV1Catalog() as $item) {
+            if ($item['name'] === $candidate) {
+                return $item['name'];
+            }
+        }
+        return '';
     }
 
     /**
@@ -283,13 +351,15 @@ class live2d_SDK
 
     public function GetModelMotions()
     {
+        $this->verify_admin_ajax('live2d_shop_action');
         $result = $this->GetModelList();
         wp_send_json($result);
     }
 
     public function GetTextureList()
     {
-        $param = ['modelId' => $_POST["modelId"]];
+        $this->verify_admin_ajax('live2d_shop_action');
+        $param = ['modelId' => intval($_POST["modelId"])];
         $result = $this->DoGet($param, "Model/Textures", $this->userInfo["sign"]);
         wp_send_json($result);
     }
@@ -299,27 +369,40 @@ class live2d_SDK
      */
     public function OpenZip()
     {
+        $this->verify_admin_ajax('live2d_shop_action');
         $zip = new ZipArchive;
         $sanfilename = sanitize_file_name($_POST["fileName"]);
         $zipFile = DOWNLOAD_DIR . $sanfilename;
         $zipFileName = pathinfo($zipFile, PATHINFO_FILENAME);
+        $extractTarget = DOWNLOAD_DIR . $zipFileName;
         $res = $zip->open($zipFile);
         if ($res === TRUE) {
-            $zip->extractTo(DOWNLOAD_DIR . '/' . $zipFileName);
+            // 防 zip slip: 逐条校验条目, 任一跳出目录则拒绝解压
+            for ($i = 0, $n = $zip->numFiles; $i < $n; $i++) {
+                $entryName = $zip->getNameIndex($i);
+                if ($entryName === false) {
+                    $zip->close();
+                    @unlink($zipFile);
+                    error_log('OpenZip:[读取 zip 条目失败]');
+                    echo 0;
+                    return;
+                }
+                // 拒绝绝对路径与 ../ 跳转
+                if (strpos($entryName, '..') !== false || strpos($entryName, '/..') !== false || preg_match('#^([a-zA-Z]:)?[\\/]#', $entryName)) {
+                    $zip->close();
+                    @unlink($zipFile);
+                    error_log('OpenZip:[检测到非法条目路径: ' . $entryName . ']');
+                    echo 0;
+                    return;
+                }
+            }
+            $zip->extractTo($extractTarget);
             $zip->close();
-            unlink($zipFile);
+            @unlink($zipFile);
             echo 1;
         } else {
             echo 0;
         }
-    }
-
-    public function Downloaded()
-    {
-        $modelId = intval($_POST["modelId"]);
-        $param = ['id' => $modelId];
-        $result = $this->DoPost($param, "Model/Downloaded", $this->userInfo["sign"]);
-        echo json_encode($result);
     }
 
     /**
@@ -328,17 +411,38 @@ class live2d_SDK
      */
     public function ClearFiles()
     {
-        if (!current_user_can("delete_plugins")) {
+        $this->verify_admin_ajax('live2d_shop_action');
+        if (!current_user_can('manage_options')) {
             echo 0;
+            return;
         }
         $sanfilename = sanitize_file_name($_POST["fileName"]);
         $filePath = DOWNLOAD_DIR . $sanfilename;
-        if (file_exists($filePath)) {
-            unlink($filePath);
+        // 确保路径仍位于下载目录之内
+        $realDir = realpath(DOWNLOAD_DIR);
+        $realFile = realpath($filePath);
+        if ($realDir === false || $realFile === false || strpos($realFile, $realDir) !== 0) {
+            echo 0;
+            return;
+        }
+        if (file_exists($realFile)) {
+            unlink($realFile);
             echo 1;
         } else {
             echo 0;
         }
+    }
+
+    /**
+     * 统一的后台 AJAX 鉴权: 要求登录 + 管理员权限 + nonce 有效
+     */
+    private function verify_admin_ajax($action)
+    {
+        if (!is_user_logged_in() || !current_user_can('manage_options')) {
+            wp_send_json_error(array('errorCode' => 403, 'errorMsg' => 'forbidden'), 403);
+        }
+        // check_ajax_referer 在失败时会自动调 wp_die
+        check_ajax_referer($action, '_wpnonce');
     }
 
     //排查错误使用
@@ -421,7 +525,6 @@ class live2d_SDK
             'http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata' => intval($this->userInfo["userLevel"]),
         ];
         $jwt = JWT::encode($payload, $key, 'HS256');
-        error_log('JWT DEBUG: ' . json_encode($key) . '$payload: ' . json_encode($payload) . ' $jwt: ' . $jwt);
         return $jwt;
     }
 

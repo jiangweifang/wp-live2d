@@ -11,9 +11,14 @@
  * Domain Path: /languages
  */
 
+if (!defined('ABSPATH')) {
+    exit; // 阻止直接访问
+}
+
 //定义目录
 define('LIVE2D_ASSETS', plugin_dir_url(__FILE__) . 'assets/'); //资源目录
 define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)) . '/languages'); //基础目录
+define('LIVE2D_VERSION', '2.0.0'); //资源版本号, 用于缓存破坏
 
 // 加载设置组件
 include_once(dirname(__FILE__)  . '/src/live2d-Main.php');
@@ -58,13 +63,12 @@ function live_2d_install()
     $live_2d_Settings->install_Default_Advanced();
 }
 
-// 停用插件
+// 停用插件 — 注意: 停用不应删除用户配置, 仅卸载时清理.
 register_deactivation_hook(__FILE__, 'live_2d_stop');
 function live_2d_stop()
 {
-    delete_option('live_2d_settings_option_name');
-    //delete_option( 'live_2d_advanced_option_name' );
-    delete_option('live_2d_settings_user_token');
+    // 故意留空: 停用插件保留用户设置, 重新启用时无需重新配置.
+    // 如需彻底清理请使用 "删除" (uninstall) 操作, 见 live_2d_uninstall().
 }
 
 //卸载插件
@@ -96,12 +100,6 @@ add_action('rest_api_init', function () {
     register_rest_route('live2d/v1', '/token', array(
         'methods' => 'POST',
         'callback' => array($sdk, 'user_login'),
-        'permission_callback' => '__return_true'
-    ));
-
-    register_rest_route('live2d/v1', '/rollback_set', array(
-        'methods' => 'POST',
-        'callback' => array($sdk, 'rollback_set'),
         'permission_callback' => '__return_true'
     ));
 
@@ -173,7 +171,9 @@ function live2D_DefMod()
         </div>
     </div>
     <script type="text/javascript">
-        window.onload = initLive2dWeb();
+        if (typeof initLive2dWeb === 'function') {
+            window.addEventListener('load', initLive2dWeb);
+        }
     </script>
 <?php
 }
@@ -182,8 +182,8 @@ function live_2d_link($url, $text = '', $ext = '')
 {
     if (empty($text)) $text = $url;
     $button = stripos($ext, 'button') !== false ? " class='button'" : "";
-    $target = stripos($ext, 'blank') !== false ? " target='_blank'" : "";
-    $link = "<a href='{$url}'{$button}{$target}>{$text}</a>";
+    $target = stripos($ext, 'blank') !== false ? " target='_blank' rel='noopener noreferrer'" : "";
+    $link = "<a href='" . esc_url($url) . "'{$button}{$target}>" . esc_html($text) . "</a>";
     return stripos($ext, 'p') !== false ? "<p>{$link}</p>" : "{$link} ";
 }
 

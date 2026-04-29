@@ -38,7 +38,9 @@ class Live2D_Widget extends WP_Widget
             <div class="gptInput"><input type="text" id="live2dChatText" /><span><button class="wp-element-button" id="live2dSend">发送</button></span></div>
         </div>
         <script type="text/javascript">
-            window.onload = initLive2dWeb();
+            if (typeof initLive2dWeb === 'function') {
+                window.addEventListener('load', initLive2dWeb);
+            }
         </script>
     <?php
         echo $after_widget;

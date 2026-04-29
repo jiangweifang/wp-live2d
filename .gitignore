@@ -3,3 +3,4 @@
 .svn
 assets/*.map
 model/*.*
+/.vs
