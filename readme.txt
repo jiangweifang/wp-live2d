@@ -1,14 +1,16 @@
 === Live2DWebCanvas ===
 
-Contributors: Weifang Chiang
+Contributors: jiangweifang
 Donate link: https://github.com/jiangweifang/wp-live2d
-Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
+Tags: live2d, vtuber, anime, animation, chatgpt
 Tested up to: 6.8
 Requires at least: 5.5
 Stable tag: 2.1.0
 Requires PHP: 7.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT
+
+在 WordPress 站点嵌入 Live2D 看板娘小部件，支持 Cubism 2/3/4/5 模型，后台可视化配置 waifu-tips，无需改代码。
 
 == Changelog ==
 
