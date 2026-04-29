@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
 require_once(dirname(__FILE__)  . '/waifu-Advanced.php');
 require_once(dirname(__FILE__)  . '/waifu-Settings.php');
 require_once(dirname(__FILE__)  . '/waifu-Settings-Style.php');
@@ -61,6 +64,9 @@ class live2D
 		);
 		wp_enqueue_script('wp-color-picker-alpha');
 		wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu-admin.min.js');
+		// admin 端传给 JS 的 settings 原样下发: live2d-admin.ts 需要 apiType 的
+		// 三态字符串 ('local'|'remote'|'custom') 驱动表单动态切换。
+		// 前端 live2dweb (wordpress-live2d.php) 则单独压成 bool供运行时使用。
 		wp_localize_script('admin_js', 'settings', array(
 			'userInfo' => array(
 				'sign' => isset($live2dUserInfo["sign"]) ? $live2dUserInfo["sign"] : '',
@@ -69,10 +75,25 @@ class live2D
 			),
 			'homeUrl' => get_home_url(),
 			'settings' => get_option('live_2d_settings_option_name'),
+			'nonce' => wp_create_nonce('live2d_shop_action'),
 		));
+		// admin_js 是 ES module(import/export),需要 type="module" 否则浏览器 SyntaxError;
+		// 同时 inline 调用必须等 module 加载完成后才能看见 window.live2dSettings.
+		live2d_mark_script_as_module('admin_js');
 		wp_add_inline_script(
 			'admin_js',
-			'jQuery( function() { live2dSettings(); } );'
+			'(function(){
+				var tryRun = function(retry){
+					if (typeof window.live2dSettings === "function") {
+						window.live2dSettings();
+					} else if (retry > 0) {
+						setTimeout(function(){ tryRun(retry - 1); }, 50);
+					} else {
+						console.warn("live2dSettings 加载超时,Tab 切换可能不可用。");
+					}
+				};
+				if (window.jQuery) { jQuery(function(){ tryRun(40); }); } else { tryRun(40); }
+			})();'
 		);
 ?>
 		<div class="wrap">

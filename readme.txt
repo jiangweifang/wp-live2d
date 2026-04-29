@@ -5,11 +5,21 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: Live2D,看板娘,萌,moe,vtuber,comic,anime,live,2d,animation,ChatGPT
 Tested up to: 6.8
 Requires at least: 5.5
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 Requires PHP: 7.4
-License: GPLv3
+License: MIT
+License URI: https://opensource.org/licenses/MIT
 
 == Changelog ==
+
+= 2.1.0 =
+- 新增：内置本地 V1 模型 API（`/wp-json/live2d/v1/model/*`），Pio / Tia / 22 / 33 等经典 moc 模型不再依赖 fghrsh.net 等第三方接口，完全本地化运行。
+- 新增：创意工坊 API 类型升级为三态（本地 / 远程创意工坊 / 自定义），其中“本地”选项免费开放，未购买授权也可使用 V1 模型。
+- 新增：`assets/v1/` 内置常见 V1 模型的 `textures.json` 与预览图，首次启用插件即可开箱使用。
+- 优化：`live2d-SDK.php` 重构 V1 模型下载与解压链路，新增 zip-slip 防御和失败回收，创意工坊下载更稳定。
+- 优化：多语言系统重做，新增 `languages/build-i18n.py` 自动构建脚本与 `translations.json`，补全大量翻译条目，新增日语 (ja) 翻译。
+- 修复：一批 PHP 安全告警与设置页 / 创意工坊 AJAX 的 nonce 竞态问题。
+- 变更：同步升级 Live2D Cubism 5 SDK for Web R5 第二版产物与 Shaders 着色器（`Framework/Shaders/WebGL/`），请勿删改 Shaders 目录。
 
 = 2.0.0 R5 beta2 = 
 - Live2D SDK 升级至 Cubism 5 SDK for Web R5 测试第二版
@@ -347,8 +357,8 @@ License: GPLv3
 
   [2]: https://github.com/journey-ad/live2d_src "基于 #fea64e4 的修改版"
   
-- 请遵循GPL v3.0授权协议
-- Live2DWebCanvas 插件不属于 Live2D Inc. 它是一个非官方产品
+- 本插件本体遵循 MIT 许可证（见 LICENSE 文件）。上游 live2d_src 原作品仍受其 GPL v2.0 约束，请保留其原始版权与许可声明。
+- Live2DWebCanvas 插件不属于 Live2D Inc. 它是一个非官方产品。
 
 ## 软件许可协议
 

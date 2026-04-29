@@ -25,15 +25,17 @@ class live2D_Settings_Base
                 'live-2d-settings-base', // page
                 'live_2d_setting_base_section' // section
             );
-
-            add_settings_field(
-                'apiType', // id
-                __('API 方式', 'live-2d'), // title
-                array($this, 'apiType_callback'), // callback
-                'live-2d-settings-base', // page
-                'live_2d_setting_base_section' // section
-            );
         }
+
+        // apiType 三选项中 'local' 不需要登录/付费即可使用,因此把整个 radio 字段
+        // 移出 userLevel>0 的付费门槛,让未登录用户也能切到 'local' 直接用本地模型。
+        add_settings_field(
+            'apiType', // id
+            __('API 方式', 'live-2d'), // title
+            array($this, 'apiType_callback'), // callback
+            'live-2d-settings-base', // page
+            'live_2d_setting_base_section' // section
+        );
         add_settings_field(
             'modelAPI', // id
             __('模型 API', 'live-2d'), // title
@@ -60,6 +62,8 @@ class live2D_Settings_Base
 
         if (!empty($this->userInfo["userLevel"]) && intval($this->userInfo["userLevel"]) > 0) {
 
+            // modelDir 始终 register;实际可见性交给 live2d-admin.ts
+            // 根据 apiType 三态(local/remote/custom + .json 结尾判断)动态切换。
             add_settings_field(
                 'modelDir', // id
                 __('模型目录', 'live-2d'), // title
@@ -112,22 +116,47 @@ class live2D_Settings_Base
 
     public function apiType_callback()
     {
+        // apiType 三态字符串,详见 src/live2d-V1Api.php live2d_normalize_api_type()。
+        // 旧 DB 里 bool true→'local'、false→'remote';新 'custom' 用于 .model3.json / V3 目录。
+        $current = function_exists('live2d_normalize_api_type')
+            ? live2d_normalize_api_type(isset($this->live_2d__options['apiType']) ? $this->live_2d__options['apiType'] : null)
+            : 'remote';
+        // 'local' 走本地 model/ 目录,无需付费/登录;'custom' (V3+) 走自定义 URL,
+        // 与原 V2 自定 API 行为一致,沿用付费门槛。
+        $hasPaid = !empty($this->userInfo["userLevel"]) && intval($this->userInfo["userLevel"]) > 0;
+        $shopUrl = esc_url(admin_url('admin.php?page=live-2d-shop'));
 ?>
         <fieldset>
-            <?php
-            $checked = (isset($this->live_2d__options['apiType']) && $this->live_2d__options['apiType'] === true);
-            if (!empty($this->userInfo["userLevel"]) && intval($this->userInfo["userLevel"]) > 0) {
-            ?>
-                <label for="apiType-0"><input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-0" class="apiType" value="1" <?php echo $checked ? 'checked' : ''; ?>> <?php esc_html_e('创意工坊', 'live-2d') ?></label><br>
-                <label for="apiType-1"><input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-1" class="apiType" value="0" <?php echo !$checked ? 'checked' : ''; ?>> <?php esc_html_e('自定API', 'live-2d') ?></label>
-            <?php
-            } else {
-            ?>
-                <label for="apiType-0"><input type="radio" disabled> <?php esc_html_e('创意工坊', 'live-2d') ?></label><br>
-                <label for="apiType-1"><input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-1" class="apiType" value="0" checked> <?php esc_html_e('自定API', 'live-2d') ?></label>
-            <?php
-            }
-            ?>
+            <label for="apiType-local">
+                <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-local" class="apiType" value="local" <?php echo $current === 'local' ? 'checked' : ''; ?>>
+                <?php esc_html_e('本地部署旧版模型', 'live-2d'); ?>
+            </label>
+            <span style="margin-left: 8px;">
+                <a href="<?php echo $shopUrl; ?>"><?php esc_html_e('点击进入下载页面', 'live-2d'); ?></a>
+            </span><br>
+            <span class="description"><?php esc_html_e('模型文件由本插件托管,模型 API 自动指向本站,不会向外网发起请求。', 'live-2d'); ?></span><br>
+
+            <label for="apiType-remote">
+                <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-remote" class="apiType" value="remote" <?php echo $current === 'remote' ? 'checked' : ''; ?>>
+                <?php esc_html_e('自行部署旧版模型', 'live-2d'); ?>
+            </label><br>
+            <span class="description"><?php esc_html_e('对接你自己部署的旧版 V1/V2 模型 API(例如 fghrsh-style 的 /get/?id= 路由)。', 'live-2d'); ?></span><br>
+
+            <?php if ($hasPaid): ?>
+                <label for="apiType-custom">
+                    <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-custom" class="apiType" value="custom" <?php echo $current === 'custom' ? 'checked' : ''; ?>>
+                    <?php esc_html_e('自定义新版模型路径', 'live-2d'); ?>
+                </label><br>
+                <span class="description"><?php esc_html_e('Cubism 4+ 模型(*.model3.json),可填模型直链或目录根并在下方"模型目录"中列出多个模型。', 'live-2d'); ?></span>
+            <?php else: ?>
+                <?php // 未登录 / 未付费: radio 与 label 都置灰, 并配合 cursor:not-allowed 提示用户不可点击.
+                      // disabled 属性已经阻止勾选, 这里加视觉反馈; 同时把 title 提示加到 label 上,
+                      // hover 时会显示完整原因, 避免用户以为是 bug. ?>
+                <label for="apiType-custom" style="opacity: 0.5; cursor: not-allowed;" title="<?php esc_attr_e('完成登录并付费后可用', 'live-2d'); ?>">
+                    <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义新版模型路径', 'live-2d'); ?>
+                </label><br>
+                <span class="description" style="opacity: 0.7;"><?php esc_html_e('Cubism 4+ 模型: 完成登录并付费后可用。', 'live-2d'); ?></span>
+            <?php endif; ?>
         </fieldset>
     <?php
     }
@@ -147,40 +176,38 @@ class live2D_Settings_Base
 
     public function modelAPI_callback()
     {
-        $userInfo = $this->userInfo;
-        if (!empty($userInfo)) {
-            printf(
-                '<input class="regular-text" type="url" name="live_2d_settings_option_name[modelAPI]" id="modelAPI" value="%s">',
-                isset($this->live_2d__options['modelAPI']) ? esc_attr($this->live_2d__options['modelAPI']) : ''
-            );
-            echo '<p>' . esc_html__('使用 Cubism Editor 4.2 或更高版本制作的模型请填写到模型根目录。','live-2d').'</p>';
-            echo '<p>' . esc_html__('例如：https://live2dweb.domain.com/{此处是你的模型名称}/{模型名称}.model3.json','live-2d').'</p>';
-            echo '<p>' . esc_html__('应填写为：https://live2dweb.domain.com/ ','live-2d').'</p>';
-        } else {
-        ?>
-            <p>请完成登录后此项才可显示</p>
-<?php
-        }
+        // 总是渲染一个普通文本输入框。在 'local' 模式下后台会在 sanitize 阶段
+        // 强制写回本地 REST URL(详见 src/waifu-Settings.php),前端 live2d-admin.ts
+        // 会根据 apiType 动态设 readonly 与提示文案。
+        printf(
+            '<input class="regular-text" type="url" name="live_2d_settings_option_name[modelAPI]" id="modelAPI" value="%s">',
+            isset($this->live_2d__options['modelAPI']) ? esc_attr($this->live_2d__options['modelAPI']) : ''
+        );
+        // 静态帮助文案仅作底层说明;与 apiType 联动的选择性提示由 JS 插入 / 隐藏。
+        echo '<p class="description live2d-modelAPI-hint live2d-modelAPI-hint-default">'
+            . esc_html__('上面「API 方式」选不同选项时, 此处填写要求不同。', 'live-2d')
+            . '</p>';
     }
 
     public function modelId_callback()
     {
+        // 'local' 模式下 live2d-admin.ts 会把本文本框 replaceWith 为 select(
+        // 调 wp_ajax_get_model_list 拉本地列表);'remote'/'custom' 模式下保持文本框。
         printf(
             '<input class="regular-text" type="text" name="live_2d_settings_option_name[modelId]" id="modelId" value="%s">',
             isset($this->live_2d__options['modelId']) ? esc_attr($this->live_2d__options['modelId']) : ''
         );
-        echo '<p>' . esc_html__('您可以在此处直接填写模型ID', 'live-2d') . '</p>';
-        echo '<p>' . esc_html__('使用旧版本 Cubism Editor 制作的模型请填写此项。','live-2d').'</p>';
+        echo '<p class="description">' . esc_html__('选择或填写默认加载的模型 ID(具体要求取决于上面「API 方式」)。', 'live-2d') . '</p>';
     }
 
     public function modelTexturesId_callback()
     {
+        // 同 modelId,'local' 模式下转为 select 列出该模型可用皮肤。
         printf(
             '<input class="regular-text" type="text" name="live_2d_settings_option_name[modelTexturesId]" id="modelTexturesId" value="%s">',
             isset($this->live_2d__options['modelTexturesId']) ? esc_attr($this->live_2d__options['modelTexturesId']) : ''
         );
-        echo '<p>' . esc_html__('您可以在此处直接填写皮肤ID', 'live-2d') . '</p>';
-        echo '<p>' . esc_html__('使用旧版本 Cubism Editor 制作的模型请填写此项。','live-2d').'</p>';
+        echo '<p class="description">' . esc_html__('选择或填写默认皮肤 ID;新版模型不使用此项, 可留空。', 'live-2d') . '</p>';
     }
 
     public function modelDir_callback()

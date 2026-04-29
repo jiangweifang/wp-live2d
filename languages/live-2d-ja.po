@@ -1,4 +1,4 @@
-# Live 2D - en_US
+# Live 2D - ja
 # Copyright (C) Weifang Chiang
 # This file is distributed under the same license as the Live 2D plugin.
 #
@@ -8,315 +8,315 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-29 07:15+0000\n"
 "PO-Revision-Date: 2026-04-29 07:15+0000\n"
-"Language-Team: English (United States)\n"
-"Language: en_US\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: build-i18n.py\n"
 
 #: wordpress-live2d.php:180
 msgid "设置"
-msgstr "Settings"
+msgstr "設定"
 
 #: wordpress-live2d.php:261
 #: src/live2d-Widget.php:38
 msgid "发送"
-msgstr "Send"
+msgstr "送信"
 
 #: src/live2d-Login.php:22
 #: src/live2d-Login.php:29
 #: src/live2d-Login.php:85
 msgid "登录"
-msgstr "Sign in"
+msgstr "ログイン"
 
 #: src/live2d-Login.php:37
 msgid "请输入key"
-msgstr "Enter your Key"
+msgstr "Key を入力してください"
 
 #: src/live2d-Login.php:61
 msgid "保存失败, 登录信息无法解析"
-msgstr "Save failed: sign-in info could not be parsed."
+msgstr "保存に失敗しました。ログイン情報を解析できません"
 
 #: src/live2d-Login.php:64
 msgid "保存失败, 登录信息为空"
-msgstr "Save failed: sign-in info is empty."
+msgstr "保存に失敗しました。ログイン情報が空です"
 
 #: src/live2d-Login.php:72
 msgid "如果您无法解决链接问题，请在<a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">官方网站登录</a>，查看Key后将其复制到下方，保存后就可以登录成功了！"
-msgstr "If you cannot resolve the connection issue, please <a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">sign in on the official site</a>, copy your Key into the field below, and save to complete sign-in."
+msgstr "接続の問題を解決できない場合は、<a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">公式サイトでログイン</a>し、Key を確認して以下にコピーしてください。保存するとログインに成功します。"
 
 #: src/live2d-Login.php:95
 msgid "已登录, 用户名: %s"
-msgstr "Signed in as %s"
+msgstr "ログイン中：%s"
 
 #: src/live2d-Login.php:98
 msgid "退出登录"
-msgstr "Sign out"
+msgstr "ログアウト"
 
 #: src/live2d-Login.php:106
 msgid "此站点未绑定, 请<a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">点击此处</a>绑定站点, 绑定时请注意与WordPress中的 站点地址（URL） 相同"
-msgstr "This site is not bound. Please <a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">click here</a> to bind it; make sure the URL matches your WordPress Site Address (URL)."
+msgstr "このサイトは未登録です。<a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">こちら</a>から登録してください。登録時は WordPress の「サイトアドレス（URL）」と一致させてください。"
 
 #: src/live2d-Login.php:114
 msgid "您的邮箱未激活, 请<a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">点击此处</a>激活邮箱"
-msgstr "Your email is not activated. Please <a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">click here</a> to activate it."
+msgstr "メールアドレスが未有効化です。<a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">こちら</a>から有効化してください。"
 
 #: src/live2d-Login.php:122
 msgid "您是未付费用户, 请<a href=\"https://www.live2dweb.com/Order/Pay\" target=\"_blank\">点击此处</a>付费后使用更多功能"
-msgstr "You are on the free tier. Please <a href=\"https://www.live2dweb.com/Order/Pay\" target=\"_blank\">click here</a> to upgrade and unlock more features."
+msgstr "未課金ユーザーです。<a href=\"https://www.live2dweb.com/Order/Pay\" target=\"_blank\">こちら</a>からお支払いいただくと、より多くの機能を利用できます。"
 
 #: src/live2d-Login.php:137
 msgid "如果您发现登录没有反应，或者出现了错误，请先检查 <a href=\"%1$s\">%1$s</a> 是否可以被访问"
-msgstr "If sign-in does not respond or returns an error, please first check whether <a href=\"%1$s\">%1$s</a> is reachable."
+msgstr "ログインが反応しない、またはエラーが出る場合は、まず <a href=\"%1$s\">%1$s</a> にアクセスできるか確認してください。"
 
 #: src/live2d-Login.php:151
 msgid "没有权限"
-msgstr "Permission denied"
+msgstr "権限がありません"
 
 #: src/live2d-Main.php:35
 msgid "Live 2D 设置"
-msgstr "Live 2D Settings"
+msgstr "Live 2D 設定"
 
 #: src/live2d-Main.php:43
 msgid "Live 2D 创意工坊"
-msgstr "Live 2D Workshop"
+msgstr "Live 2D ワークショップ"
 
 #: src/live2d-Main.php:101
 msgid "登陆"
-msgstr "Sign in"
+msgstr "ログイン"
 
 #: src/live2d-Main.php:102
 #: src/waifu-Settings-Base.php:15
 msgid "基础设置"
-msgstr "General"
+msgstr "基本設定"
 
 #: src/live2d-Main.php:103
 #: src/waifu-Settings-Toolbar.php:10
 msgid "工具栏设置"
-msgstr "Toolbar"
+msgstr "ツールバー設定"
 
 #: src/live2d-Main.php:104
 msgid "提示消息选项"
-msgstr "Tip messages"
+msgstr "メッセージ設定"
 
 #: src/live2d-Main.php:105
 msgid "样式设置"
-msgstr "Style"
+msgstr "スタイル設定"
 
 #: src/live2d-Main.php:106
 #: src/waifu-Advanced.php:18
 msgid "高级设置"
-msgstr "Advanced"
+msgstr "詳細設定"
 
 #: src/live2d-Shop.php:27
 msgid "您没有访问该页面的权限。"
-msgstr "You do not have permission to access this page."
+msgstr "このページへのアクセス権限がありません。"
 
 #: src/live2d-Shop.php:55
 msgid "列表中是您可以使用的模型。"
-msgstr "These are the models you can use."
+msgstr "ご利用いただけるモデルの一覧です。"
 
 #: src/live2d-Shop.php:57
 msgid "下载方式与浏览器扩展一致:直接 GET <code>download.live2dweb.com/model/{name}.zip</code>,由后端 PHP 解压到 <code>model/{name}</code>。"
-msgstr "Downloads work the same as in the browser extension: GET <code>download.live2dweb.com/model/{name}.zip</code> directly, then PHP unpacks it into <code>model/{name}</code>."
+msgstr "ダウンロード方法はブラウザ拡張と同じです。<code>download.live2dweb.com/model/{name}.zip</code> を GET し、サーバー側の PHP が <code>model/{name}</code> に展開します。"
 
 #: src/live2d-Shop.php:66
 msgid "您需要登陆并付费才可以使用此功能。"
-msgstr "You need to sign in and upgrade to use this feature."
+msgstr "この機能を使用するにはログインと課金が必要です。"
 
 #: src/live2d-Shop.php:72
 msgid "您需要付费才可以使用此功能。"
-msgstr "You need to upgrade to use this feature."
+msgstr "この機能を使用するには課金が必要です。"
 
 #: src/live2d-Shop.php:94
 #: src/live2d-Shop.php:122
 msgid "已启用"
-msgstr "Installed"
+msgstr "インストール済み"
 
 #: src/live2d-Shop.php:96
 #: src/live2d-Shop.php:123
 msgid "下载"
-msgstr "Download"
+msgstr "ダウンロード"
 
 #: src/live2d-Shop.php:103
 msgid "没有可用的模型。"
-msgstr "No models available."
+msgstr "利用できるモデルがありません。"
 
 #: src/live2d-Shop.php:120
 msgid "正在下载..."
-msgstr "Downloading…"
+msgstr "ダウンロード中…"
 
 #: src/live2d-Shop.php:121
 msgid "正在解压..."
-msgstr "Extracting…"
+msgstr "展開中…"
 
 #: src/live2d-Shop.php:124
 msgid "解压失败,文件可能损坏。"
-msgstr "Extraction failed; the file may be corrupted."
+msgstr "展開に失敗しました。ファイルが破損している可能性があります。"
 
 #: src/live2d-Shop.php:125
 msgid "下载失败"
-msgstr "Download failed"
+msgstr "ダウンロードに失敗しました"
 
 #: src/live2d-Shop.php:126
 msgid "下载请求失败,请检查网络或登录状态。"
-msgstr "The download request failed. Check your network or sign-in status."
+msgstr "ダウンロード要求に失敗しました。ネットワークまたはログイン状態を確認してください。"
 
 #: src/live2d-Utils.php:32
 #: src/live2d-Utils.php:57
 #: src/live2d-Utils.php:69
 #: src/live2d-Utils.php:90
 msgid "点击此处增加一条"
-msgstr "Click here to add an entry"
+msgstr "ここをクリックして 1 行追加"
 
 #: src/live2d-Utils.php:80
 msgid "基础设置帮助"
-msgstr "General settings help"
+msgstr "基本設定のヘルプ"
 
 #: src/live2d-Utils.php:89
 msgid "高级设置帮助"
-msgstr "Advanced settings help"
+msgstr "詳細設定のヘルプ"
 
 #: src/live2d-Utils.php:110
 msgid "创意工坊帮助"
-msgstr "Workshop help"
+msgstr "ワークショップのヘルプ"
 
 #: src/live2d-V1Api.php:196
 #: src/live2d-V1Api.php:216
 msgid "我的新名字叫做「%s」哦~"
-msgstr "My new name is \"%s\"!"
+msgstr "新しい名前は「%s」だよ~"
 
 #: src/live2d-V1Api.php:235
 #: src/live2d-V1Api.php:253
 msgid "我还没有其他衣服呢~"
-msgstr "I don't have any other outfits yet~"
+msgstr "他の衣装はまだ持っていないの~"
 
 #: src/live2d-V1Api.php:236
 #: src/live2d-V1Api.php:261
 msgid "你帮我换了一件新衣服!"
-msgstr "You changed my outfit!"
+msgstr "新しい衣装に着替えさせてくれてありがとう！"
 
 #: src/live2d-Widget.php:10
 msgid "您可以把看板娘放在一个指定的区域"
-msgstr "Place the waifu in a designated widget area."
+msgstr "看板娘を指定したウィジェットエリアに配置できます。"
 
 #: src/live2d-Widget.php:69
 msgid "Title:"
-msgstr "Title:"
+msgstr "タイトル："
 
 #: src/waifu-Advanced.php:25
 msgid "复制信息时的提示"
-msgstr "Tip when copying text"
+msgstr "コピー時のメッセージ"
 
 #: src/waifu-Advanced.php:33
 msgid "截图时的提示"
-msgstr "Tip when taking a screenshot"
+msgstr "スクリーンショット時のメッセージ"
 
 #: src/waifu-Advanced.php:41
 msgid "隐藏看板娘的提示"
-msgstr "Tip when hiding the waifu"
+msgstr "看板娘を非表示にした時のメッセージ"
 
 #: src/waifu-Advanced.php:49
 msgid "更换服装时的提示"
-msgstr "Tip when changing outfit"
+msgstr "衣装変更時のメッセージ"
 
 #: src/waifu-Advanced.php:57
 msgid "每小时提示"
-msgstr "Hourly tip"
+msgstr "時間ごとのメッセージ"
 
 #: src/waifu-Advanced.php:65
 msgid "搜索引擎入站提示"
-msgstr "Search-engine referral tip"
+msgstr "検索エンジン経由の来訪メッセージ"
 
 #: src/waifu-Advanced.php:73
 msgid "访问本站点的提示"
-msgstr "Site visitor tip"
+msgstr "サイト訪問者へのメッセージ"
 
 #: src/waifu-Advanced.php:81
 msgid "一言API的消息"
-msgstr "Hitokoto API message"
+msgstr "Hitokoto API のメッセージ"
 
 #: src/waifu-Advanced.php:89
 msgid "鼠标悬停时的消息提示"
-msgstr "Mouse hover tip"
+msgstr "マウスオーバー時のメッセージ"
 
 #: src/waifu-Advanced.php:97
 msgid "鼠标点击选择器"
-msgstr "Mouse click selector"
+msgstr "マウスクリック用セレクタ"
 
 #: src/waifu-Advanced.php:105
 msgid "鼠标点击时的消息提示"
-msgstr "Mouse click tip"
+msgstr "マウスクリック時のメッセージ"
 
 #: src/waifu-Advanced.php:113
 msgid "节日事件"
-msgstr "Holiday events"
+msgstr "イベント／祝日"
 
 #: src/waifu-Advanced.php:195
 msgid "请在第一个输入框输入没有服装时的默认提示，第二个输入框输入每次切换时的提示消息"
-msgstr "Use the first field for the default message when no outfit is available, and the second field for the message shown on each switch."
+msgstr "1 つ目の入力欄に衣装が無い場合のデフォルトメッセージを、2 つ目の入力欄に切り替え時のメッセージを入力してください。"
 
 #: src/waifu-Advanced.php:204
 msgid "时间按照t{开始小时}-{结束小时}的方式填写，例如：t5-7或t7-11（避免改错，目前此项无法更改）"
-msgstr "Use the format t{startHour}-{endHour}, for example t5-7 or t7-11. (To avoid mistakes, this item is currently locked.)"
+msgstr "時間は t{開始時}-{終了時} の形式で入力してください。例：t5-7 や t7-11（誤入力を避けるため、現在この項目は変更できません）。"
 
 #: src/waifu-Advanced.php:211
 msgid "请务必不要修改{}中的内容，{title}网站标题、{keyword}关键词、{website}站点名称"
-msgstr "Do not modify the contents inside {}: {title} = page title, {keyword} = keyword, {website} = site name."
+msgstr "{} の中身は変更しないでください。{title} はサイトタイトル、{keyword} はキーワード、{website} はサイト名です。"
 
 #: src/waifu-Advanced.php:221
 msgid "请务必不要修改{}中的内容，lwl12.com接口会有没有作者的情况语句中需要用“|”进行分割"
-msgstr "Do not modify the contents inside {}; the lwl12.com endpoint sometimes has no author, so separate sentences with \"|\"."
+msgstr "{} の中身は変更しないでください。lwl12.com の API では作者情報が無い場合があるため、文を「|」で区切ってください。"
 
 #: src/waifu-Advanced.php:226
 msgid "鼠标悬停位置的<a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery选择器</a>"
-msgstr "<a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery selector</a> for the hover target."
+msgstr "ホバー対象を指定する <a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery セレクタ</a>。"
 
 #: src/waifu-Advanced.php:239
 msgid "点击看板娘会循环以上的每一行点击事件"
-msgstr "Clicking the waifu cycles through each click event listed above."
+msgstr "看板娘をクリックすると、上記の各行のクリックイベントが順番に表示されます。"
 
 #: src/waifu-Advanced.php:246
 msgid "在指定的日期说提示语，日期的规则为MM/dd，例如2月14日为 02/14，可填写一个时间区间，格式为11/05-11/12。"
-msgstr "Show a tip on the specified date. Use MM/dd (e.g. 02/14 for Feb 14). A range like 11/05-11/12 is also supported."
+msgstr "指定日にメッセージを表示します。日付は MM/dd 形式（例：2 月 14 日は 02/14）。11/05-11/12 のような期間指定も可能です。"
 
 #: src/waifu-Settings-Base.php:23
 msgid "看板娘模式"
-msgstr "Waifu layout mode"
+msgstr "看板娘の表示モード"
 
 #: src/waifu-Settings-Base.php:34
 msgid "API 方式"
-msgstr "API mode"
+msgstr "API モード"
 
 #: src/waifu-Settings-Base.php:41
 msgid "模型 API"
-msgstr "Model API"
+msgstr "モデル API"
 
 #: src/waifu-Settings-Base.php:49
 msgid "默认模型 ID"
-msgstr "Default model ID"
+msgstr "デフォルトモデル ID"
 
 #: src/waifu-Settings-Base.php:57
 msgid "默认材质 ID"
-msgstr "Default texture ID"
+msgstr "デフォルトテクスチャ ID"
 
 #: src/waifu-Settings-Base.php:69
 msgid "模型目录"
-msgstr "Model directory"
+msgstr "モデルディレクトリ"
 
 #: src/waifu-Settings-Base.php:77
 msgid "模型缩放倍数"
-msgstr "Model zoom"
+msgstr "モデルの拡大率"
 
 #: src/waifu-Settings-Base.php:85
 msgid "看板娘位置"
-msgstr "Waifu position"
+msgstr "看板娘の位置"
 
 #: src/waifu-Settings-Base.php:93
 msgid "Cubism Core for Web <br/> 引用地址"
-msgstr "Cubism Core for Web<br/>script URL"
+msgstr "Cubism Core for Web<br/>スクリプト URL"
 
 #: src/waifu-Settings-Base.php:101
 msgid "WebGLShader 引用地址"
@@ -324,195 +324,195 @@ msgstr "WebGLShader URL"
 
 #: src/waifu-Settings-Base.php:132
 msgid "本地部署旧版模型"
-msgstr "Local legacy models"
+msgstr "ローカルの旧モデル"
 
 #: src/waifu-Settings-Base.php:135
 msgid "点击进入下载页面"
-msgstr "Open the download page"
+msgstr "ダウンロードページを開く"
 
 #: src/waifu-Settings-Base.php:137
 msgid "模型文件由本插件托管,模型 API 自动指向本站,不会向外网发起请求。"
-msgstr "Model files are hosted by this plugin and the model API automatically points to your own site; no external requests are made."
+msgstr "モデルファイルはこのプラグインで管理され、モデル API は自動的に自サイトを参照します。外部へのリクエストは行いません。"
 
 #: src/waifu-Settings-Base.php:141
 msgid "自行部署旧版模型"
-msgstr "Self-hosted legacy models"
+msgstr "自前ホストの旧モデル"
 
 #: src/waifu-Settings-Base.php:143
 msgid "对接你自己部署的旧版 V1/V2 模型 API(例如 fghrsh-style 的 /get/?id= 路由)。"
-msgstr "Connect to your own legacy V1/V2 model API (for example, the fghrsh-style /get/?id= route)."
+msgstr "ご自身でホストする旧版 V1/V2 モデル API（例：fghrsh 形式の /get/?id= ルート）に接続します。"
 
 #: src/waifu-Settings-Base.php:148
 #: src/waifu-Settings-Base.php:156
 msgid "自定义新版模型路径"
-msgstr "Custom new-format model path"
+msgstr "カスタム新形式モデルパス"
 
 #: src/waifu-Settings-Base.php:150
 msgid "Cubism 4+ 模型(*.model3.json),可填模型直链或目录根并在下方\"模型目录\"中列出多个模型。"
-msgstr "Cubism 4+ models (*.model3.json). Provide a direct URL or a directory root and list multiple models in \"Model directory\" below."
+msgstr "Cubism 4+ モデル（*.model3.json）。直接 URL またはディレクトリのルートを指定し、下の「モデルディレクトリ」で複数モデルを列挙できます。"
 
 #: src/waifu-Settings-Base.php:155
 msgid "完成登录并付费后可用"
-msgstr "Available after signing in and upgrading"
+msgstr "ログインおよび課金後に利用可能"
 
 #: src/waifu-Settings-Base.php:158
 msgid "Cubism 4+ 模型: 完成登录并付费后可用。"
-msgstr "Cubism 4+ models: available after signing in and upgrading."
+msgstr "Cubism 4+ モデル：ログインおよび課金後に利用可能です。"
 
 #: src/waifu-Settings-Base.php:171
 msgid "页面"
-msgstr "Page"
+msgstr "ページ"
 
 #: src/waifu-Settings-Base.php:172
 msgid "小工具(beta)"
-msgstr "Widget (beta)"
+msgstr "ウィジェット（Beta）"
 
 #: src/waifu-Settings-Base.php:188
 msgid "上面「API 方式」选不同选项时, 此处填写要求不同。"
-msgstr "The required value here depends on the \"API mode\" selected above."
+msgstr "上の「API モード」の選択により、ここに入力すべき内容が変わります。"
 
 #: src/waifu-Settings-Base.php:200
 msgid "选择或填写默认加载的模型 ID(具体要求取决于上面「API 方式」)。"
-msgstr "Select or enter the default model ID (the exact requirement depends on the \"API mode\" above)."
+msgstr "デフォルトで読み込むモデル ID を選択／入力してください（要件は上の「API モード」に依存します）。"
 
 #: src/waifu-Settings-Base.php:210
 msgid "选择或填写默认皮肤 ID;新版模型不使用此项, 可留空。"
-msgstr "Select or enter the default texture ID. New-format models do not use this and may be left empty."
+msgstr "デフォルトのテクスチャ ID を選択／入力します。新形式モデルでは使用しないため、空欄でも構いません。"
 
 #: src/waifu-Settings-Base.php:216
 msgid "可切换的模型名称，程序会通过Model API来按顺序获取模型的信息，请保证模型目录的名称和 model3.json 一致"
-msgstr "Switchable model names. The plugin queries the Model API in order, so the directory name must match model3.json."
+msgstr "切り替え可能なモデル名。プラグインは Model API を順に呼び出すため、ディレクトリ名と model3.json を一致させてください。"
 
 #: src/waifu-Settings-Base.php:223
 msgid "设置看板娘在画框中的缩放比例，最小1倍，最大5倍，可以有小数点"
-msgstr "Set the waifu's zoom inside its frame; range 1 to 5, decimals allowed."
+msgstr "看板娘のフレーム内拡大率を設定します。1～5 倍の範囲で、小数も指定できます。"
 
 #: src/waifu-Settings-Base.php:233
 msgid "设置看板娘的位置，可以是负数"
-msgstr "Set the waifu's position; negative values are allowed."
+msgstr "看板娘の位置を設定します。負の値も指定できます。"
 
 #: src/waifu-Settings-Base.php:245
 msgid "如未授权请勿修改此地址，擅自修改此地址引发的法律问题与插件作者无关。"
-msgstr "Do not modify this URL without authorization. The plugin author is not responsible for legal issues caused by unauthorized changes."
+msgstr "正規のライセンスがない限り、この URL を変更しないでください。無断変更による法的問題について、プラグイン作者は責任を負いません。"
 
 #: src/waifu-Settings-Base.php:246
 msgid "软件许可协议："
-msgstr "Software license:"
+msgstr "ソフトウェアライセンス："
 
 #: src/waifu-Settings-Base.php:257
 msgid "这个路径是 WebGLShader 代码的位置，请勿随意修改。"
-msgstr "This is the location of the WebGLShader code; do not modify it casually."
+msgstr "このパスは WebGLShader コードの場所です。安易に変更しないでください。"
 
 #: src/waifu-Settings-Style.php:9
 msgid "这里可以设置看板娘的外观"
-msgstr "Configure the waifu's appearance here."
+msgstr "ここで看板娘の見た目を設定できます。"
 
 #: src/waifu-Settings-Style.php:16
 msgid "是否记录用户上次选择的样式"
-msgstr "Remember the user's last style choice"
+msgstr "ユーザーが前回選択したスタイルを記憶する"
 
 #: src/waifu-Settings-Style.php:25
 msgid "模型切换方式"
-msgstr "Model switching mode"
+msgstr "モデル切替方式"
 
 #: src/waifu-Settings-Style.php:33
 msgid "材质切换方式"
-msgstr "Texture switching mode"
+msgstr "テクスチャ切替方式"
 
 #: src/waifu-Settings-Style.php:41
 msgid "看板娘大小"
-msgstr "Waifu size"
+msgstr "看板娘のサイズ"
 
 #: src/waifu-Settings-Style.php:49
 msgid "面页小于指定宽度(px) <br/>禁用看板娘"
-msgstr "Disable waifu when page<br/>width is below (px)"
+msgstr "ページ幅が指定値 (px) 未満<br/>のとき看板娘を無効化"
 
 #: src/waifu-Settings-Style.php:57
 msgid "是否在移动端加载看板娘"
-msgstr "Load waifu on mobile devices"
+msgstr "モバイル端末で看板娘を読み込む"
 
 #: src/waifu-Settings-Style.php:65
 msgid "看板娘页面边缘"
-msgstr "Page edge"
+msgstr "ページ端への配置"
 
 #: src/waifu-Settings-Style.php:73
 msgid "看板娘页面边距(px)"
-msgstr "Page margin (px)"
+msgstr "ページ余白 (px)"
 
 #: src/waifu-Settings-Style.php:81
 msgid "拖拽样式"
-msgstr "Drag mode"
+msgstr "ドラッグ方式"
 
 #: src/waifu-Settings-Style.php:89
 msgid "松开鼠标还原拖拽位置"
-msgstr "Snap back when released"
+msgstr "マウスを放したら位置を戻す"
 
 #: src/waifu-Settings-Style.php:102
 msgid "是"
-msgstr "Yes"
+msgstr "はい"
 
 #: src/waifu-Settings-Style.php:104
 msgid "否"
-msgstr "No"
+msgstr "いいえ"
 
 #: src/waifu-Settings-Style.php:110
 #: src/waifu-Settings-Style.php:119
 msgid "随机"
-msgstr "Random"
+msgstr "ランダム"
 
 #: src/waifu-Settings-Style.php:112
 #: src/waifu-Settings-Style.php:121
 msgid "顺序"
-msgstr "Sequential"
+msgstr "順番"
 
 #: src/waifu-Settings-Style.php:129
 msgid "由于看板娘大小不同，请自行设置：宽度 x 高度"
-msgstr "Since waifus vary in size, set width x height yourself."
+msgstr "看板娘によりサイズが異なるため、幅 x 高さを各自で設定してください。"
 
 #: src/waifu-Settings-Style.php:138
 msgid "设置为 0 时，任何大小的屏幕都会启用看板娘"
-msgstr "When set to 0, the waifu is enabled on screens of any size."
+msgstr "0 に設定すると、画面サイズに関係なく看板娘が有効になります。"
 
 #: src/waifu-Settings-Style.php:145
 msgid "启用"
-msgstr "Enabled"
+msgstr "有効"
 
 #: src/waifu-Settings-Style.php:147
 #: src/waifu-Settings-Style.php:167
 msgid "禁用"
-msgstr "Disabled"
+msgstr "無効"
 
 #: src/waifu-Settings-Style.php:152
 msgid "靠左"
-msgstr "Left"
+msgstr "左寄せ"
 
 #: src/waifu-Settings-Style.php:154
 msgid "靠右"
-msgstr "Right"
+msgstr "右寄せ"
 
 #: src/waifu-Settings-Style.php:169
 msgid "只能水平拖拽"
-msgstr "Horizontal only"
+msgstr "水平方向のみ"
 
 #: src/waifu-Settings-Style.php:171
 msgid "自由拖拽"
-msgstr "Free drag"
+msgstr "自由にドラッグ"
 
 #: src/waifu-Settings-Style.php:177
 msgid "还原"
-msgstr "Snap back"
+msgstr "元に戻す"
 
 #: src/waifu-Settings-Style.php:179
 msgid "不还原"
-msgstr "Stay in place"
+msgstr "そのまま"
 
 #: src/waifu-Settings-Tips.php:10
 msgid "提示框设置"
-msgstr "Tip box"
+msgstr "メッセージボックス設定"
 
 #: src/waifu-Settings-Tips.php:17
 msgid "启用一言"
-msgstr "Enable Hitokoto"
+msgstr "Hitokoto を有効化"
 
 #: src/waifu-Settings-Tips.php:25
 msgid "一言 API"
@@ -520,65 +520,65 @@ msgstr "Hitokoto API"
 
 #: src/waifu-Settings-Tips.php:33
 msgid "待机动画延迟时间（毫秒）"
-msgstr "Idle animation delay (ms)"
+msgstr "アイドルアニメーションの遅延時間（ミリ秒）"
 
 #: src/waifu-Settings-Tips.php:41
 msgid "待机动画文件名"
-msgstr "Idle animation filename"
+msgstr "アイドルアニメーションのファイル名"
 
 #: src/waifu-Settings-Tips.php:49
 msgid "显示“复制内容”提示"
-msgstr "Show \"copied\" tip"
+msgstr "「コピー」メッセージを表示"
 
 #: src/waifu-Settings-Tips.php:57
 msgid "显示进入面页欢迎词"
-msgstr "Show welcome message on page entry"
+msgstr "ページ読込時のウェルカムメッセージを表示"
 
 #: src/waifu-Settings-Tips.php:65
 msgid "提示框大小"
-msgstr "Tip box size"
+msgstr "メッセージボックスのサイズ"
 
 #: src/waifu-Settings-Tips.php:73
 msgid "提示框字号(px)"
-msgstr "Tip box font size (px)"
+msgstr "メッセージボックスのフォントサイズ (px)"
 
 #: src/waifu-Settings-Tips.php:80
 msgid "提示框位置(px)"
-msgstr "Tip box position (px)"
+msgstr "メッセージボックスの位置 (px)"
 
 #: src/waifu-Settings-Tips.php:88
 msgid "提示框背景色"
-msgstr "Tip box background"
+msgstr "メッセージボックスの背景色"
 
 #: src/waifu-Settings-Tips.php:96
 msgid "边框颜色"
-msgstr "Border color"
+msgstr "枠線の色"
 
 #: src/waifu-Settings-Tips.php:104
 msgid "阴影颜色"
-msgstr "Shadow color"
+msgstr "影の色"
 
 #: src/waifu-Settings-Tips.php:112
 msgid "提示框文字颜色"
-msgstr "Tip text color"
+msgstr "メッセージ文字の色"
 
 #: src/waifu-Settings-Tips.php:120
 msgid "高亮文字颜色"
-msgstr "Highlight color"
+msgstr "ハイライト色"
 
 #: src/waifu-Settings-Tips.php:133
 #: src/waifu-Settings-Tips.php:153
 msgid "秒"
-msgstr "sec"
+msgstr "秒"
 
 #: src/waifu-Settings-Tips.php:134
 #: src/waifu-Settings-Tips.php:154
 msgid "待机动画延迟时间，单位为秒，默认值为30秒。如果设置为0，则禁用待机动画。"
-msgstr "Idle animation delay in seconds, default 30. Set to 0 to disable idle animation."
+msgstr "アイドルアニメーションの遅延（秒）。デフォルトは 30 秒。0 に設定するとアイドルアニメーションを無効化します。"
 
 #: src/waifu-Settings-Tips.php:162
 msgid "待机动画文件名, 文件是*.motion3.json"
-msgstr "Idle animation filename; the file is *.motion3.json."
+msgstr "アイドルアニメーションのファイル名。ファイルは *.motion3.json です。"
 
 #: src/waifu-Settings-Tips.php:167
 #: src/waifu-Settings-Tips.php:174
@@ -591,7 +591,7 @@ msgstr "Idle animation filename; the file is *.motion3.json."
 #: src/waifu-Settings-Toolbar.php:199
 #: src/waifu-Settings-Toolbar.php:206
 msgid "显示"
-msgstr "Show"
+msgstr "表示"
 
 #: src/waifu-Settings-Tips.php:169
 #: src/waifu-Settings-Tips.php:176
@@ -604,93 +604,93 @@ msgstr "Show"
 #: src/waifu-Settings-Toolbar.php:201
 #: src/waifu-Settings-Toolbar.php:208
 msgid "隐藏"
-msgstr "Hide"
+msgstr "非表示"
 
 #: src/waifu-Settings-Tips.php:183
 msgid "由于提示大小不同，请自行设置：宽度 x 高度"
-msgstr "Since tip-box sizes vary, set width x height yourself."
+msgstr "メッセージボックスのサイズは個別に異なるため、幅 x 高さを各自で設定してください。"
 
 #: src/waifu-Settings-Tips.php:199
 msgid "数字越大越靠上"
-msgstr "Larger values move it upward"
+msgstr "数値が大きいほど上に寄ります"
 
 #: src/waifu-Settings-Toolbar.php:17
 msgid "工具栏"
-msgstr "Toolbar"
+msgstr "ツールバー"
 
 #: src/waifu-Settings-Toolbar.php:25
 msgid "ChatGPT按钮"
-msgstr "ChatGPT button"
+msgstr "ChatGPT ボタン"
 
 #: src/waifu-Settings-Toolbar.php:33
 msgid "关闭看板娘按钮"
-msgstr "Close waifu button"
+msgstr "看板娘を閉じるボタン"
 
 #: src/waifu-Settings-Toolbar.php:41
 msgid "模型切换按钮"
-msgstr "Switch model button"
+msgstr "モデル切替ボタン"
 
 #: src/waifu-Settings-Toolbar.php:49
 msgid "材质切换按钮"
-msgstr "Switch texture button"
+msgstr "テクスチャ切替ボタン"
 
 #: src/waifu-Settings-Toolbar.php:57
 msgid "一言切换按钮"
-msgstr "Switch Hitokoto button"
+msgstr "Hitokoto 切替ボタン"
 
 #: src/waifu-Settings-Toolbar.php:65
 msgid "看板娘截图按钮"
-msgstr "Screenshot button"
+msgstr "スクリーンショットボタン"
 
 #: src/waifu-Settings-Toolbar.php:73
 msgid "看板娘截图文件名"
-msgstr "Screenshot filename"
+msgstr "スクリーンショットのファイル名"
 
 #: src/waifu-Settings-Toolbar.php:81
 msgid "返回首页按钮"
-msgstr "Home button"
+msgstr "ホームへ戻るボタン"
 
 #: src/waifu-Settings-Toolbar.php:89
 msgid "跳转关于页按钮"
-msgstr "About page button"
+msgstr "About ページボタン"
 
 #: src/waifu-Settings-Toolbar.php:97
 msgid "关于页地址"
-msgstr "About page URL"
+msgstr "About ページの URL"
 
 #: src/waifu-Settings-Toolbar.php:105
 msgid "工具栏图标大小(px)"
-msgstr "Toolbar icon size (px)"
+msgstr "ツールバーアイコンサイズ (px)"
 
 #: src/waifu-Settings-Toolbar.php:113
 msgid "工具栏行高(px)"
-msgstr "Toolbar line height (px)"
+msgstr "ツールバーの行の高さ (px)"
 
 #: src/waifu-Settings-Toolbar.php:121
 msgid "工具栏顶部边距(px)"
-msgstr "Toolbar top margin (px)"
+msgstr "ツールバーの上部余白 (px)"
 
 #: src/waifu-Settings-Toolbar.php:129
 msgid "工具栏图标颜色"
-msgstr "Toolbar icon color"
+msgstr "ツールバーアイコンの色"
 
 #: src/waifu-Settings-Toolbar.php:137
 msgid "鼠标触碰时图标颜色"
-msgstr "Toolbar hover color"
+msgstr "ホバー時のアイコン色"
 
 #: src/waifu-Settings-Toolbar.php:164
 msgid "开启"
-msgstr "On"
+msgstr "オン"
 
 #: src/waifu-Settings-Toolbar.php:166
 msgid "关闭"
-msgstr "Off"
+msgstr "オフ"
 
 #: src/waifu-Settings-Toolbar.php:228
 msgid "数字越大越靠下"
-msgstr "Larger values move it downward"
+msgstr "数値が大きいほど下に寄ります"
 
 #: src/waifu-Settings.php:39
 msgid "\"自定义新版模型路径\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\"."
-msgstr "\"Custom new-format model path\" requires sign-in and upgrade. Reverted to \"Self-hosted legacy models\"."
+msgstr "「カスタム新形式モデルパス」はログインおよび課金後にのみ利用可能です。「自前ホストの旧モデル」に自動で戻しました。"
 

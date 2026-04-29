@@ -1,0 +1,4 @@
+[submodule "live2d_sdk"]
+	path = live2d_sdk
+	url = https://github.com/jiangweifang/live2d_src_v4.git
+	branch = extension
