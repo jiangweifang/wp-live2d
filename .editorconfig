@@ -1,0 +1,38 @@
+; EditorConfig — https://editorconfig.org
+; 统一 wp-live2d 仓库内的换行 / 编码 / 缩进风格。
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# WordPress 插件 PHP 代码遵循 WordPress Coding Standards：使用 Tab 缩进。
+[*.php]
+indent_style = tab
+indent_size = 4
+tab_width = 4
+
+# WordPress 插件描述文件 / 翻译模板等。
+[{readme.txt,*.pot,*.po}]
+indent_style = space
+indent_size = 4
+
+[Makefile]
+indent_style = tab
+
+# Markdown 行尾的两个空格代表换行，禁止裁剪。
+[*.md]
+trim_trailing_whitespace = false
+
+# 不要修改第三方 / 产物 / 二进制资源。
+[{assets/**,Framework/**,languages/*.mo,**/r5b2-core/**,live2d_sdk/src/v2/Framework/**,live2d_sdk/dist/**,live2d_sdk/node_modules/**}]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset
+indent_size = 2

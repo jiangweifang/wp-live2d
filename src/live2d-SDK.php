@@ -229,6 +229,18 @@ class live2d_SDK
      */
     public function DownloadV1Model()
     {
+        // ====诊断日志·一旦报错 看这几行==== //
+        $postedNonce = isset($_POST['_wpnonce']) ? wp_unslash($_POST['_wpnonce']) : '';
+        $freshNonce  = wp_create_nonce('live2d_shop_action');
+        error_log('DownloadV1Model:[ENTER] modelName=' . (isset($_POST['modelName']) ? wp_unslash($_POST['modelName']) : '<missing>')
+            . ' user_id=' . get_current_user_id()
+            . ' logged_in=' . (is_user_logged_in() ? '1' : '0')
+            . ' can_manage=' . (current_user_can('manage_options') ? '1' : '0')
+            . ' posted_nonce=' . $postedNonce
+            . ' fresh_nonce=' . $freshNonce
+            . ' nonce_match=' . ($postedNonce === $freshNonce ? 'EXACT' : 'DIFF')
+            . ' verify_now=' . var_export(wp_verify_nonce($postedNonce, 'live2d_shop_action'), true)
+            . ' session_token=' . substr((string) wp_get_session_token(), 0, 8) . '...');
         $this->verify_admin_ajax('live2d_shop_action');
         $rawName = isset($_POST['modelName']) ? wp_unslash($_POST['modelName']) : '';
         $modelName = $this->ResolveV1ModelName($rawName);
@@ -250,18 +262,25 @@ class live2d_SDK
         $fileUrl = LIVE2D_V1_ZIP_BASE . '/' . rawurlencode($modelName) . '.zip';
         $tmpfname = wp_tempnam($fileUrl);
         error_log('DownloadV1Model:[开始下载 ' . $fileUrl . ']');
-        error_log('DownloadV1Model:[Origin ' . get_home_url() . ']');
         error_log('DownloadV1Model:[临时文件 ' . $tmpfname . ']');
 
+        // 鉴权要求(对照 wp-live2d-api Live2dJwtBearerEvents.TokenValidated):
+        //   1) Authorization: Bearer {sign} —— sign 是 ApiKey 自身做密钥的 HS256 JWT。
+        //   2) Origin 或 Referer 的 host 必须等于 sign.aud 的 host。
+        //   3) COS (download.live2dweb.com) 走回源鉴权/防盗链,会根据 Referer 决定是否放行。
+        //      老版本 DownloadModel 能下成功,headers 与之保持一致(Authorization + Origin + Referer + UA + Accept)。
+        $homeUrl = trailingslashit(get_home_url());
+        $headers = array(
+            'Authorization' => 'Bearer ' . $this->userInfo['sign'],
+            'Origin'        => get_home_url(),
+            'Referer'       => $homeUrl,
+            'User-Agent'    => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+            'Accept'        => '*/*',
+        );
+        error_log('DownloadV1Model:[请求头 ' . wp_json_encode(array_keys($headers)) . ']');
+
         $response = wp_safe_remote_get($fileUrl, array(
-            'headers' => array(
-                'Authorization' => 'Bearer ' . $this->userInfo['sign'],
-                'Origin'        => get_home_url(),
-                'Host'          => 'download.live2dweb.com',
-                'User-Agent'    => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
-                'Accept'        => '*/*',
-                'Connection'    => 'keep-alive',
-            ),
+            'headers'  => $headers,
             'timeout'  => 300,
             'stream'   => true,
             'filename' => $tmpfname,
@@ -274,10 +293,20 @@ class live2d_SDK
             return;
         }
         $httpCode = wp_remote_retrieve_response_code($response);
+        $respHeaders = wp_remote_retrieve_headers($response);
+        error_log('DownloadV1Model:[HTTP ' . $httpCode . '] response headers: ' . wp_json_encode((array) $respHeaders));
         if ($httpCode === 401 || $httpCode === 403) {
+            // stream=true 时 body 不在 response,只有响应头;手工读临时文件首段查看错误说明(如有)
+            $bodyPeek = '';
+            if (file_exists($tmpfname)) {
+                $bodyPeek = (string) @file_get_contents($tmpfname, false, null, 0, 2048);
+            }
             @unlink($tmpfname);
-            wp_send_json(array('errorCode' => $httpCode, 'errorMsg' => '服务器未授权此访问'));
-            error_log('DownloadV1Model:[请求失败: ' . $httpCode . ']服务器未授权此访问');
+            error_log('DownloadV1Model:[请求失败: ' . $httpCode . '] body 前 2KB: ' . $bodyPeek);
+            wp_send_json(array(
+                'errorCode' => $httpCode,
+                'errorMsg'  => '服务器未授权此访问 (HTTP ' . $httpCode . '),详情见 WP error_log',
+            ));
             return;
         }
         if ($httpCode !== 200) {
@@ -290,14 +319,24 @@ class live2d_SDK
         // 写到 model/{name}.zip,与 OpenZip 的入参约定保持一致(zip 同名 + 解压目录同名)。
         $sanfilename = sanitize_file_name($modelName . '.zip');
         $targetPath  = DOWNLOAD_DIR . $sanfilename;
-        if (!@rename($tmpfname, $targetPath)) {
+        // PHP rename() 跨文件系统/挂载点会失败(临时文件常在 /tmp,目标在 plugins/),
+        // 失败时退回到 copy + unlink,作为最后兜底。
+        $renamed = @rename($tmpfname, $targetPath);
+        if (!$renamed) {
+            $copyOk = @copy($tmpfname, $targetPath);
             @unlink($tmpfname);
-            wp_send_json(array('errorCode' => 9501, 'errorMsg' => '保存文件失败'));
-            error_log('DownloadV1Model:[9501]保存文件失败 ' . $targetPath);
-            return;
+            if (!$copyOk) {
+                $perm = is_writable(DOWNLOAD_DIR) ? 'writable' : 'NOT writable';
+                error_log('DownloadV1Model:[9501]保存文件失败 target=' . $targetPath
+                    . ' tmp=' . $tmpfname
+                    . ' tmp_exists=' . (file_exists($tmpfname) ? '1' : '0')
+                    . ' dir=' . DOWNLOAD_DIR . '(' . $perm . ')');
+                wp_send_json(array('errorCode' => 9501, 'errorMsg' => '保存文件失败,请确认 ' . DOWNLOAD_DIR . ' 可写'));
+                return;
+            }
         }
-        @chmod($targetPath, 0777);
-        error_log('DownloadV1Model:[文件保存到 ' . $targetPath . ']');
+        @chmod($targetPath, 0644);
+        error_log('DownloadV1Model:[文件保存到 ' . $targetPath . ' 大小=' . (file_exists($targetPath) ? filesize($targetPath) : -1) . ']');
 
         wp_send_json(array(
             'errorCode' => 200,
@@ -325,43 +364,100 @@ class live2d_SDK
     }
 
     /**
-     * 去服务器获取列表, 被ts中 getModelList 方法调用
-     * 这个方法可以通过PHP过滤已下载的路径, 避免前端重复下载
+     * 设置页 modelId 下拉框数据源。
+     * 原本走 Model/List 以远程 API，现在对齐 Chromium 扩展直接返回本地 V1 catalog:
+     *   id   = catalog.name (与下载路由 / 本地目录 / textures.json 前缀一致)
+     *   name = catalog.label (UI 显示名)
      */
-    public function GetModelList()
-    {
-        if (!empty($this->userInfo["sign"])) {
-            $result = $this->DoGet([], "Model/List", $this->userInfo["sign"]);
-            if (is_array($result)) {
-                foreach ($result as &$value) {
-                    $fileName = str_replace(array('/', '.'), '_', $value["name"]);
-                    $sanfilename = sanitize_file_name($fileName);
-                    $filePath = DOWNLOAD_DIR . $sanfilename;
-                    $value["downloaded"] = file_exists($filePath);
-                }
-                return $result;
-            } else {
-                // 返回空数组或错误信息
-                return [];
-            }
-        } else {
-            return [];
-        }
-    }
-
     public function GetModelMotions()
     {
         $this->verify_admin_ajax('live2d_shop_action');
-        $result = $this->GetModelList();
-        wp_send_json($result);
+        $list = array();
+        foreach (self::GetV1Catalog() as $item) {
+            $list[] = array(
+                'id'   => $item['name'],
+                'name' => $item['label'],
+            );
+        }
+        wp_send_json($list);
     }
 
+    /**
+     * 设置页 modelTexturesId 下拉框数据源。读本地 assets/v1/{name}.textures.json 或 catalog.skins:
+     *  - skins 优先(多皮肤型)
+     *  - texturesJson=true 时读三方 JSON，每项是单个贴图或一组贴图文件名的数组
+     *  - 都没有时只返 #0
+     */
     public function GetTextureList()
     {
         $this->verify_admin_ajax('live2d_shop_action');
-        $param = ['modelId' => intval($_POST["modelId"])];
-        $result = $this->DoGet($param, "Model/Textures", $this->userInfo["sign"]);
-        wp_send_json($result);
+        $candidate = isset($_POST['modelId']) ? wp_unslash($_POST['modelId']) : '';
+        $modelName = $this->ResolveV1ModelName($candidate);
+        if ($modelName === '') {
+            wp_send_json(array());
+            return;
+        }
+        $item = null;
+        foreach (self::GetV1Catalog() as $c) {
+            if ($c['name'] === $modelName) { $item = $c; break; }
+        }
+        $list = array();
+        if (!empty($item['skins'])) {
+            foreach ($item['skins'] as $i => $skin) {
+                $list[] = array('id' => $i, 'name' => '#' . $i . ' · ' . $skin);
+            }
+        } elseif (!empty($item['texturesJson'])) {
+            // 用 dirname(__DIR__) 直接定位插件根,绕开 plugin_dir_path 在某些
+            // 环境(符号链接 / mu-plugins / Windows 路径)里拼不到插件根的边界情况
+            $jsonPath = dirname(__DIR__) . '/assets/v1/' . $modelName . '.textures.json';
+            $exists   = file_exists($jsonPath);
+            error_log('GetTextureList:[读取 textures.json] modelName=' . $modelName
+                . ' path=' . $jsonPath
+                . ' exists=' . ($exists ? '1' : '0'));
+            if ($exists) {
+                $raw  = file_get_contents($jsonPath);
+                // 去掉 UTF-8 BOM (EF BB BF) 与首尾空白,
+                // 否则 PHP json_decode 会以 "Syntax error" 失败
+                if (strncmp($raw, "\xEF\xBB\xBF", 3) === 0) {
+                    $raw = substr($raw, 3);
+                }
+                $raw  = trim($raw);
+                $data = json_decode($raw, true);
+                if (is_array($data)) {
+                    foreach ($data as $i => $entry) {
+                        $list[] = array('id' => $i, 'name' => self::DescribeTextureEntry($entry, $i));
+                    }
+                } else {
+                    error_log('GetTextureList:[json_decode 失败] modelName=' . $modelName
+                        . ' json_last_error=' . json_last_error_msg());
+                }
+            }
+        }
+        if (empty($list)) {
+            $list[] = array('id' => 0, 'name' => '#0');
+        }
+        wp_send_json($list);
+    }
+
+    /**
+     * 对齐 Chromium 扩展 v1Catalog.ts 中的 describeTextureEntry:
+     * 数组 -> 取每项 basename 用 + 连起来(超长截断);字符串 -> 取 basename。
+     */
+    private static function DescribeTextureEntry($entry, $index)
+    {
+        $baseOf = function ($s) {
+            $name = preg_replace('#\.[^./\\\\]+$#', '', basename((string)$s));
+            return preg_replace('#-costume$#i', '', $name);
+        };
+        if (is_array($entry)) {
+            if (count($entry) === 0) return '#' . $index;
+            $joined = implode(' + ', array_map($baseOf, $entry));
+            if (mb_strlen($joined) > 60) {
+                $joined = mb_substr($joined, 0, 57) . '…';
+            }
+            return '#' . $index . ' · ' . $joined;
+        }
+        return '#' . $index . ' · ' . $baseOf($entry);
     }
 
     /**
@@ -439,9 +535,20 @@ class live2d_SDK
     private function verify_admin_ajax($action)
     {
         if (!is_user_logged_in() || !current_user_can('manage_options')) {
+            error_log('verify_admin_ajax:[FAIL/cap] action=' . $action
+                . ' user_id=' . get_current_user_id()
+                . ' logged_in=' . (is_user_logged_in() ? '1' : '0')
+                . ' can_manage=' . (current_user_can('manage_options') ? '1' : '0'));
             wp_send_json_error(array('errorCode' => 403, 'errorMsg' => 'forbidden'), 403);
         }
         // check_ajax_referer 在失败时会自动调 wp_die
+        $valid = isset($_POST['_wpnonce']) ? wp_verify_nonce($_POST['_wpnonce'], $action) : false;
+        if (!$valid) {
+            error_log('verify_admin_ajax:[FAIL/nonce] action=' . $action
+                . ' has_nonce=' . (isset($_POST['_wpnonce']) ? 'yes' : 'no')
+                . ' nonce_value=' . (isset($_POST['_wpnonce']) ? substr($_POST['_wpnonce'], 0, 4) . '...' : '')
+                . ' verify_result=' . var_export($valid, true));
+        }
         check_ajax_referer($action, '_wpnonce');
     }
 

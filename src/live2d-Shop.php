@@ -38,7 +38,12 @@ class live2d_Shop
             'settings' => get_option('live_2d_settings_option_name'),
             'nonce' => wp_create_nonce('live2d_shop_action'),
         ));
-        add_action('admin_footer', 'model_shop_scripts');
+        // 把 nonce 以 PHP 字面量直接入 inline 脚本，避免依赖 window.settings.nonce
+        // (admin_js 是 ES module + 多处 wp_localize_script 可能产生读到空 nonce 的竞态)
+        $shopNonceLiteral = wp_create_nonce('live2d_shop_action');
+        add_action('admin_footer', function () use ($shopNonceLiteral) {
+            model_shop_scripts($shopNonceLiteral);
+        });
 
         // 缩略图位于插件 assets/v1/imgs/{name}.png(由 live2d_sdk/src/Chromium/public/v1 复制而来)
         $assetsBaseUrl = plugin_dir_url(dirname(__FILE__)) . 'assets/';
@@ -80,9 +85,7 @@ class live2d_Shop
                         echo '<div class="thumb">';
                         echo '<img src="' . esc_url($thumbUrl) . '" alt="' . esc_attr($item['label']) . '" loading="lazy">';
                         echo '</div>';
-                        echo '<div class="title">' . esc_html($item['label']);
-                        echo ' <code style="font-size:12px;color:#666;">' . esc_html($item['name']) . '</code>';
-                        echo '</div>';
+                        echo '<div class="title">' . esc_html($item['label']) . '</div>';
                         echo '<div class="downBtn">';
                         if ($isCached) {
                             echo '<button type="button" class="install-now button button-disabled" disabled data-model-name="' . esc_attr($item['name']) . '">已启用</button>';
@@ -103,8 +106,12 @@ class live2d_Shop
     <?php
     }
 }
-function model_shop_scripts()
+function model_shop_scripts($shopNonceLiteral = '')
 {
+    // 后兼容: 如果调用者未传 nonce(老代码路径)，则从 window.settings.nonce 取
+    $nonceJs = $shopNonceLiteral !== ''
+        ? wp_json_encode($shopNonceLiteral)
+        : '((window.settings && window.settings.nonce) ? window.settings.nonce : "")';
     ?>
     <script>
         // 模型下载流程对齐 Chromium 扩展 v1ModelCache.ts:
@@ -112,56 +119,111 @@ function model_shop_scripts()
         //   2) POST zip_model { fileName }          -> 后端 PHP ZipArchive 解压(前端不做解压)
         //   3) 失败时 POST clear_files 清理半成品 zip
         // 与扩展不同:这里不再走 Model/ModelInfo / Model/Downloaded 两次额外往返。
+        //
+        // 改用原生 JS 与 fetch,彻底避开 jQuery / jquery-migrate 的弃用 API
+        // (例如 .click() 短链),避免 WP 后台 console 出现 JQMIGRATE 告警。
         (function () {
-            const $ = jQuery;
-            const thisAjaxUrl = ajaxurl;
-            const live2dShopNonce = (window.settings && window.settings.nonce) ? window.settings.nonce : '';
-            $(function () {
-                $('#live2d-shop').on('click', '.install-now:not([disabled])', function (e) {
-                    e.preventDefault();
-                    const installBtn = $(this);
-                    const modelName = installBtn.data('model-name');
-                    if (!modelName) {
-                        return;
+            'use strict';
+            var thisAjaxUrl = (typeof ajaxurl !== 'undefined') ? ajaxurl : '/wp-admin/admin-ajax.php';
+            var live2dShopNonce = <?php echo $nonceJs; ?>;
+
+            function setBtnState(btn, opts) {
+                if (!btn) return;
+                if (opts.text !== undefined) btn.textContent = opts.text;
+                if (opts.disabled !== undefined) btn.disabled = !!opts.disabled;
+                if (opts.addClass) {
+                    opts.addClass.split(/\s+/).forEach(function (c) { if (c) btn.classList.add(c); });
+                }
+                if (opts.removeClass) {
+                    opts.removeClass.split(/\s+/).forEach(function (c) { if (c) btn.classList.remove(c); });
+                }
+            }
+
+            // 用 application/x-www-form-urlencoded 发,符合 WP admin-ajax 的入参约定
+            function postForm(action, payload) {
+                var body = new URLSearchParams();
+                body.set('action', action);
+                body.set('_wpnonce', live2dShopNonce);
+                Object.keys(payload || {}).forEach(function (k) {
+                    if (payload[k] !== undefined && payload[k] !== null) {
+                        body.set(k, String(payload[k]));
                     }
-                    installBtn.addClass('updating-message').text('正在下载...').prop('disabled', true);
-                    $.post(thisAjaxUrl, {
-                        action: 'download_v1_model',
-                        modelName: modelName,
-                        _wpnonce: live2dShopNonce,
-                    }, function (rsp) {
-                        // DownloadV1Model 用 wp_send_json 返回 object,无需 JSON.parse
-                        const rspInfo = rsp || {};
-                        if (rspInfo.errorCode === 200) {
-                            installBtn.text('正在解压...');
-                            $.post(thisAjaxUrl, {
-                                action: 'zip_model',
-                                fileName: rspInfo.fileName,
-                                _wpnonce: live2dShopNonce,
-                            }, function (zipRsp) {
-                                if (Number(zipRsp) === 1) {
-                                    installBtn.removeClass('updating-message').text('已启用').prop('disabled', true).addClass('button-disabled');
-                                } else {
-                                    $.post(thisAjaxUrl, {
-                                        action: 'clear_files',
-                                        fileName: rspInfo.fileName,
-                                        _wpnonce: live2dShopNonce,
-                                    });
-                                    alert('解压失败,文件可能损坏。');
-                                    installBtn.removeClass('updating-message').prop('disabled', false).text('下载');
-                                }
-                            });
-                        } else {
-                            const msg = (rspInfo && rspInfo.errorMsg) ? rspInfo.errorMsg : '下载失败';
-                            alert(msg);
-                            installBtn.removeClass('updating-message').prop('disabled', false).text('下载');
-                        }
-                    }).fail(function () {
-                        alert('下载请求失败,请检查网络或登录状态。');
-                        installBtn.removeClass('updating-message').prop('disabled', false).text('下载');
-                    });
                 });
-            });
+                return fetch(thisAjaxUrl, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: body.toString(),
+                });
+            }
+
+            function onClick(e) {
+                var btn = e.target.closest('.install-now');
+                if (!btn) return;
+                if (btn.disabled || btn.classList.contains('button-disabled')) return;
+                e.preventDefault();
+                var modelName = btn.getAttribute('data-model-name');
+                if (!modelName) return;
+
+                setBtnState(btn, { text: '正在下载...', disabled: true, addClass: 'updating-message' });
+
+                postForm('download_v1_model', { modelName: modelName })
+                    .then(function (r) { return r.json().catch(function () { return {}; }); })
+                    .then(function (rsp) {
+                        var rspInfo = rsp || {};
+                        if (rspInfo.errorCode === 200) {
+                            setBtnState(btn, { text: '正在解压...' });
+                            return postForm('zip_model', { fileName: rspInfo.fileName })
+                                .then(function (r) { return r.text(); })
+                                .then(function (zipRspText) {
+                                    if (Number(zipRspText) === 1) {
+                                        setBtnState(btn, {
+                                            text: '已启用',
+                                            disabled: true,
+                                            removeClass: 'updating-message',
+                                            addClass: 'button-disabled',
+                                        });
+                                    } else {
+                                        // 半成品 zip 清理,失败也不阻塞用户
+                                        postForm('clear_files', { fileName: rspInfo.fileName }).catch(function () {});
+                                        window.alert('解压失败,文件可能损坏。');
+                                        setBtnState(btn, {
+                                            text: '下载',
+                                            disabled: false,
+                                            removeClass: 'updating-message',
+                                        });
+                                    }
+                                });
+                        }
+                        var msg = (rspInfo && rspInfo.errorMsg) ? rspInfo.errorMsg : '下载失败';
+                        window.alert(msg);
+                        setBtnState(btn, {
+                            text: '下载',
+                            disabled: false,
+                            removeClass: 'updating-message',
+                        });
+                    })
+                    .catch(function () {
+                        window.alert('下载请求失败,请检查网络或登录状态。');
+                        setBtnState(btn, {
+                            text: '下载',
+                            disabled: false,
+                            removeClass: 'updating-message',
+                        });
+                    });
+            }
+
+            function bind() {
+                var root = document.getElementById('live2d-shop');
+                if (!root) return;
+                root.addEventListener('click', onClick);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', bind, { once: true });
+            } else {
+                bind();
+            }
         })();
     </script>
 <?php

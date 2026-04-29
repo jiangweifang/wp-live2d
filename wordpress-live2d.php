@@ -20,6 +20,48 @@ define('LIVE2D_ASSETS', plugin_dir_url(__FILE__) . 'assets/'); //资源目录
 define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)) . '/languages'); //基础目录
 define('LIVE2D_VERSION', '2.0.0'); //资源版本号, 用于缓存破坏
 
+/**
+ * 把 wp_enqueue_script 注册的脚本标记为 ES module。
+ * 通过 wp_script_add_data + script_loader_tag filter,在 <script> 标签上输出 type="module"。
+ * 用于 vite 产物(包含 import/export 语法)在 WordPress 中正确加载。
+ */
+function live2d_mark_script_as_module($handle)
+{
+    global $wp_scripts;
+    if (!isset($wp_scripts) || !is_a($wp_scripts, 'WP_Scripts')) {
+        // 还未初始化时延迟到 wp_default_scripts 之后挂
+        add_action('wp_default_scripts', function () use ($handle) {
+            live2d_mark_script_as_module($handle);
+        }, 99);
+        return;
+    }
+    wp_script_add_data($handle, 'live2d_module', true);
+}
+
+add_filter('script_loader_tag', 'live2d_module_script_tag', 10, 3);
+function live2d_module_script_tag($tag, $handle, $src)
+{
+    global $wp_scripts;
+    if (!isset($wp_scripts->registered[$handle])) {
+        return $tag;
+    }
+    $is_module = $wp_scripts->get_data($handle, 'live2d_module');
+    if (!$is_module) {
+        return $tag;
+    }
+    // 普通 <script src="..."></script> -> <script type="module" src="..."></script>
+    // 避免对 inline <script>...code...</script> 误判:必须含有 src 属性
+    if (strpos($tag, ' src=') === false) {
+        return $tag;
+    }
+    if (strpos($tag, ' type=') !== false) {
+        $tag = preg_replace('#\stype=([\"\']).*?\1#', ' type="module"', $tag);
+    } else {
+        $tag = str_replace('<script ', '<script type="module" ', $tag);
+    }
+    return $tag;
+}
+
 // 加载设置组件
 include_once(dirname(__FILE__)  . '/src/live2d-Main.php');
 // 加载小工具

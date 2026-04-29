@@ -74,9 +74,23 @@ class live2D
 			'settings' => get_option('live_2d_settings_option_name'),
 			'nonce' => wp_create_nonce('live2d_shop_action'),
 		));
+		// admin_js 是 ES module(import/export),需要 type="module" 否则浏览器 SyntaxError;
+		// 同时 inline 调用必须等 module 加载完成后才能看见 window.live2dSettings.
+		live2d_mark_script_as_module('admin_js');
 		wp_add_inline_script(
 			'admin_js',
-			'jQuery( function() { live2dSettings(); } );'
+			'(function(){
+				var tryRun = function(retry){
+					if (typeof window.live2dSettings === "function") {
+						window.live2dSettings();
+					} else if (retry > 0) {
+						setTimeout(function(){ tryRun(retry - 1); }, 50);
+					} else {
+						console.warn("live2dSettings 加载超时,Tab 切换可能不可用。");
+					}
+				};
+				if (window.jQuery) { jQuery(function(){ tryRun(40); }); } else { tryRun(40); }
+			})();'
 		);
 ?>
 		<div class="wrap">
