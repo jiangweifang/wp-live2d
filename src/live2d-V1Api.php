@@ -192,7 +192,8 @@ class live2d_V1Api
 		return new WP_REST_Response(array(
 			'model' => array(
 				'id'      => $next,
-				'message' => sprintf('我的新名字叫做「%s」哦~', $label),
+				/* translators: %s: model display name */
+				'message' => sprintf( __('我的新名字叫做「%s」哦~', 'live-2d'), $label ),
 			),
 		), 200);
 	}
@@ -211,7 +212,8 @@ class live2d_V1Api
 		return new WP_REST_Response(array(
 			'model' => array(
 				'id'      => $next,
-				'message' => sprintf('我的新名字叫做「%s」哦~', $label),
+				/* translators: %s: model display name */
+				'message' => sprintf( __('我的新名字叫做「%s」哦~', 'live-2d'), $label ),
 			),
 		), 200);
 	}
@@ -230,8 +232,8 @@ class live2d_V1Api
 			'textures' => array(
 				'id'      => $next,
 				'message' => $next === intval($textureId)
-					? '我还没有其他衣服呢~'
-					: '你帮我换了一件新衣服!',
+					? __('我还没有其他衣服呢~', 'live-2d')
+					: __('你帮我换了一件新衣服!', 'live-2d'),
 			),
 		), 200);
 	}
@@ -248,7 +250,7 @@ class live2d_V1Api
 			return new WP_REST_Response(array(
 				'textures' => array(
 					'id'      => intval($textureId),
-					'message' => '我还没有其他衣服呢~',
+					'message' => __('我还没有其他衣服呢~', 'live-2d'),
 				),
 			), 200);
 		}
@@ -256,7 +258,7 @@ class live2d_V1Api
 		return new WP_REST_Response(array(
 			'textures' => array(
 				'id'      => $next,
-				'message' => '你帮我换了一件新衣服!',
+				'message' => __('你帮我换了一件新衣服!', 'live-2d'),
 			),
 		), 200);
 	}

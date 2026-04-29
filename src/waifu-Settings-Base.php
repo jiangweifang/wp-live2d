@@ -149,10 +149,13 @@ class live2D_Settings_Base
                 </label><br>
                 <span class="description"><?php esc_html_e('Cubism 4+ 模型(*.model3.json),可填模型直链或目录根并在下方"模型目录"中列出多个模型。', 'live-2d'); ?></span>
             <?php else: ?>
-                <label for="apiType-custom">
-                    <input type="radio" disabled> <?php esc_html_e('自定义新版模型路径', 'live-2d'); ?>
+                <?php // 未登录 / 未付费: radio 与 label 都置灰, 并配合 cursor:not-allowed 提示用户不可点击.
+                      // disabled 属性已经阻止勾选, 这里加视觉反馈; 同时把 title 提示加到 label 上,
+                      // hover 时会显示完整原因, 避免用户以为是 bug. ?>
+                <label for="apiType-custom" style="opacity: 0.5; cursor: not-allowed;" title="<?php esc_attr_e('完成登录并付费后可用', 'live-2d'); ?>">
+                    <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义新版模型路径', 'live-2d'); ?>
                 </label><br>
-                <span class="description"><?php esc_html_e('Cubism 4+ 模型: 完成登录并付费后可用。', 'live-2d'); ?></span>
+                <span class="description" style="opacity: 0.7;"><?php esc_html_e('Cubism 4+ 模型: 完成登录并付费后可用。', 'live-2d'); ?></span>
             <?php endif; ?>
         </fieldset>
     <?php

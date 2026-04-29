@@ -146,17 +146,26 @@ function live_2d_install()
     $live_2d_Settings->install_Default_Advanced();
 }
 
-// 停用插件 — 注意: 停用不应删除用户配置, 仅卸载时清理.
+// 停用插件 — 用户要求: 停用时清理本插件设置过的所有 option, 重新启用即干净状态.
+// 模型文件 (model/) 不在此处理: 卸载时 WP 会连同插件目录一并删除; 仅停用时保留下载的
+// 模型文件无碍 (重新启用后照常可用).
 register_deactivation_hook(__FILE__, 'live_2d_stop');
 function live_2d_stop()
 {
-    // 故意留空: 停用插件保留用户设置, 重新启用时无需重新配置.
-    // 如需彻底清理请使用 "删除" (uninstall) 操作, 见 live_2d_uninstall().
+    live_2d_purge_options();
 }
 
-//卸载插件
+//卸载插件 — 走同一份清理逻辑.
 register_uninstall_hook(__FILE__, 'live_2d_uninstall');
 function live_2d_uninstall()
+{
+    live_2d_purge_options();
+}
+
+/**
+ * 清理本插件创建的所有 option (主设置 / 高级提示 / 登录 token).
+ */
+function live_2d_purge_options()
 {
     delete_option('live_2d_settings_option_name');
     delete_option('live_2d_advanced_option_name');
@@ -249,7 +258,7 @@ function live2D_DefMod()
         <div class="gptInput">
             <input type="text" id="live2dChatText" />
             <span>
-                <button class="wp-element-button" id="live2dSend">发送</button>
+                <button class="wp-element-button" id="live2dSend"><?php esc_html_e('发送', 'live-2d'); ?></button>
             </span>
             <span style="width: 30px;font-size: 15px;display: flex;justify-content: center;align-items: center;">
                 <i id="live2dSendClose" class="fa-solid fa-circle-xmark"></i>

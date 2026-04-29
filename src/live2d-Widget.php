@@ -7,7 +7,7 @@ class Live2D_Widget extends WP_Widget
         // 主要内容方法
         $widget_ops = array(
             'classname'                   => 'live2D_Widget',
-            'description'                 => __('您可以把看板娘放在一个指定的区域'),
+            'description'                 => __('您可以把看板娘放在一个指定的区域', 'live-2d'),
             'customize_selective_refresh' => true,
         );
         //$control_ops = array('width' => 400, 'height' => 300);
@@ -35,7 +35,7 @@ class Live2D_Widget extends WP_Widget
                 <span class="fui-info-circle"><i class="fa-solid fa-circle-info"></i></span>
                 <span class="fui-cross"><i class="fa-solid fa-circle-xmark"></i></span>
             </div>
-            <div class="gptInput"><input type="text" id="live2dChatText" /><span><button class="wp-element-button" id="live2dSend">发送</button></span></div>
+            <div class="gptInput"><input type="text" id="live2dChatText" /><span><button class="wp-element-button" id="live2dSend"><?php esc_html_e('发送', 'live-2d'); ?></button></span></div>
         </div>
         <?php // 必须用 type="module": live2dwebsdk.min.js 是 ES module(defer 执行),
               // 经典 inline <script> 会在 module 之前同步执行, 那时 window.initLive2dWeb
@@ -66,7 +66,7 @@ class Live2D_Widget extends WP_Widget
         }
     ?>
         <p>
-            <label for="<?php echo $this->get_field_id('title'); ?>"><?php esc_attr_e('Title:'); ?>
+            <label for="<?php echo $this->get_field_id('title'); ?>"><?php esc_attr_e('Title:', 'live-2d'); ?>
                 <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" />
             </label>
         </p>

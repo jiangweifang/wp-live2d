@@ -23,6 +23,24 @@ class live2D_Settings
 			$sanitary_values['apiType'] = 'remote';
 		}
 
+		// 'custom' (自定义新版模型路径 / Cubism 4+) 是付费功能, 与 waifu-Settings-Base.php
+		// apiType_callback 的 UI 门槛保持一致: 未登录或未付费(userLevel<1) 用户即便绕过
+		// 前端的 disabled radio 直接 POST 'custom', 服务端也强制退回 'remote'.
+		if ($sanitary_values['apiType'] === 'custom') {
+			$user_token = get_option('live_2d_settings_user_token');
+			$is_paid = is_array($user_token)
+				&& !empty($user_token['userLevel'])
+				&& intval($user_token['userLevel']) > 0;
+			if (!$is_paid) {
+				$sanitary_values['apiType'] = 'remote';
+				add_settings_error(
+					'live_2d_sdk_error',
+					'live2d_apitype_paywall',
+					__('"自定义新版模型路径" 需要登录并付费后才能使用, 已自动恢复为 "自行部署旧版模型".', 'live-2d')
+				);
+			}
+		}
+
 		if (isset($input['modelAPI'])) {
 			$sanitary_values['modelAPI'] = sanitize_text_field($input['modelAPI']);
 		} else {

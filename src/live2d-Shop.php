@@ -52,21 +52,24 @@ class live2d_Shop
 ?>
         <div id="live2d-shop">
             <div class="wp-filter">
-                <h2>列表中是您可以使用的模型。</h2>
-                <p>下载方式与浏览器扩展一致:直接 GET <code>download.live2dweb.com/model/{name}.zip</code>,由后端 PHP 解压到 <code>model/{name}</code>。</p>
+                <h2><?php esc_html_e('列表中是您可以使用的模型。', 'live-2d'); ?></h2>
+                <p><?php echo wp_kses(
+                    __('下载方式与浏览器扩展一致:直接 GET <code>download.live2dweb.com/model/{name}.zip</code>,由后端 PHP 解压到 <code>model/{name}</code>。', 'live-2d'),
+                    array('code' => array())
+                ); ?></p>
             </div>
             <?php
             $userInfo = $this->userInfo;
             if (!isset($userInfo) || empty($userInfo["sign"])) {
             ?>
                 <div>
-                    您需要登陆并付费才可以使用此功能。
+                    <?php esc_html_e('您需要登陆并付费才可以使用此功能。', 'live-2d'); ?>
                 </div>
             <?php
             } else if (intval($userInfo["userLevel"]) < 1) {
             ?>
                 <div>
-                    您需要付费才可以使用此功能。
+                    <?php esc_html_e('您需要付费才可以使用此功能。', 'live-2d'); ?>
                 </div>
             <?php
             } else {
@@ -88,16 +91,16 @@ class live2d_Shop
                         echo '<div class="title">' . esc_html($item['label']) . '</div>';
                         echo '<div class="downBtn">';
                         if ($isCached) {
-                            echo '<button type="button" class="install-now button button-disabled" disabled data-model-name="' . esc_attr($item['name']) . '">已启用</button>';
+                            echo '<button type="button" class="install-now button button-disabled" disabled data-model-name="' . esc_attr($item['name']) . '">' . esc_html__('已启用', 'live-2d') . '</button>';
                         } else {
-                            echo '<button type="button" class="install-now button" data-model-name="' . esc_attr($item['name']) . '">下载</button>';
+                            echo '<button type="button" class="install-now button" data-model-name="' . esc_attr($item['name']) . '">' . esc_html__('下载', 'live-2d') . '</button>';
                         }
                         echo '</div>';
                         echo '</div>';
                     }
                     echo '</div>';
                 } else {
-                    echo '<div>没有可用的模型。</div>';
+                    echo '<div>' . esc_html__('没有可用的模型。', 'live-2d') . '</div>';
                 }
             }
             ?>
@@ -112,6 +115,16 @@ function model_shop_scripts($shopNonceLiteral = '')
     $nonceJs = $shopNonceLiteral !== ''
         ? wp_json_encode($shopNonceLiteral)
         : '((window.settings && window.settings.nonce) ? window.settings.nonce : "")';
+    // 交互文案一次性以 JSON 下发，避免在 inline JS 中混插 PHP 调用。
+    $i18n = array(
+        'downloading' => __('正在下载...', 'live-2d'),
+        'extracting'  => __('正在解压...', 'live-2d'),
+        'enabled'     => __('已启用', 'live-2d'),
+        'download'    => __('下载', 'live-2d'),
+        'unzipFailed' => __('解压失败,文件可能损坏。', 'live-2d'),
+        'downloadFailed'  => __('下载失败', 'live-2d'),
+        'requestFailed'   => __('下载请求失败,请检查网络或登录状态。', 'live-2d'),
+    );
     ?>
     <script>
         // 模型下载流程对齐 Chromium 扩展 v1ModelCache.ts:
@@ -126,6 +139,7 @@ function model_shop_scripts($shopNonceLiteral = '')
             'use strict';
             var thisAjaxUrl = (typeof ajaxurl !== 'undefined') ? ajaxurl : '/wp-admin/admin-ajax.php';
             var live2dShopNonce = <?php echo $nonceJs; ?>;
+            var live2dShopI18n = <?php echo wp_json_encode($i18n); ?>;
 
             function setBtnState(btn, opts) {
                 if (!btn) return;
@@ -165,48 +179,48 @@ function model_shop_scripts($shopNonceLiteral = '')
                 var modelName = btn.getAttribute('data-model-name');
                 if (!modelName) return;
 
-                setBtnState(btn, { text: '正在下载...', disabled: true, addClass: 'updating-message' });
+                setBtnState(btn, { text: live2dShopI18n.downloading, disabled: true, addClass: 'updating-message' });
 
                 postForm('download_v1_model', { modelName: modelName })
                     .then(function (r) { return r.json().catch(function () { return {}; }); })
                     .then(function (rsp) {
                         var rspInfo = rsp || {};
                         if (rspInfo.errorCode === 200) {
-                            setBtnState(btn, { text: '正在解压...' });
+                            setBtnState(btn, { text: live2dShopI18n.extracting });
                             return postForm('zip_model', { fileName: rspInfo.fileName })
                                 .then(function (r) { return r.text(); })
                                 .then(function (zipRspText) {
                                     if (Number(zipRspText) === 1) {
                                         setBtnState(btn, {
-                                            text: '已启用',
+                                            text: live2dShopI18n.enabled,
                                             disabled: true,
                                             removeClass: 'updating-message',
                                             addClass: 'button-disabled',
                                         });
                                     } else {
-                                        // 半成品 zip 清理,失败也不阻塞用户
+                                        // 半成品 zip 清理，失败也不阻塞用户
                                         postForm('clear_files', { fileName: rspInfo.fileName }).catch(function () {});
-                                        window.alert('解压失败,文件可能损坏。');
+                                        window.alert(live2dShopI18n.unzipFailed);
                                         setBtnState(btn, {
-                                            text: '下载',
+                                            text: live2dShopI18n.download,
                                             disabled: false,
                                             removeClass: 'updating-message',
                                         });
                                     }
                                 });
                         }
-                        var msg = (rspInfo && rspInfo.errorMsg) ? rspInfo.errorMsg : '下载失败';
+                        var msg = (rspInfo && rspInfo.errorMsg) ? rspInfo.errorMsg : live2dShopI18n.downloadFailed;
                         window.alert(msg);
                         setBtnState(btn, {
-                            text: '下载',
+                            text: live2dShopI18n.download,
                             disabled: false,
                             removeClass: 'updating-message',
                         });
                     })
                     .catch(function () {
-                        window.alert('下载请求失败,请检查网络或登录状态。');
+                        window.alert(live2dShopI18n.requestFailed);
                         setBtnState(btn, {
-                            text: '下载',
+                            text: live2dShopI18n.download,
                             disabled: false,
                             removeClass: 'updating-message',
                         });
