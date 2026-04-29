@@ -13,15 +13,28 @@ class live2D_Settings
 		}
 
 		if (isset($input['apiType'])) {
-			$sanitary_values['apiType'] = (bool)$input['apiType'];
+			// apiType 三态字符串: 'local' | 'remote' | 'custom'
+			// 兼容老版本(bool/string"1") -> 用 live2d_normalize_api_type 归一化,
+			// 未知值一律退到 'remote' 以最安全(用户继续看到 modelAPI 输入框)。
+			$sanitary_values['apiType'] = function_exists('live2d_normalize_api_type')
+				? live2d_normalize_api_type($input['apiType'])
+				: ($input['apiType'] === 'local' ? 'local' : 'remote');
 		} else {
-			$sanitary_values['apiType'] = false;
+			$sanitary_values['apiType'] = 'remote';
 		}
 
 		if (isset($input['modelAPI'])) {
 			$sanitary_values['modelAPI'] = sanitize_text_field($input['modelAPI']);
 		} else {
 			$sanitary_values['modelAPI'] = "https://live2d.fghrsh.net/api/";
+		}
+
+		// apiType=local(本地部署旧版模型) 强制把 modelAPI 改写到本插件提供的本地
+		// V1 接口(详见 src/live2d-V1Api.php),不再走 https://api.live2dweb.com/model/v2。
+		// 这里在 sanitize 阶段持久化到 DB,运行时不再依赖 wp_head 钩子里的覆盖。
+		// 即使用户在表单里手动改回了 api.live2dweb.com,只要选了 local 也会被纠正。
+		if ($sanitary_values['apiType'] === 'local' && function_exists('live2d_v1api_local_url')) {
+			$sanitary_values['modelAPI'] = live2d_v1api_local_url();
 		}
 
 		if (isset($input['modelDir'])) {

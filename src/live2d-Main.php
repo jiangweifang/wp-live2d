@@ -64,6 +64,9 @@ class live2D
 		);
 		wp_enqueue_script('wp-color-picker-alpha');
 		wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu-admin.min.js');
+		// admin 端传给 JS 的 settings 原样下发: live2d-admin.ts 需要 apiType 的
+		// 三态字符串 ('local'|'remote'|'custom') 驱动表单动态切换。
+		// 前端 live2dweb (wordpress-live2d.php) 则单独压成 bool供运行时使用。
 		wp_localize_script('admin_js', 'settings', array(
 			'userInfo' => array(
 				'sign' => isset($live2dUserInfo["sign"]) ? $live2dUserInfo["sign"] : '',

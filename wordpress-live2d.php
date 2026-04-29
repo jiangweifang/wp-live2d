@@ -62,26 +62,67 @@ function live2d_module_script_tag($tag, $handle, $src)
     return $tag;
 }
 
+/**
+ * 输出 ES module importmap, 把裸说明符 "moment" 解析到一个从 window.moment
+ * 取值的 data: shim. vite 配置把 moment 标成 external 并以 ES 格式输出, 产物里
+ * 保留了 `import x from "moment"`; 浏览器加载 module 时必须按规范解析裸说明符,
+ * 没有 importmap 会抛 "Failed to resolve module specifier 'moment'".
+ *
+ * 必须在任何 <script type="module"> 之前出现, 因此挂在 wp_head 优先级 0,
+ * 早于 live2D_style(priority 1) 入队的脚本(实际由 wp_print_head_scripts
+ * 在优先级 9 渲染).
+ */
+add_action('wp_head', 'live2d_print_module_importmap', 0);
+function live2d_print_module_importmap()
+{
+    echo '<script type="importmap">{"imports":{"moment":"data:text/javascript,export default window.moment;"}}</script>' . "\n";
+}
+
 // 加载设置组件
 include_once(dirname(__FILE__)  . '/src/live2d-Main.php');
 // 加载小工具
 include_once(dirname(__FILE__)  . '/src/live2d-Widget.php');
 // 加载登录确认API
 include_once(dirname(__FILE__)  . '/src/live2d-SDK.php');
+// 加载本地 V1 模型 API(取代 https://api.live2dweb.com/model/v2 的清单/切换/换装服务)
+include_once(dirname(__FILE__)  . '/src/live2d-V1Api.php');
 
 //添加样式（初始化）
 function live2D_style()
 {
     $live2dSettings = get_option('live_2d_settings_option_name');
     $live2dUserInfo = get_option('live_2d_settings_user_token');
+    // apiType=local(本地部署旧版模型): 不再走 https://api.live2dweb.com/model/v2,
+    // 把 modelAPI 重写到本插件提供的本地 V1 接口(详见 src/live2d-V1Api.php)。
+    // 该 URL 不带 .json 结尾、不命中 LIVE2DWEB_API,会被 classifyModelApi 判为
+    // ApiUrlType.Other,前端复用旧 PHP 后端的 /get/?id=X-Y 等路径。
+    // 'remote' / 'custom' 模式下,用户配置的 modelAPI 不被覆盖。
+    //
+    // 持久化逻辑在 live2d_Settings::live_2d_settings_sanitize 里;此处的运行时
+    // 覆盖只是兜底:覆盖 site URL 改了之后 DB 里旧值过期、或老用户从远端恢复
+    // 配置后还来不及保存设置就刷新了页面这两种情况。
+    $isLocal = is_array($live2dSettings)
+        && function_exists('live2d_api_type_is_local')
+        && live2d_api_type_is_local(isset($live2dSettings['apiType']) ? $live2dSettings['apiType'] : null);
+    if ($isLocal && function_exists('live2d_v1api_local_url')) {
+        $live2dSettings['modelAPI'] = live2d_v1api_local_url();
+    }
+    // 把三态字符串 apiType 在传给 JS 前压成 bool,与 live2d-tips.ts 既有的
+    // truthy 判断 / `isWorkshop=${settings.apiType}` 拼接保持兼容。
+    if (is_array($live2dSettings) && function_exists('live2d_api_type_is_local')) {
+        $live2dSettings['apiType'] = live2d_api_type_is_local(isset($live2dSettings['apiType']) ? $live2dSettings['apiType'] : null);
+    }
     wp_enqueue_style('waifu_css', LIVE2D_ASSETS . "waifu.css"); //css
     wp_enqueue_style('fontawesome_css', LIVE2D_ASSETS . "fontawesome/css/all.min.css"); //css
     wp_enqueue_script('moment', LIVE2D_ASSETS . 'moment.min.js'); //
     wp_enqueue_script('live2dv1core', LIVE2D_ASSETS . 'live2dv1.min.js');
+    live2d_mark_script_as_module('live2dv1core');
     //wp_enqueue_script('live2dv2core', $live2dSettings["sdkUrl"]);
     wp_enqueue_script('live2dv2core', LIVE2D_ASSETS . 'r5b2-core/live2dcubismcore.min.js');
     wp_enqueue_script('live2dv2sdk', LIVE2D_ASSETS . 'live2dv2.min.js', array('live2dv2core'));
+    live2d_mark_script_as_module('live2dv2sdk');
     wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'live2dv2sdk', 'moment'));
+    live2d_mark_script_as_module('live2dweb');
     wp_localize_script('live2dweb', 'live2d_settings', array(
         'userInfo' => array(
             'sign' => isset($live2dUserInfo["sign"]) ? $live2dUserInfo["sign"] : '',
@@ -156,6 +197,9 @@ add_action('rest_api_init', function () {
         'callback' => array($sdk, 'verify_token'),
         'permission_callback' => '__return_true'
     ));
+
+    // 本地 V1 模型清单 / 切换 / 换装(取代 api.live2dweb.com/model/v2)
+    live2d_V1Api::register_routes();
 });
 
 // 初始化加载
@@ -212,9 +256,17 @@ function live2D_DefMod()
             </span>
         </div>
     </div>
-    <script type="text/javascript">
-        if (typeof initLive2dWeb === 'function') {
-            window.addEventListener('load', initLive2dWeb);
+    <?php // 必须用 type="module": live2dwebsdk.min.js 是 ES module(defer 执行),
+          // 经典 inline <script> 会在 module 之前同步执行, 那时 window.initLive2dWeb
+          // 还未被赋值. inline module 与 src module 共用 defer 队列, 按文档顺序执行,
+          // 因此能保证此时 initLive2dWeb 已经挂到 window 上. ?>
+    <script type="module">
+        if (typeof window.initLive2dWeb === 'function') {
+            if (document.readyState === 'complete') {
+                window.initLive2dWeb();
+            } else {
+                window.addEventListener('load', window.initLive2dWeb);
+            }
         }
     </script>
 <?php

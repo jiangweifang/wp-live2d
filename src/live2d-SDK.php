@@ -368,12 +368,21 @@ class live2d_SDK
      * 原本走 Model/List 以远程 API，现在对齐 Chromium 扩展直接返回本地 V1 catalog:
      *   id   = catalog.name (与下载路由 / 本地目录 / textures.json 前缀一致)
      *   name = catalog.label (UI 显示名)
+     *
+     * 只回传已下载并解压到 DOWNLOAD_DIR/{name}/ 的条目,避免用户在下拉框里
+     * 选到尚未下载的模型,导致前端取不到 model.json/textures。判断标准与
+     * live2d_Shop 卡片上"已启用"完全一致(sanitize_file_name + is_dir)。
      */
     public function GetModelMotions()
     {
         $this->verify_admin_ajax('live2d_shop_action');
         $list = array();
         foreach (self::GetV1Catalog() as $item) {
+            $sanName     = sanitize_file_name($item['name']);
+            $extractPath = DOWNLOAD_DIR . $sanName;
+            if (!is_dir($extractPath)) {
+                continue;
+            }
             $list[] = array(
                 'id'   => $item['name'],
                 'name' => $item['label'],
