@@ -462,15 +462,46 @@ class live2d_SDK
 
     /**
      * 对ZIP进行解压缩
+     *
+     * 优先用 WordPress 内置的 unzip_file()(wp-admin/includes/file.php),它会:
+     *   - 若环境有 ext-zip 则走 ZipArchive,否则回落到随 WP 自带的纯 PHP 库 PclZip;
+     *   - 走 WP_Filesystem 写盘,失败时返回 WP_Error(有 code/message/data),信息更完整;
+     *   - 自带 zip slip 防护、自动跳过 __MACOSX/.DS_Store、按需建中间目录。
+     * 如果 WP_Filesystem 拿不到 direct 模式(罕见,例如纯 FTP 站点),回落到原本的
+     * ZipArchive 直接调用,保证旧行为不退化。
+     *
+     * 失败时除了 echo 0(协议保持不变),会把所有可定位"为什么失败"的诊断信息写进 error_log:
+     *   - zip 路径/大小/权限位/属主、解压目标目录是否可写
+     *   - PHP 进程的 euid/egid + 用户名(POSIX 可用时);常见现象:
+     *       * 文件由 ubuntu 用户手动放进去,umask 027/077 导致 www 读不到
+     *       * 目标目录属主非 www 且无 group/other 写权限
+     *   - WP_Error code/message,或 ZipArchive::open() 的真实返回码(int)
+     * 注意:权限/不存在类错误故意 *不* 删除 zip,保留现场让运维 ls -l 查证;
+     *      仅在确认是 ZIP 内容损坏(ER_NOZIP/ER_INCONS/ER_CRC 等)或越权条目时才删。
      */
     public function OpenZip()
     {
         $this->verify_admin_ajax('live2d_shop_action');
-        $zip = new ZipArchive;
         $sanfilename = sanitize_file_name($_POST["fileName"]);
         $zipFile = DOWNLOAD_DIR . $sanfilename;
         $zipFileName = pathinfo($zipFile, PATHINFO_FILENAME);
         $extractTarget = DOWNLOAD_DIR . $zipFileName;
+
+        // 1) 首选:WP 官方 unzip_file()
+        $wpResult = $this->TryUnzipWithWpFilesystem($zipFile, $extractTarget);
+        if ($wpResult === 'ok') {
+            @unlink($zipFile);
+            // 必须 wp_die,不然 admin-ajax.php 会追加 "0",前端拿到 "10" 会被判失败
+            wp_die('1', '', array('response' => null));
+        }
+        if ($wpResult === 'fail') {
+            // unzip_file 已识别这是错误(不是"环境不可用"),日志已写;不要再用 ZipArchive 试一遍
+            wp_die('0', '', array('response' => null));
+        }
+        // $wpResult === 'unavailable' —— WP_Filesystem direct 模式拿不到,走兜底
+
+        // 2) 兜底:ZipArchive 直接调用
+        $zip = new ZipArchive;
         $res = $zip->open($zipFile);
         if ($res === TRUE) {
             // 防 zip slip: 逐条校验条目, 任一跳出目录则拒绝解压
@@ -479,26 +510,181 @@ class live2d_SDK
                 if ($entryName === false) {
                     $zip->close();
                     @unlink($zipFile);
-                    error_log('OpenZip:[读取 zip 条目失败]');
-                    echo 0;
-                    return;
+                    error_log('OpenZip:[读取 zip 条目失败] file=' . $zipFile);
+                    wp_die('0', '', array('response' => null));
                 }
-                // 拒绝绝对路径与 ../ 跳转
                 if (strpos($entryName, '..') !== false || strpos($entryName, '/..') !== false || preg_match('#^([a-zA-Z]:)?[\\/]#', $entryName)) {
                     $zip->close();
                     @unlink($zipFile);
-                    error_log('OpenZip:[检测到非法条目路径: ' . $entryName . ']');
-                    echo 0;
-                    return;
+                    error_log('OpenZip:[检测到非法条目路径: ' . $entryName . '] file=' . $zipFile);
+                    wp_die('0', '', array('response' => null));
                 }
             }
-            $zip->extractTo($extractTarget);
+            $extractRes = $zip->extractTo($extractTarget);
             $zip->close();
+            if ($extractRes !== true) {
+                error_log('OpenZip:[ZipArchive::extractTo 失败] ' . self::DescribeFsContext($zipFile, $extractTarget));
+                @unlink($zipFile);
+                wp_die('0', '', array('response' => null));
+            }
             @unlink($zipFile);
-            echo 1;
+            wp_die('1', '', array('response' => null));
         } else {
-            echo 0;
+            $errCode = is_int($res) ? $res : -1;
+            $errLabel = self::ZipOpenErrorLabel($errCode);
+            error_log('OpenZip:[ZipArchive::open 失败] code=' . $errCode . '(' . $errLabel . ') ' . self::DescribeFsContext($zipFile, $extractTarget));
+            if (in_array($errCode, array(ZipArchive::ER_NOZIP, ZipArchive::ER_INCONS, ZipArchive::ER_CRC), true)) {
+                @unlink($zipFile);
+            }
+            wp_die('0', '', array('response' => null));
         }
+    }
+
+    /**
+     * 用 WP 官方 unzip_file() 解压。
+     * 返回三态字符串:
+     *   'ok'          —— 解压成功
+     *   'fail'        —— unzip_file 明确失败,日志已写,zip 已按错误类型决定是否删除;
+     *                    调用方应直接 echo 0,不要再回落,因为同一个文件用 ZipArchive 大概率
+     *                    遇到完全相同的失败原因(权限/损坏),再来一遍只会多一份日志。
+     *   'unavailable' —— WP 核心函数缺失或 WP_Filesystem direct 模式拿不到;调用方回落到
+     *                    ZipArchive 直接调用。
+     */
+    private function TryUnzipWithWpFilesystem($zipFile, $extractTarget)
+    {
+        if (!function_exists('unzip_file') || !function_exists('WP_Filesystem')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+        if (!function_exists('unzip_file') || !function_exists('WP_Filesystem')) {
+            return 'unavailable';
+        }
+        global $wp_filesystem;
+        if (empty($wp_filesystem)) {
+            // 第三个参数 true 强制 direct,避免在某些环境弹出 FTP 凭据表单
+            if (!WP_Filesystem(false, false, true)) {
+                error_log('OpenZip:[WP_Filesystem 初始化失败,回落到 ZipArchive] ' . self::DescribeFsContext($zipFile, $extractTarget));
+                return 'unavailable';
+            }
+        }
+        // unzip_file 内部已做 zip slip 防护、跳过 __MACOSX、按需创建目标目录;
+        // 在 ext-zip 不可用时会自动用纯 PHP 的 PclZip(随 WP 自带)
+        $result = unzip_file($zipFile, $extractTarget);
+        if ($result === true) {
+            return 'ok';
+        }
+        if (is_wp_error($result)) {
+            $code = $result->get_error_code();
+            $msg  = $result->get_error_message();
+            $data = $result->get_error_data();
+            error_log('OpenZip:[unzip_file 失败] code=' . $code
+                . ' msg=' . $msg
+                . ' data=' . (is_scalar($data) ? (string)$data : wp_json_encode($data))
+                . ' ' . self::DescribeFsContext($zipFile, $extractTarget));
+            // 仅在确认是 zip 损坏/空包时才删,权限/磁盘类保留现场
+            if (in_array($code, array('incompatible_archive', 'empty_archive_pclzip', 'empty_archive_ziparchive', 'corrupt_zip'), true)) {
+                @unlink($zipFile);
+            }
+        } else {
+            error_log('OpenZip:[unzip_file 返回非预期类型] ' . var_export($result, true) . ' ' . self::DescribeFsContext($zipFile, $extractTarget));
+        }
+        return 'fail';
+    }
+
+
+    /**
+     * 把 ZipArchive::open() 的 int 返回码翻成可读名字。
+     * 常量值见 https://www.php.net/manual/en/class.ziparchive.php
+     */
+    private static function ZipOpenErrorLabel($code)
+    {
+        static $map = null;
+        if ($map === null) {
+            $map = array(
+                ZipArchive::ER_OK      => 'ER_OK',
+                ZipArchive::ER_MULTIDISK => 'ER_MULTIDISK',
+                ZipArchive::ER_RENAME  => 'ER_RENAME',
+                ZipArchive::ER_CLOSE   => 'ER_CLOSE',
+                ZipArchive::ER_SEEK    => 'ER_SEEK',
+                ZipArchive::ER_READ    => 'ER_READ/读失败(常见:权限不足)',
+                ZipArchive::ER_WRITE   => 'ER_WRITE',
+                ZipArchive::ER_CRC     => 'ER_CRC/校验失败(zip 损坏)',
+                ZipArchive::ER_ZIPCLOSED => 'ER_ZIPCLOSED',
+                ZipArchive::ER_NOENT   => 'ER_NOENT/文件不存在',
+                ZipArchive::ER_EXISTS  => 'ER_EXISTS',
+                ZipArchive::ER_OPEN    => 'ER_OPEN/打开失败(常见:权限不足或被占用)',
+                ZipArchive::ER_TMPOPEN => 'ER_TMPOPEN',
+                ZipArchive::ER_ZLIB    => 'ER_ZLIB',
+                ZipArchive::ER_MEMORY  => 'ER_MEMORY',
+                ZipArchive::ER_CHANGED => 'ER_CHANGED',
+                ZipArchive::ER_COMPNOTSUPP => 'ER_COMPNOTSUPP',
+                ZipArchive::ER_EOF     => 'ER_EOF/文件被截断(下载未完成?)',
+                ZipArchive::ER_INVAL   => 'ER_INVAL',
+                ZipArchive::ER_NOZIP   => 'ER_NOZIP/不是 zip 格式(很可能是 HTML/XML 错误页)',
+                ZipArchive::ER_INTERNAL => 'ER_INTERNAL',
+                ZipArchive::ER_INCONS  => 'ER_INCONS/zip 不一致(损坏)',
+                ZipArchive::ER_REMOVE  => 'ER_REMOVE',
+                ZipArchive::ER_DELETED => 'ER_DELETED',
+            );
+        }
+        return isset($map[$code]) ? $map[$code] : ('UNKNOWN(' . $code . ')');
+    }
+
+    /**
+     * 把"PHP 这一刻看到的文件系统状态"打成一行字,集中诊断 own/perm/size 类问题。
+     */
+    private static function DescribeFsContext($zipFile, $extractTarget)
+    {
+        $exists = file_exists($zipFile);
+        $size = $exists ? @filesize($zipFile) : -1;
+        $readable = $exists && is_readable($zipFile);
+        $perms = $exists ? substr(sprintf('%o', @fileperms($zipFile)), -4) : '----';
+        $owner = '?';
+        $group = '?';
+        if ($exists && function_exists('fileowner')) {
+            $uid = @fileowner($zipFile);
+            $gid = @filegroup($zipFile);
+            if (function_exists('posix_getpwuid')) {
+                $pw = $uid !== false ? @posix_getpwuid($uid) : false;
+                $gr = $gid !== false ? @posix_getgrgid($gid) : false;
+                $owner = ($pw && isset($pw['name'])) ? $pw['name'] . '(' . $uid . ')' : (string)$uid;
+                $group = ($gr && isset($gr['name'])) ? $gr['name'] . '(' . $gid . ')' : (string)$gid;
+            } else {
+                $owner = (string)$uid;
+                $group = (string)$gid;
+            }
+        }
+        $proc = '?';
+        if (function_exists('posix_geteuid')) {
+            $euid = @posix_geteuid();
+            $egid = function_exists('posix_getegid') ? @posix_getegid() : -1;
+            if (function_exists('posix_getpwuid')) {
+                $pw = @posix_getpwuid($euid);
+                $proc = ($pw && isset($pw['name'])) ? $pw['name'] . '(' . $euid . '/' . $egid . ')' : ($euid . '/' . $egid);
+            } else {
+                $proc = $euid . '/' . $egid;
+            }
+        } elseif (function_exists('get_current_user')) {
+            $proc = (string) get_current_user();
+        }
+        $dir = dirname($zipFile);
+        $dirWritable = is_dir($dir) && is_writable($dir);
+        $dirPerms = is_dir($dir) ? substr(sprintf('%o', @fileperms($dir)), -4) : '----';
+        $extDirExists = is_dir($extractTarget);
+        $extDirWritable = $extDirExists ? is_writable($extractTarget) : is_writable($dir);
+        return 'file=' . $zipFile
+            . ' exists=' . ($exists ? '1' : '0')
+            . ' size=' . $size
+            . ' readable=' . ($readable ? '1' : '0')
+            . ' perms=' . $perms
+            . ' owner=' . $owner
+            . ' group=' . $group
+            . ' proc_user=' . $proc
+            . ' dir=' . $dir
+            . ' dir_perms=' . $dirPerms
+            . ' dir_writable=' . ($dirWritable ? '1' : '0')
+            . ' extract_target=' . $extractTarget
+            . ' extract_target_exists=' . ($extDirExists ? '1' : '0')
+            . ' extract_target_writable=' . ($extDirWritable ? '1' : '0');
     }
 
     /**
@@ -509,8 +695,7 @@ class live2d_SDK
     {
         $this->verify_admin_ajax('live2d_shop_action');
         if (!current_user_can('manage_options')) {
-            echo 0;
-            return;
+            wp_die('0', '', array('response' => null));
         }
         $sanfilename = sanitize_file_name($_POST["fileName"]);
         $filePath = DOWNLOAD_DIR . $sanfilename;
@@ -518,15 +703,15 @@ class live2d_SDK
         $realDir = realpath(DOWNLOAD_DIR);
         $realFile = realpath($filePath);
         if ($realDir === false || $realFile === false || strpos($realFile, $realDir) !== 0) {
-            echo 0;
-            return;
+            wp_die('0', '', array('response' => null));
         }
         if (file_exists($realFile)) {
             unlink($realFile);
-            echo 1;
-        } else {
-            echo 0;
+            wp_die('1', '', array('response' => null));
         }
+        // 文件本来就不在,从前端视角等同于"已清理",仍返回 1 也合理;
+        // 但保留旧语义返回 0,以免破坏调用方对"是否真的删过"的依赖
+        wp_die('0', '', array('response' => null));
     }
 
     /**
