@@ -3,7 +3,7 @@
  * Plugin Name: Live 2D
  * Plugin URI: https://www.live2dweb.com/
  * Description: 看板娘插件
- * Version: 2.1.0
+ * Version: 2.1.1
  * Requires PHP: 7.4
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 //定义目录
 define('LIVE2D_ASSETS', plugin_dir_url(__FILE__) . 'assets/'); //资源目录
 define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)) . '/languages'); //基础目录
-define('LIVE2D_VERSION', '2.1.0'); //资源版本号, 用于缓存破坏
+define('LIVE2D_VERSION', '2.1.1'); //资源版本号, 用于缓存破坏
 
 /**
  * 把 wp_enqueue_script 注册的脚本标记为 ES module。

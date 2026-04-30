@@ -5,7 +5,7 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: live2d, vtuber, anime, animation, chatgpt
 Tested up to: 6.8
 Requires at least: 5.5
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 Requires PHP: 7.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT
