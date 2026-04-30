@@ -83,13 +83,9 @@ class live2D_Settings_Base
                 'live_2d_setting_base_section' // section
             );
 
-            add_settings_field(
-                'shaderDir', // id
-                __('WebGLShader 引用地址', 'live-2d'), // title
-                array($this, 'shaderDir_callback'), // callback
-                'live-2d-settings-base', // page
-                'live_2d_setting_base_section' // section
-            );
+            // shaderDir 不再暴露给用户配置: 路径完全由 wordpress-live2d.php 的
+            // live2D_style() 在运行时按 plugin_dir_url(__FILE__) 自动拼接,
+            // 确保跟随插件实际安装位置 / 站点 URL,免受 DB 旧值污染。
         }
     }
 
@@ -208,9 +204,13 @@ class live2D_Settings_Base
 
     public function sdkUrl_callback()
     {
+        // 默认 placeholder 改用插件本地 Cubism Core 6.x(由 wordpress-live2d.php 中
+        // 的 LIVE2D_ASSETS . 'cubism-core/live2dcubismcore.min.js' 提供),原因见该文件
+        // live2D_style() 注释。仍允许用户改回官方 CDN 或镜像地址。
+        $defaultSdkUrl = plugin_dir_url(dirname(__FILE__)) . 'assets/cubism-core/live2dcubismcore.min.js';
         printf(
             '<input class="regular-text" type="text" name="live_2d_settings_option_name[sdkUrl]" id="sdkUrl" value="%s">',
-            isset($this->live_2d__options['sdkUrl']) ? esc_attr($this->live_2d__options['sdkUrl']) : 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js'
+            isset($this->live_2d__options['sdkUrl']) ? esc_attr($this->live_2d__options['sdkUrl']) : esc_attr($defaultSdkUrl)
         );
         echo '<p>' . esc_html__('如未授权请勿修改此地址，擅自修改此地址引发的法律问题与插件作者无关。', 'live-2d') . '</p>
         <p>' . esc_html__('软件许可协议：', 'live-2d')
@@ -218,14 +218,7 @@ class live2D_Settings_Base
         | <a href = "https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html" target="_blank">Live2D Open Software License Agreement</a> </p>';
     }
 
-    public function shaderDir_callback()
-    {
-        printf(
-            '<input class="regular-text" type="text" name="live_2d_settings_option_name[shaderDir]" id="shaderDir" value="%s">',
-            isset($this->live_2d__options['shaderDir']) ? esc_attr($this->live_2d__options['shaderDir']) : plugin_dir_url(dirname(__FILE__)) . 'Framework/Shaders/WebGL/'
-        );
-        echo '<p>' . esc_html__('这个路径是 WebGLShader 代码的位置，请勿随意修改。', 'live-2d') .'<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGLShader" target="_blank">了解更多信息</a>'. '</p>';
-
-    }
+    // shaderDir_callback 已移除: shaderDir 不再作为可配置项, 详见 live_2d_settings_base_init
+    // 顶部说明; 实际值在 wordpress-live2d.php live2D_style() 运行时统一注入。
 }
 ?>

@@ -92,11 +92,8 @@ class live2D_Settings
 			$sanitary_values['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
 		}
 
-		if (isset($input['shaderDir'])) {
-			$sanitary_values['shaderDir'] = sanitize_text_field($input['shaderDir']);
-		} else {
-			$sanitary_values['shaderDir'] = plugin_dir_url(dirname(__FILE__)) . 'Framework/Shaders/WebGL/';
-		}
+		// shaderDir 不再持久化: 该路径由 wordpress-live2d.php live2D_style() 在运行时
+		// 按 plugin_dir_url(__FILE__) 自动注入, 跟随插件实际安装位置, 不依赖 DB 值。
 
 		if (isset($input['showToolMenu'])) {
 			$sanitary_values['showToolMenu'] = (bool)$input['showToolMenu'];

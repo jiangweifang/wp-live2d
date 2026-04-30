@@ -3,7 +3,7 @@
  * Plugin Name: Live 2D
  * Plugin URI: https://www.live2dweb.com/
  * Description: 看板娘插件
- * Version: 2.1.1
+ * Version: 2.1.2
  * Requires PHP: 7.4
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 //定义目录
 define('LIVE2D_ASSETS', plugin_dir_url(__FILE__) . 'assets/'); //资源目录
 define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)) . '/languages'); //基础目录
-define('LIVE2D_VERSION', '2.1.1'); //资源版本号, 用于缓存破坏
+define('LIVE2D_VERSION', '2.1.2'); //资源版本号, 用于缓存破坏
 
 /**
  * 把 wp_enqueue_script 注册的脚本标记为 ES module。
@@ -112,21 +112,30 @@ function live2D_style()
     if (is_array($live2dSettings) && function_exists('live2d_api_type_is_local')) {
         $live2dSettings['apiType'] = live2d_api_type_is_local(isset($live2dSettings['apiType']) ? $live2dSettings['apiType'] : null);
     }
-    wp_enqueue_style('waifu_css', LIVE2D_ASSETS . "waifu.css"); //css
-    wp_enqueue_style('fontawesome_css', LIVE2D_ASSETS . "fontawesome/css/all.min.css"); //css
-    wp_enqueue_script('moment', LIVE2D_ASSETS . 'moment.min.js'); //
-    wp_enqueue_script('live2dv1core', LIVE2D_ASSETS . 'live2dv1.min.js');
+    // shaderDir 不再由 PHP 注入: SDK (live2d_sdk/src/v2/lappdefine.ts) 默认以
+    // import.meta.url 为基准解析到同级 ./Shaders/WebGL/, vite.config.wordpress.ts
+    // 会把 shader 文件拷贝到 assets/Shaders/WebGL/,跟随插件实际位置/站点 URL。
+    wp_enqueue_style('waifu_css', LIVE2D_ASSETS . "waifu.css", array(), LIVE2D_VERSION); //css
+    wp_enqueue_style('fontawesome_css', LIVE2D_ASSETS . "fontawesome/css/all.min.css", array(), LIVE2D_VERSION); //css
+    wp_enqueue_script('moment', LIVE2D_ASSETS . 'moment.min.js', array(), LIVE2D_VERSION); //
+    wp_enqueue_script('live2dv1core', LIVE2D_ASSETS . 'live2dv1.min.js', array(), LIVE2D_VERSION);
     live2d_mark_script_as_module('live2dv1core');
-    // Live2D Cubism Core 必须从 Live2D 官方远端加载,不能本地分发(Live2D Proprietary
-    // Software License Agreement 限制)。设置项 sdkUrl 默认即为官方地址,这里只做
-    // 一次兜底,防止 DB 中该项被清空时 enqueue 出空 URL。
-    $live2dCubismCoreUrl = (is_array($live2dSettings) && !empty($live2dSettings['sdkUrl']))
-        ? $live2dSettings['sdkUrl']
-        : 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
-    wp_enqueue_script('live2dv2core', $live2dCubismCoreUrl);
-    wp_enqueue_script('live2dv2sdk', LIVE2D_ASSETS . 'live2dv2.min.js', array('live2dv2core'));
+    // Live2D Cubism Core: 当前固定走插件本地 6.x 副本(assets/cubism-core/)。
+    //   - 官方 CDN https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js
+    //     还停留在 5.1.0,不暴露 csmGetMocVersion(mocBytes) 单参重载;仓库内 Framework
+    //     已按 6.x 单参形式调用,命中老 CDN 会抛 'Cannot read properties of undefined'。
+    //   - live2d_sdk/src/v2/Core/RedistributableFiles.txt 已把 live2dcubismcore.min.js
+    //     列入 Live2D Proprietary Software License Agreement 允许 redistribute 的清单,
+    //     LICENSE.md / RedistributableFiles.txt 已并入 assets/cubism-core/。
+    // 待官方 CDN 升级到 6.x 后,把下面这行恢复为优先用户配置即可(sdkUrl 仍由设置页持久化):
+    //     $live2dCubismCoreUrl = (is_array($live2dSettings) && !empty($live2dSettings['sdkUrl']))
+    //         ? $live2dSettings['sdkUrl']
+    //         : LIVE2D_ASSETS . 'cubism-core/live2dcubismcore.min.js';
+    $live2dCubismCoreUrl = LIVE2D_ASSETS . 'cubism-core/live2dcubismcore.min.js';
+    wp_enqueue_script('live2dv2core', $live2dCubismCoreUrl, array(), LIVE2D_VERSION);
+    wp_enqueue_script('live2dv2sdk', LIVE2D_ASSETS . 'live2dv2.min.js', array('live2dv2core'), LIVE2D_VERSION);
     live2d_mark_script_as_module('live2dv2sdk');
-    wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'live2dv2sdk', 'moment'));
+    wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'live2dv2sdk', 'moment'), LIVE2D_VERSION);
     live2d_mark_script_as_module('live2dweb');
     wp_localize_script('live2dweb', 'live2d_settings', array(
         'userInfo' => array(
