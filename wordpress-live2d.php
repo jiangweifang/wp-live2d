@@ -115,6 +115,17 @@ function live2D_style()
     // shaderDir 不再由 PHP 注入: SDK (live2d_sdk/src/v2/lappdefine.ts) 默认以
     // import.meta.url 为基准解析到同级 ./Shaders/WebGL/, vite.config.wordpress.ts
     // 会把 shader 文件拷贝到 assets/Shaders/WebGL/,跟随插件实际位置/站点 URL。
+    //
+    // 但旧版插件曾把 shaderDir(默认值 '../../Framework/Shaders/WebGL/') 写进
+    // live_2d_settings_option_name; sanitize 已经不再回写, 但 get_option() 拿到的
+    // 数组里仍可能残留这个老字段, 经 wp_localize_script -> live2d_settings.settings
+    // -> LAppDelegate.initialize 的 `Oe.value = G.shaderDir || Oe.value` 一行,
+    // 会覆盖掉 import.meta.url 算出来的正确 assets/Shaders/WebGL/ 绝对 URL,
+    // 让 fetch 退回到相对路径 '../../Framework/...' 命中 404。这里在传给 JS
+    // 前显式剔掉, 避免老站点必须重新打开设置页 Save 一次才能恢复。
+    if (is_array($live2dSettings)) {
+        unset($live2dSettings['shaderDir']);
+    }
     wp_enqueue_style('waifu_css', LIVE2D_ASSETS . "waifu.css", array(), LIVE2D_VERSION); //css
     wp_enqueue_style('fontawesome_css', LIVE2D_ASSETS . "fontawesome/css/all.min.css", array(), LIVE2D_VERSION); //css
     wp_enqueue_script('moment', LIVE2D_ASSETS . 'moment.min.js', array(), LIVE2D_VERSION); //
