@@ -72,21 +72,8 @@ class live2D_Settings_Base
                 'live_2d_setting_base_section' // section
             );
 
-            add_settings_field(
-                'modelZoomNumberV2', // id
-                __('模型缩放倍数', 'live-2d'), // title
-                array($this, 'modelZoomNumberV2_callback'), // callback
-                'live-2d-settings-base', // page
-                'live_2d_setting_base_section' // section
-            );
-
-            add_settings_field(
-                'modelXYaxis', // id
-                __('看板娘位置', 'live-2d'), // title
-                array($this, 'modelXYaxis_callback'), // callback
-                'live-2d-settings-base', // page
-                'live_2d_setting_base_section' // section
-            );
+            // 模型缩放倍数 / 看板娘位置 已迁移到 "样式" 设置页 (waifu-Settings-Style.php),
+            // 仍读写同一个 modelPoint 字段, JS 端 (lappdelegate.ts initialize) 无须改动.
 
             add_settings_field(
                 'sdkUrl', // id
@@ -216,25 +203,8 @@ class live2D_Settings_Base
         echo '<p>' . esc_html__('可切换的模型名称，程序会通过Model API来按顺序获取模型的信息，请保证模型目录的名称和 model3.json 一致','live-2d').'</p>';
     }
 
-    public function modelZoomNumberV2_callback()
-    {
-        printf(
-            '<input type="number" name="live_2d_settings_option_name[modelPoint][zoom]" id="modelZoomNumberV2" value="%s" step="0.1" min="1.0" max="5.0" />
-            <p>' . esc_html__('设置看板娘在画框中的缩放比例，最小1倍，最大5倍，可以有小数点', 'live-2d') . '</p>',
-            isset($this->live_2d__options['modelPoint']['zoom']) ? esc_attr($this->live_2d__options['modelPoint']['zoom']) : '1.0'
-        );
-    }
-
-    public function modelXYaxis_callback()
-    {
-        printf(
-            'x: <input type="number" name="live_2d_settings_option_name[modelPoint][x]" id="modelPoint_x" value="%s" min="-100" max="100" /> 
-            y: <input type="number" name="live_2d_settings_option_name[modelPoint][y]" id="modelPoint_y" value="%s" min="-100" max="100" />
-            <p>' . esc_html__('设置看板娘的位置，可以是负数', 'live-2d') . '</p>',
-            isset($this->live_2d__options['modelPoint']['x']) ? esc_attr($this->live_2d__options['modelPoint']['x']) : '0',
-            isset($this->live_2d__options['modelPoint']['y']) ? esc_attr($this->live_2d__options['modelPoint']['y']) : '0'
-        );
-    }
+    // modelZoomNumberV2_callback / modelXYaxis_callback 已迁移到
+    // src/waifu-Settings-Style.php, 仍写入 live_2d_settings_option_name[modelPoint] 同一字段.
 
     public function sdkUrl_callback()
     {

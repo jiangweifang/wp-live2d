@@ -259,6 +259,39 @@ class live2D_Settings
 		if (isset($input['waifuTipTop'])) {
 			$sanitary_values['waifuTipTop'] = (int) $input['waifuTipTop'];
 		}
+
+		// 高级渲染设置(settings.style.renderScale / settings.style.antialias) 是付费功能,
+		// 与 waifu-Settings-Style.php 的 UI 门槛一致 (userLevel<1 用户即便绕过前端
+		// 不渲染的字段也无法 POST 进 DB). 字段格式参照 Chromium 扩展 storage.ts
+		// StyleSettings: renderScale ∈ {1, 1.5, 2, 3}, antialias 为布尔.
+		if (isset($input['style']) && is_array($input['style'])) {
+			$user_token = get_option('live_2d_settings_user_token');
+			$is_paid = is_array($user_token)
+				&& !empty($user_token['userLevel'])
+				&& intval($user_token['userLevel']) > 0;
+			if ($is_paid) {
+				$style_in = $input['style'];
+				$style_out = array();
+				if (isset($style_in['renderScale'])) {
+					$scale = (float) $style_in['renderScale'];
+					$allowed = array(1.0, 1.5, 2.0, 3.0);
+					if (in_array($scale, $allowed, true)) {
+						// 整数倍率写回 int, 1.5 保留 float, 与扩展存储一致.
+						$style_out['renderScale'] = ($scale == (int) $scale) ? (int) $scale : $scale;
+					} else {
+						$style_out['renderScale'] = 1;
+					}
+				}
+				if (isset($style_in['antialias'])) {
+					$style_out['antialias'] = (bool) $style_in['antialias'];
+				}
+				if (!empty($style_out)) {
+					$sanitary_values['style'] = $style_out;
+				}
+			}
+			// 未付费用户提交了 style 字段直接丢弃 (不写 $sanitary_values['style']),
+			// 之前若已有值 update_option 时会被覆盖为不含 style, 等同于回退到默认.
+		}
 		return $sanitary_values;
 	}
 
