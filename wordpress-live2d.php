@@ -3,7 +3,7 @@
  * Plugin Name: Live 2D
  * Plugin URI: https://www.live2dweb.com/
  * Description: 看板娘插件
- * Version: 2.1.0
+ * Version: 2.1.1
  * Requires PHP: 7.4
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 //定义目录
 define('LIVE2D_ASSETS', plugin_dir_url(__FILE__) . 'assets/'); //资源目录
 define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)) . '/languages'); //基础目录
-define('LIVE2D_VERSION', '2.1.0'); //资源版本号, 用于缓存破坏
+define('LIVE2D_VERSION', '2.1.1'); //资源版本号, 用于缓存破坏
 
 /**
  * 把 wp_enqueue_script 注册的脚本标记为 ES module。
@@ -117,8 +117,13 @@ function live2D_style()
     wp_enqueue_script('moment', LIVE2D_ASSETS . 'moment.min.js'); //
     wp_enqueue_script('live2dv1core', LIVE2D_ASSETS . 'live2dv1.min.js');
     live2d_mark_script_as_module('live2dv1core');
-    //wp_enqueue_script('live2dv2core', $live2dSettings["sdkUrl"]);
-    wp_enqueue_script('live2dv2core', LIVE2D_ASSETS . 'r5b2-core/live2dcubismcore.min.js');
+    // Live2D Cubism Core 必须从 Live2D 官方远端加载,不能本地分发(Live2D Proprietary
+    // Software License Agreement 限制)。设置项 sdkUrl 默认即为官方地址,这里只做
+    // 一次兜底,防止 DB 中该项被清空时 enqueue 出空 URL。
+    $live2dCubismCoreUrl = (is_array($live2dSettings) && !empty($live2dSettings['sdkUrl']))
+        ? $live2dSettings['sdkUrl']
+        : 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
+    wp_enqueue_script('live2dv2core', $live2dCubismCoreUrl);
     wp_enqueue_script('live2dv2sdk', LIVE2D_ASSETS . 'live2dv2.min.js', array('live2dv2core'));
     live2d_mark_script_as_module('live2dv2sdk');
     wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'live2dv2sdk', 'moment'));
