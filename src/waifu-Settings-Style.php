@@ -248,15 +248,20 @@ class live2D_Settings_Style {
         $current = isset( $this->live_2d__options['style']['renderScale'] )
             ? (string) $this->live_2d__options['style']['renderScale']
             : '1';
+        // 必须用 list-of-pairs 而不是 assoc-array: PHP 会把纯数字字符串数组键
+        // (如 '1' / '2' / '3') 自动转为 int, 导致 foreach 里 $value 类型混杂
+        // (1.5 是 string, 其余是 int), 与 (string)$current 做 === 比较时
+        // 1/2/3 永远不会命中 selected, 让用户以为 renderScale 没保存。
         $options = array(
-            '1'   => __('1x（默认，不做超采样）','live-2d'),
-            '1.5' => __('1.5x（轻度超采样）','live-2d'),
-            '2'   => __('2x（高质量，显存约 4 倍）','live-2d'),
-            '3'   => __('3x（极致，显存约 9 倍）','live-2d'),
+            array( '1',   __('1x（默认，不做超采样）','live-2d') ),
+            array( '1.5', __('1.5x（轻度超采样）','live-2d') ),
+            array( '2',   __('2x（高质量，显存约 4 倍）','live-2d') ),
+            array( '3',   __('3x（极致，显存约 9 倍）','live-2d') ),
         );
         ?>
         <select name="live_2d_settings_option_name[style][renderScale]" id="renderScale">
-        <?php foreach ( $options as $value => $label ) :
+        <?php foreach ( $options as $opt ) :
+            list( $value, $label ) = $opt;
             $selected = ( $current === $value ) ? 'selected' : ''; ?>
             <option value="<?php echo esc_attr( $value ); ?>" <?php echo $selected; ?>><?php echo esc_html( $label ); ?></option>
         <?php endforeach; ?>

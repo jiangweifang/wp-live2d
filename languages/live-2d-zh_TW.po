@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Live 2D 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-29 07:15+0000\n"
-"PO-Revision-Date: 2026-04-29 07:15+0000\n"
+"POT-Creation-Date: 2026-05-05 06:51+0000\n"
+"PO-Revision-Date: 2026-05-05 06:51+0000\n"
 "Language-Team: Traditional Chinese (Taiwan)\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: build-i18n.py\n"
 
-#: wordpress-live2d.php:180
+#: wordpress-live2d.php:205
 msgid "设置"
 msgstr "設定"
 
-#: wordpress-live2d.php:261
+#: wordpress-live2d.php:286
 #: src/live2d-Widget.php:38
 msgid "发送"
 msgstr "傳送"
@@ -306,205 +306,238 @@ msgstr "預設材質 ID"
 msgid "模型目录"
 msgstr "模型目錄"
 
-#: src/waifu-Settings-Base.php:77
-msgid "模型缩放倍数"
-msgstr "模型縮放倍率"
-
-#: src/waifu-Settings-Base.php:85
-msgid "看板娘位置"
-msgstr "看板娘位置"
-
-#: src/waifu-Settings-Base.php:93
+#: src/waifu-Settings-Base.php:80
 msgid "Cubism Core for Web <br/> 引用地址"
 msgstr "Cubism Core for Web<br/>引用網址"
 
-#: src/waifu-Settings-Base.php:101
-msgid "WebGLShader 引用地址"
-msgstr "WebGLShader 引用網址"
-
-#: src/waifu-Settings-Base.php:132
+#: src/waifu-Settings-Base.php:115
 msgid "本地部署旧版模型"
 msgstr "本地部署舊版模型"
 
-#: src/waifu-Settings-Base.php:135
+#: src/waifu-Settings-Base.php:118
 msgid "点击进入下载页面"
 msgstr "點擊進入下載頁面"
 
-#: src/waifu-Settings-Base.php:137
+#: src/waifu-Settings-Base.php:120
 msgid "模型文件由本插件托管,模型 API 自动指向本站,不会向外网发起请求。"
 msgstr "模型檔案由本外掛代管，模型 API 會自動指向本站，不會向外部網路發送請求。"
 
-#: src/waifu-Settings-Base.php:141
+#: src/waifu-Settings-Base.php:124
 msgid "自行部署旧版模型"
 msgstr "自行部署舊版模型"
 
-#: src/waifu-Settings-Base.php:143
+#: src/waifu-Settings-Base.php:126
 msgid "对接你自己部署的旧版 V1/V2 模型 API(例如 fghrsh-style 的 /get/?id= 路由)。"
 msgstr "串接您自行部署的舊版 V1/V2 模型 API（例如 fghrsh 風格的 /get/?id= 路由）。"
 
-#: src/waifu-Settings-Base.php:148
-#: src/waifu-Settings-Base.php:156
+#: src/waifu-Settings-Base.php:131
+#: src/waifu-Settings-Base.php:139
 msgid "自定义新版模型路径"
 msgstr "自訂新版模型路徑"
 
-#: src/waifu-Settings-Base.php:150
+#: src/waifu-Settings-Base.php:133
 msgid "Cubism 4+ 模型(*.model3.json),可填模型直链或目录根并在下方\"模型目录\"中列出多个模型。"
 msgstr "Cubism 4+ 模型（*.model3.json），可填寫模型直連網址或目錄根，並在下方「模型目錄」列出多個模型。"
 
-#: src/waifu-Settings-Base.php:155
+#: src/waifu-Settings-Base.php:138
 msgid "完成登录并付费后可用"
 msgstr "完成登入並付費後可使用"
 
-#: src/waifu-Settings-Base.php:158
+#: src/waifu-Settings-Base.php:141
 msgid "Cubism 4+ 模型: 完成登录并付费后可用。"
 msgstr "Cubism 4+ 模型：完成登入並付費後可使用。"
 
-#: src/waifu-Settings-Base.php:171
+#: src/waifu-Settings-Base.php:154
 msgid "页面"
 msgstr "頁面"
 
-#: src/waifu-Settings-Base.php:172
+#: src/waifu-Settings-Base.php:155
 msgid "小工具(beta)"
 msgstr "小工具（Beta）"
 
-#: src/waifu-Settings-Base.php:188
+#: src/waifu-Settings-Base.php:171
 msgid "上面「API 方式」选不同选项时, 此处填写要求不同。"
 msgstr "上方「API 模式」選擇不同選項時，此處的填寫要求也會不同。"
 
-#: src/waifu-Settings-Base.php:200
+#: src/waifu-Settings-Base.php:183
 msgid "选择或填写默认加载的模型 ID(具体要求取决于上面「API 方式」)。"
 msgstr "選擇或填寫預設載入的模型 ID（具體要求依上方「API 模式」而定）。"
 
-#: src/waifu-Settings-Base.php:210
+#: src/waifu-Settings-Base.php:193
 msgid "选择或填写默认皮肤 ID;新版模型不使用此项, 可留空。"
 msgstr "選擇或填寫預設造型 ID；新版模型不使用此項，可留空。"
 
-#: src/waifu-Settings-Base.php:216
+#: src/waifu-Settings-Base.php:199
 msgid "可切换的模型名称，程序会通过Model API来按顺序获取模型的信息，请保证模型目录的名称和 model3.json 一致"
 msgstr "可切換的模型名稱，程式會透過 Model API 依序取得模型資訊，請確保模型目錄名稱與 model3.json 一致。"
 
-#: src/waifu-Settings-Base.php:223
-msgid "设置看板娘在画框中的缩放比例，最小1倍，最大5倍，可以有小数点"
-msgstr "設定看板娘在畫框中的縮放比例，最小 1 倍、最大 5 倍，可使用小數。"
-
-#: src/waifu-Settings-Base.php:233
-msgid "设置看板娘的位置，可以是负数"
-msgstr "設定看板娘的位置，可以是負數。"
-
-#: src/waifu-Settings-Base.php:245
+#: src/waifu-Settings-Base.php:215
 msgid "如未授权请勿修改此地址，擅自修改此地址引发的法律问题与插件作者无关。"
 msgstr "如未取得授權請勿修改此網址，擅自修改所引發的法律問題與外掛作者無關。"
 
-#: src/waifu-Settings-Base.php:246
+#: src/waifu-Settings-Base.php:216
 msgid "软件许可协议："
 msgstr "軟體授權合約："
 
-#: src/waifu-Settings-Base.php:257
-msgid "这个路径是 WebGLShader 代码的位置，请勿随意修改。"
-msgstr "此路徑為 WebGLShader 程式碼的位置，請勿任意修改。"
-
-#: src/waifu-Settings-Style.php:9
+#: src/waifu-Settings-Style.php:11
 msgid "这里可以设置看板娘的外观"
 msgstr "在此可設定看板娘的外觀。"
 
-#: src/waifu-Settings-Style.php:16
+#: src/waifu-Settings-Style.php:18
 msgid "是否记录用户上次选择的样式"
 msgstr "是否記住使用者上次選擇的樣式"
 
-#: src/waifu-Settings-Style.php:25
+#: src/waifu-Settings-Style.php:27
 msgid "模型切换方式"
 msgstr "模型切換方式"
 
-#: src/waifu-Settings-Style.php:33
+#: src/waifu-Settings-Style.php:35
 msgid "材质切换方式"
 msgstr "材質切換方式"
 
-#: src/waifu-Settings-Style.php:41
+#: src/waifu-Settings-Style.php:43
 msgid "看板娘大小"
 msgstr "看板娘大小"
 
-#: src/waifu-Settings-Style.php:49
+#: src/waifu-Settings-Style.php:51
 msgid "面页小于指定宽度(px) <br/>禁用看板娘"
 msgstr "頁面寬度小於指定值 (px)<br/>則停用看板娘"
 
-#: src/waifu-Settings-Style.php:57
+#: src/waifu-Settings-Style.php:59
 msgid "是否在移动端加载看板娘"
 msgstr "是否在行動裝置上載入看板娘"
 
-#: src/waifu-Settings-Style.php:65
+#: src/waifu-Settings-Style.php:67
 msgid "看板娘页面边缘"
 msgstr "看板娘頁面邊緣"
 
-#: src/waifu-Settings-Style.php:73
+#: src/waifu-Settings-Style.php:75
 msgid "看板娘页面边距(px)"
 msgstr "看板娘頁面邊距 (px)"
 
-#: src/waifu-Settings-Style.php:81
+#: src/waifu-Settings-Style.php:83
 msgid "拖拽样式"
 msgstr "拖曳樣式"
 
-#: src/waifu-Settings-Style.php:89
+#: src/waifu-Settings-Style.php:91
 msgid "松开鼠标还原拖拽位置"
 msgstr "放開滑鼠後還原拖曳位置"
 
-#: src/waifu-Settings-Style.php:102
+#: src/waifu-Settings-Style.php:109
+msgid "模型缩放倍数"
+msgstr "模型縮放倍率"
+
+#: src/waifu-Settings-Style.php:117
+msgid "看板娘位置"
+msgstr "看板娘位置"
+
+#: src/waifu-Settings-Style.php:125
+msgid "高级渲染:超采样倍率"
+msgstr "進階渲染：超取樣倍率（SSAA）"
+
+#: src/waifu-Settings-Style.php:133
+msgid "高级渲染:抗锯齿"
+msgstr "進階渲染：抗鋸齒（MSAA）"
+
+#: src/waifu-Settings-Style.php:147
 msgid "是"
 msgstr "是"
 
-#: src/waifu-Settings-Style.php:104
+#: src/waifu-Settings-Style.php:149
 msgid "否"
 msgstr "否"
 
-#: src/waifu-Settings-Style.php:110
-#: src/waifu-Settings-Style.php:119
+#: src/waifu-Settings-Style.php:155
+#: src/waifu-Settings-Style.php:164
 msgid "随机"
 msgstr "隨機"
 
-#: src/waifu-Settings-Style.php:112
-#: src/waifu-Settings-Style.php:121
+#: src/waifu-Settings-Style.php:157
+#: src/waifu-Settings-Style.php:166
 msgid "顺序"
 msgstr "依序"
 
-#: src/waifu-Settings-Style.php:129
+#: src/waifu-Settings-Style.php:174
 msgid "由于看板娘大小不同，请自行设置：宽度 x 高度"
 msgstr "由於看板娘大小不一，請自行設定：寬度 x 高度。"
 
-#: src/waifu-Settings-Style.php:138
+#: src/waifu-Settings-Style.php:183
 msgid "设置为 0 时，任何大小的屏幕都会启用看板娘"
 msgstr "設為 0 時，任何尺寸的螢幕都會啟用看板娘。"
 
-#: src/waifu-Settings-Style.php:145
+#: src/waifu-Settings-Style.php:190
 msgid "启用"
 msgstr "啟用"
 
-#: src/waifu-Settings-Style.php:147
-#: src/waifu-Settings-Style.php:167
+#: src/waifu-Settings-Style.php:192
+#: src/waifu-Settings-Style.php:212
 msgid "禁用"
 msgstr "停用"
 
-#: src/waifu-Settings-Style.php:152
+#: src/waifu-Settings-Style.php:197
 msgid "靠左"
 msgstr "靠左"
 
-#: src/waifu-Settings-Style.php:154
+#: src/waifu-Settings-Style.php:199
 msgid "靠右"
 msgstr "靠右"
 
-#: src/waifu-Settings-Style.php:169
+#: src/waifu-Settings-Style.php:214
 msgid "只能水平拖拽"
 msgstr "僅可水平拖曳"
 
-#: src/waifu-Settings-Style.php:171
+#: src/waifu-Settings-Style.php:216
 msgid "自由拖拽"
 msgstr "自由拖曳"
 
-#: src/waifu-Settings-Style.php:177
+#: src/waifu-Settings-Style.php:222
 msgid "还原"
 msgstr "還原"
 
-#: src/waifu-Settings-Style.php:179
+#: src/waifu-Settings-Style.php:224
 msgid "不还原"
 msgstr "不還原"
+
+#: src/waifu-Settings-Style.php:230
+msgid "设置看板娘在画框中的缩放比例，最小1倍，最大5倍，可以有小数点"
+msgstr "設定看板娘在畫框中的縮放比例，最小 1 倍、最大 5 倍，可使用小數。"
+
+#: src/waifu-Settings-Style.php:239
+msgid "设置看板娘的位置，可以是负数"
+msgstr "設定看板娘的位置，可以是負數。"
+
+#: src/waifu-Settings-Style.php:256
+msgid "1x（默认，不做超采样）"
+msgstr "1×（預設，不進行超取樣）"
+
+#: src/waifu-Settings-Style.php:257
+msgid "1.5x（轻度超采样）"
+msgstr "1.5×（輕度超取樣）"
+
+#: src/waifu-Settings-Style.php:258
+msgid "2x（高质量，显存约 4 倍）"
+msgstr "2×（高品質，顯示記憶體約 4 倍）"
+
+#: src/waifu-Settings-Style.php:259
+msgid "3x（极致，显存约 9 倍）"
+msgstr "3×（極致，顯示記憶體約 9 倍）"
+
+#: src/waifu-Settings-Style.php:269
+msgid "叠加在浏览器 devicePixelRatio 之上的 SSAA 倍率，可消除模型边缘细线；倍率越高 GPU/显存压力越大。"
+msgstr "疊加在瀏覽器 devicePixelRatio 之上的 SSAA 倍率，可消除模型邊緣細線；倍率越高 GPU／顯示記憶體壓力越大。"
+
+#: src/waifu-Settings-Style.php:281
+msgid "开启（默认）"
+msgstr "啟用（預設）"
+
+#: src/waifu-Settings-Style.php:282
+#: src/waifu-Settings-Toolbar.php:166
+msgid "关闭"
+msgstr "關閉"
+
+#: src/waifu-Settings-Style.php:284
+msgid "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。"
+msgstr "WebGL 多重取樣抗鋸齒（MSAA）。關閉後預設畫面緩衝邊緣可能出現鋸齒；切換後建議重新整理前台頁面以套用。"
 
 #: src/waifu-Settings-Tips.php:10
 msgid "提示框设置"
@@ -681,10 +714,6 @@ msgstr "滑鼠懸停時的圖示顏色"
 #: src/waifu-Settings-Toolbar.php:164
 msgid "开启"
 msgstr "開啟"
-
-#: src/waifu-Settings-Toolbar.php:166
-msgid "关闭"
-msgstr "關閉"
 
 #: src/waifu-Settings-Toolbar.php:228
 msgid "数字越大越靠下"
