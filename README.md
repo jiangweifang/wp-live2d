@@ -1,6 +1,6 @@
 # Live2D Web Canvas - WordPress 插件
 
-[![sdk](https://img.shields.io/badge/Live2D-v5.r1.bate.1-blue?color=%23ff6e2d)](https://www.live2d.com/download/cubism-sdk/download-web/)  [![showcase](https://img.shields.io/badge/Live2D-Live2dWebCanvas-blue)](https://www.live2d.jp/showcase/live2dwebcanvas/)  [![wordpress](https://img.shields.io/badge/Wordpress-v2.1.0-blue)](https://wordpress.org/plugins/live-2d/)
+[![sdk](https://img.shields.io/badge/Live2D-v5.r5-blue?color=%23ff6e2d)](https://www.live2d.com/download/cubism-sdk/download-web/)  [![showcase](https://img.shields.io/badge/Live2D-Live2dWebCanvas-blue)](https://www.live2d.jp/showcase/live2dwebcanvas/)  [![wordpress](https://img.shields.io/badge/Wordpress-v2.1.3-blue)](https://wordpress.org/plugins/live-2d/)
 
 - 基于Live2D 看板娘前端 HTML 源码改写
 - 插件可在WordPress后台通过插件搜索获得 https://wordpress.org/plugins/live-2d/ 记得给个好评！

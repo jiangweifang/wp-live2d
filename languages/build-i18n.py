@@ -147,7 +147,7 @@ def write_pot(strings: "OrderedDict[str, list[str]]", path: Path) -> None:
         "#, fuzzy",
         'msgid ""',
         'msgstr ""',
-        '"Project-Id-Version: Live 2D 2.1.0\\n"',
+        '"Project-Id-Version: Live 2D 2.1.3\\n"',
         '"Report-Msgid-Bugs-To: \\n"',
         f'"POT-Creation-Date: {now}\\n"',
         '"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n"',
@@ -185,7 +185,7 @@ def write_po(
         "#",
         'msgid ""',
         'msgstr ""',
-        '"Project-Id-Version: Live 2D 2.1.0\\n"',
+        '"Project-Id-Version: Live 2D 2.1.3\\n"',
         '"Report-Msgid-Bugs-To: \\n"',
         f'"POT-Creation-Date: {now}\\n"',
         f'"PO-Revision-Date: {now}\\n"',
@@ -283,7 +283,7 @@ def build_mo_for_locale(
     # The metadata entry; gettext header.
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M+0000")
     metadata = (
-        f"Project-Id-Version: Live 2D 2.1.0\n"
+        f"Project-Id-Version: Live 2D 2.1.3\n"
         f"PO-Revision-Date: {now}\n"
         f"Language-Team: \n"
         f"Language: {locale}\n"
