@@ -5,14 +5,29 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: live2d, vtuber, anime, animation, chatgpt
 Tested up to: 6.8
 Requires at least: 5.5
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 Requires PHP: 7.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
 在 WordPress 站点嵌入 Live2D 看板娘小部件，支持 Cubism 2/3/4/5 模型，后台可视化配置 waifu-tips，无需改代码。
 
+== Live2D Cubism Core 再配布声明 ==
+
+本插件随包分发 Live2D Cubism Core 6.x（位于 `assets/cubism-core/`，包含 `live2dcubismcore.min.js` 与随附的 `LICENSE.md` / `RedistributableFiles.txt`）。该部分文件遵循 **Live2D Proprietary Software License Agreement**，与本插件主体的 MIT 许可独立，未随本插件重新许可。
+
+* 协议全文：https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_cn.html
+* 该目录下的 `live2dcubismcore.min.js` 依据官方 `RedistributableFiles.txt` 清单允许再配布，二次分发者请保留该目录内原始 LICENSE / RedistributableFiles 文件。
+* 二次分发者需要求未来的 distributor 与终端用户接受与原协议同等效力的保护条款（EULA 5.2.2）。
+* 与本插件及 Cubism Core 相关的第三方费用 / 诉讼须由二次分发者自行免责、抗辩与补偿 Live2D 公司（EULA 5.2.3）。
+* 插件作者与 Live2D Inc. 无雇佣关系，但保持官方合作关系；如需出版由 Cubism Core 驱动的派生作品（插件本身均属于“拓展性应用”），请参考 EULA 第 2 条、第 6.3 条自行与 Live2D 公司签订 *Live2D 出版许可协议*。
+
 == Changelog ==
+
+= 2.1.2 =
+- 修复：v2 模型加载偶发抛 `Cannot read properties of undefined (reading 'byteLength')` —— 仓库内 Framework 已按 Cubism Core 6.x 的 `csmGetMocVersion(mocBytes)` 单参重载调用,但官方 CDN 仍停留在 5.1.0。本版改为随插件分发 Cubism Core 6.x 本地副本(`assets/cubism-core/`,含 LICENSE / RedistributableFiles 文档)。
+- 修复：着色器请求 404(如 `https://<站点>/Framework/Shaders/WebGL/fragshadersrcmaskinvertedpremultipliedalpha.frag`)—— v2 lappmodel 的 renderer 调用未把设置项 `shaderDir` 透传给 Framework,导致落到内置默认相对路径。已在 `loadShaders()` / `drawModel()` 三处补齐 `LAppDefine.ShaderDir.value` 注入,与上游 CubismWebSamples Demo 对齐。
+- 修复：从老版本升级上来的站点仍出现着色器 404(URL 形如 `<站点>/wp-content/plugins/live-2d/Framework/Shaders/WebGL/...`) —— 旧版插件曾把 `shaderDir='../../Framework/Shaders/WebGL/'` 写进 `live_2d_settings_option_name`, sanitize 已不再回写但 `get_option()` 仍带出残留字段, 经 `wp_localize_script` 透到前端覆盖了 `import.meta.url` 算出的绝对 URL。本版在传给 JS 前显式 `unset($live2dSettings['shaderDir'])`, 老站点无需重新打开设置页 Save 即可恢复。
 
 = 2.1.0 =
 - 新增：内置本地 V1 模型 API（`/wp-json/live2d/v1/model/*`），Pio / Tia / 22 / 33 等经典 moc 模型不再依赖 fghrsh.net 等第三方接口，完全本地化运行。
