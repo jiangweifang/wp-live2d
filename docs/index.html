@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live2D Web Canvas · 文档中心</title>
+    <meta name="description" content="WordPress Live2D 插件 / Live2D Web Canvas 浏览器扩展的文档与帮助。" />
+    <link rel="stylesheet" href="assets/cayman.css" />
+</head>
+<body>
+
+    <header class="page-header">
+        <h1 class="project-name">Live2D Web Canvas</h1>
+        <h2 class="project-tagline">WordPress 插件 &amp; 浏览器扩展 · 文档中心</h2>
+        <p class="project-meta">
+            感谢您使用 Live2D Web Canvas！本站收录使用说明、注意事项与隐私政策。
+        </p>
+        <p class="header-nav">
+            <a href="#guides">使用指南</a>
+            <a href="#notes">注意事项</a>
+            <a href="#links">相关链接</a>
+            <a href="privacy/extension.html">隐私政策</a>
+            <a href="https://github.com/jiangweifang/wp-live2d" target="_blank" rel="noopener">GitHub 仓库</a>
+        </p>
+    </header>
+
+    <main class="main-content">
+
+        <h1 id="guides">使用指南</h1>
+        <p>选择您要查看的主题：</p>
+        <div class="card-grid">
+            <a class="card" href="wiki/custom-model.html">
+                <h3 class="card-title">如何使用 v3 或更高版本的自定义模型</h3>
+                <p class="card-desc">从付费授权、模型上传、API 配置到材质优化的完整流程。</p>
+            </a>
+            <a class="card" href="wiki/chatgpt.html">
+                <h3 class="card-title">ChatGPT 的使用</h3>
+                <p class="card-desc">如何配置 Token 数量、自定义 Open AI / Azure OpenAI 接口。</p>
+            </a>
+            <a class="card" href="wiki/touch-area.html">
+                <h3 class="card-title">v3 或更高版本的触摸区域</h3>
+                <p class="card-desc">自定义模型的可交互区域配置说明（即将完善）。</p>
+            </a>
+            <a class="card" href="https://github.com/fghrsh/live2d_api" target="_blank" rel="noopener">
+                <h3 class="card-title">自己搭建一个旧版模型服务器</h3>
+                <p class="card-desc">由 fghrsh 维护的旧版 Live2D API 项目（外部链接）。</p>
+            </a>
+            <a class="card" href="privacy/extension.html">
+                <h3 class="card-title">浏览器扩展隐私政策</h3>
+                <p class="card-desc">Chrome / Edge 扩展 Live2D Web Canvas 的隐私政策（中英双语）。</p>
+            </a>
+        </div>
+
+        <h1 id="notes">注意事项</h1>
+        <ol>
+            <li>请自行保护模型版权，将会在 2.0 版本升级到可以防盗用的版本，在那之前，创意工坊不提供上传功能。</li>
+            <li>您可以通过上传到阿里云 OSS 或者腾讯云 COS，通过防盗链和跨域保护来保证自己的模型不被盗用。</li>
+            <li>您需要控制您的模型材质，不要过大，建议到 <code>2048</code> 即可，否则加载模型的时间会很长。</li>
+            <li>moc3 的缩放比例可能会比较小，所以您需要将模型缩放比例调整至合适大小，建议 <code>2.0</code>。我没有进行控制是因为如果在代码中写入 2.0，其计算方式将会 ×2，例如 1.1 实际计算结果将会是 2.2。</li>
+            <li>请务必保证您的 WordPress REST API（<code>rest_route</code>）可以被正常访问。如果您在保存时出现异常，请检查站点是否将 WordPress REST API 设置了白名单；Cloudflare 用户很有可能出现这种情况。</li>
+            <li>使用 CDN 加速的朋友请注意，更新插件后记得刷新 CDN 加速缓存。</li>
+            <li><code>live2d.js</code> 无需 JS 压缩。如果压缩后出现错误，请自行查看是否已排除。</li>
+            <li>内网用户请使用公网 IP 访问您的网站，并配置好域名（可以是花生壳免费域名）。本地测试时插件无法保存。</li>
+            <li>您可以在 <a href="https://nizima.com/" target="_blank" rel="noopener">nizima</a> 中购买到正版 MOC3 模型。</li>
+            <li>您可以在官方 <a href="https://www.live2d.jp/showcase/live2dwebcanvas/" target="_blank" rel="noopener">Live2D Showcase</a> 中看到本插件的介绍。</li>
+            <li>更新日志将会在 <a href="https://weibo.com/nagatosaki" target="_blank" rel="noopener">微博</a> 或 <a href="https://space.bilibili.com/70444" target="_blank" rel="noopener">bilibili</a> 更新。</li>
+            <li>付费后如果没有反应，请及时联系作者 QQ：<code>85838607</code>，会尽快为您解决。</li>
+        </ol>
+
+        <h1 id="links">相关链接</h1>
+        <ul>
+            <li>GitHub 仓库：<a href="https://github.com/jiangweifang/wp-live2d" target="_blank" rel="noopener">jiangweifang/wp-live2d</a></li>
+            <li>Issues：<a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">提交问题</a></li>
+            <li>Wiki 原始页面：<a href="https://github.com/jiangweifang/wp-live2d/wiki" target="_blank" rel="noopener">GitHub Wiki</a></li>
+        </ul>
+
+        <footer class="site-footer">
+            内容同步自 <a href="https://github.com/jiangweifang/wp-live2d/wiki" target="_blank" rel="noopener">项目 Wiki</a>。
+            <br />
+            <a href="privacy/extension.html">浏览器扩展隐私政策 · Privacy Policy</a> ·
+            <a href="https://github.com/jiangweifang/wp-live2d" target="_blank" rel="noopener">GitHub</a> ·
+            <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">Issues</a>
+            <br />
+            © Live2D Web Canvas · 北京市天先生软件技术中心
+        </footer>
+
+    </main>
+
+</body>
+</html>

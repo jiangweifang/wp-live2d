@@ -5,172 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Live2D Web Canvas Extension Privacy Policy</title>
     <meta name="description" content="Privacy policy for the Live2D Web Canvas Chrome / Edge browser extension." />
-    <style>
-        /* ---- Cayman-theme inspired (GitHub Pages default) ---- */
-        :root {
-            --cayman-blue: #155799;
-            --cayman-green: #159957;
-            --cayman-text: #606c71;
-            --cayman-border: #eff0f1;
-            --cayman-code-bg: #f3f6fa;
-            --cayman-code-border: #dce6f0;
-            --cayman-link: #1e6bb8;
-        }
-
-        * { box-sizing: border-box; }
-        html { -webkit-text-size-adjust: 100%; }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial,
-                         "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-            color: var(--cayman-text);
-            background-color: #fff;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Page header (Cayman gradient banner) */
-        .page-header {
-            color: #fff;
-            text-align: center;
-            background-color: var(--cayman-green);
-            background-image: linear-gradient(120deg, var(--cayman-blue), var(--cayman-green));
-            padding: 5rem 6rem 4rem;
-        }
-        .page-header .project-name {
-            margin: 0 0 .1rem;
-            font-size: 2.5rem;
-            font-weight: 700;
-            line-height: 1.2;
-        }
-        .page-header .project-tagline {
-            margin: 0 0 1.5rem;
-            font-weight: 400;
-            opacity: .9;
-            font-size: 1.15rem;
-        }
-        .page-header .project-meta {
-            margin: 0;
-            font-size: .85rem;
-            opacity: .8;
-            line-height: 1.7;
-        }
-        .page-header .lang-switch { margin-top: 1.5rem; }
-        .page-header .lang-switch a {
-            display: inline-block;
-            margin-right: .35rem;
-            padding: .4rem .9rem;
-            color: #fff;
-            background-color: rgba(255, 255, 255, .08);
-            border: 1px solid rgba(255, 255, 255, .25);
-            border-radius: .25rem;
-            font-size: .85rem;
-            text-decoration: none;
-            transition: background-color .2s, border-color .2s;
-        }
-        .page-header .lang-switch a:hover {
-            background-color: rgba(255, 255, 255, .2);
-            border-color: rgba(255, 255, 255, .4);
-        }
-
-        /* Main content */
-        .main-content {
-            max-width: 64rem;
-            padding: 2rem 6rem;
-            margin: 0 auto;
-            font-size: 1.05rem;
-            word-wrap: break-word;
-        }
-        .main-content h1,
-        .main-content h2,
-        .main-content h3 {
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-            color: #159957;
-        }
-        .main-content h1 { font-size: 1.7rem; }
-        .main-content h2 {
-            font-size: 1.35rem;
-            padding-bottom: .35rem;
-            border-bottom: 1px solid var(--cayman-border);
-        }
-        .main-content h3 { font-size: 1.1rem; }
-        .main-content p,
-        .main-content ul,
-        .main-content ol,
-        .main-content table { margin-top: 0; margin-bottom: 1rem; }
-        .main-content a { color: var(--cayman-link); text-decoration: none; }
-        .main-content a:hover { text-decoration: underline; }
-        .main-content code {
-            padding: 2px 4px;
-            font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-            font-size: .9em;
-            color: #567482;
-            background-color: var(--cayman-code-bg);
-            border: 1px solid var(--cayman-code-border);
-            border-radius: .3rem;
-        }
-        .main-content table {
-            display: block;
-            width: 100%;
-            overflow: auto;
-            border-collapse: collapse;
-        }
-        .main-content table th,
-        .main-content table td {
-            padding: .55rem .85rem;
-            border: 1px solid #e9ebec;
-            vertical-align: top;
-        }
-        .main-content table th {
-            font-weight: 600;
-            color: #159957;
-            background-color: #f3f6fa;
-            text-align: left;
-        }
-        .main-content table tr:nth-child(2n) td { background-color: #f8fafc; }
-        .main-content .meta {
-            color: #6c757d;
-            font-size: .9rem;
-            margin-bottom: 1.25rem;
-        }
-        .main-content .text-muted { color: #8a949e; }
-
-        .lang-divider {
-            margin: 3rem 0;
-            border: 0;
-            border-top: 2px dashed #ced4da;
-        }
-
-        /* Site footer */
-        .site-footer {
-            padding-top: 2rem;
-            margin-top: 2rem;
-            border-top: 1px solid var(--cayman-border);
-            color: #819198;
-            font-size: .85rem;
-            text-align: center;
-        }
-
-        /* Responsive */
-        @media screen and (max-width: 64em) {
-            .page-header { padding: 4rem 2rem 3rem; }
-            .main-content { padding: 2rem; font-size: 1rem; }
-        }
-        @media screen and (max-width: 42em) {
-            .page-header { padding: 3rem 1rem 2rem; }
-            .page-header .project-name { font-size: 1.75rem; }
-            .page-header .project-tagline { font-size: 1rem; }
-            .main-content { padding: 1.5rem 1rem; font-size: .95rem; }
-            .main-content h1 { font-size: 1.4rem; }
-            .main-content h2 { font-size: 1.2rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/cayman.css" />
 </head>
 <body>
 
@@ -180,6 +15,12 @@
         <p class="project-meta">
             Effective date / 生效日期：2025-01-01 &nbsp;|&nbsp; Last updated / 最近更新：2026-05-05<br />
             Publisher / 发布主体：北京市天先生软件技术中心
+        </p>
+        <p class="header-nav">
+            <a href="../index.html">← 返回首页 / Home</a>
+            <a href="../wiki/custom-model.html">自定义模型</a>
+            <a href="../wiki/chatgpt.html">ChatGPT</a>
+            <a href="https://github.com/jiangweifang/wp-live2d" target="_blank" rel="noopener">GitHub</a>
         </p>
         <p class="lang-switch">
             <a href="#zh-cn">中文</a>
@@ -447,6 +288,8 @@
         </section>
 
         <footer class="site-footer">
+            <a href="../index.html">← 返回文档首页 / Back to docs home</a>
+            <br />
             &copy; 2025–2026 北京市天先生软件技术中心 · Live2D Web Canvas
         </footer>
 
