@@ -152,7 +152,24 @@ class live2D_Settings
 		}
 
 		if (isset($input['idle_motion'])) {
-			$sanitary_values['idle_motion'] = $input['idle_motion'];
+			// loopMsg('List') 即使用户未填任何动作名也会渲染一个空 input,
+			// 不过滤就会写入 [''], 前端按 length>0 触发 setInterval 后会拼出
+			// `${modelHomeDir}.motion3.json` (例如 /EMOgirl/.motion3.json)
+			// 周期性 404. 这里在持久化阶段统一剔除空白项, 顺便保证类型为字符串.
+			if (is_array($input['idle_motion'])) {
+				$cleaned = array();
+				foreach ($input['idle_motion'] as $m) {
+					if (is_string($m)) {
+						$m = trim(sanitize_text_field($m));
+						if ($m !== '') {
+							$cleaned[] = $m;
+						}
+					}
+				}
+				$sanitary_values['idle_motion'] = array_values($cleaned);
+			} else {
+				$sanitary_values['idle_motion'] = array();
+			}
 		}
 
 		if (isset($input['showCopyMessage'])) {
