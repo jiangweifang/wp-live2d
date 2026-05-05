@@ -1,6 +1,10 @@
 # Live2D Web Canvas - WordPress 插件
 
-[![sdk](https://img.shields.io/badge/Live2D-v5.r5-blue?color=%23ff6e2d)](https://www.live2d.com/download/cubism-sdk/download-web/)  [![showcase](https://img.shields.io/badge/Live2D-Live2dWebCanvas-blue)](https://www.live2d.jp/showcase/live2dwebcanvas/)  [![wordpress](https://img.shields.io/badge/Wordpress-v2.1.3-blue)](https://wordpress.org/plugins/live-2d/)
+[![sdk](https://img.shields.io/badge/Live2D-v5.r5-blue?color=%23ff6e2d)](https://www.live2d.com/download/cubism-sdk/download-web/)  [![showcase](https://img.shields.io/badge/Live2dWebCanvas-v2.1.3-blue)](https://www.live2d.jp/showcase/live2dwebcanvas/)  [![wordpress](https://img.shields.io/badge/Wordpress-v6.9.5-blue)](https://wordpress.org/plugins/live-2d/)
+
+> 📖 **使用帮助 / 文档中心：** **<https://jiangweifang.github.io/wp-live2d/>**
+>
+> 收录：[自定义模型教程](https://jiangweifang.github.io/wp-live2d/wiki/custom-model.html) · [ChatGPT 配置](https://jiangweifang.github.io/wp-live2d/wiki/chatgpt.html) · [浏览器扩展隐私政策](https://jiangweifang.github.io/wp-live2d/privacy/extension.html) · 注意事项与常见问题。
 
 - 基于Live2D 看板娘前端 HTML 源码改写
 - 插件可在WordPress后台通过插件搜索获得 https://wordpress.org/plugins/live-2d/ 记得给个好评！
