@@ -36,13 +36,10 @@ class live2D_Settings_Tips {
 			'live_2d_setting_tips_section' // section
 		);
 
-        add_settings_field(
-			'idle_motion', // id
-			__('待机动画文件名','live-2d'), // title
-			array( $this, 'idle_motion_callback' ), // callback
-			'live-2d-settings-tips', // page
-			'live_2d_setting_tips_section' // section
-		);
+        // 「待机动画文件名」 (idle_motion) 已迁移到「基础设置」页「模型目录」下方,
+        // 与 modelDir 使用同一个联动规则(仅 apiType=='custom' 且 modelAPI 不以 .json
+        // 结尾时显示)。sanitize/运行时读路径维持不变：
+        // settings.idle_motion -> live2d-tips.ts startMotion()。
 
         add_settings_field(
             'showCopyMessage', // id
@@ -156,11 +153,8 @@ class live2D_Settings_Tips {
         );
     }
 
-    //待机动画文件名
-	public function idle_motion_callback() {
-		live2D_Utils::loopMsg('idle_motion','List',true,'live_2d_settings_option_name');
-		echo '<p>'.esc_html__('待机动画文件名, 文件是*.motion3.json','live-2d').'</p>';
-	}
+    // idle_motion_callback 已迁移到 src/waifu-Settings-Base.php (付费门槛,
+    // 与 modelDir 同联动显示/隐藏), 这里不再重复定义。
 
     public function showCopyMessage_callback() {
         ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['showCopyMessage'] ) && $this->live_2d__options['showCopyMessage'] === true ) ? 'checked' : '' ; ?>

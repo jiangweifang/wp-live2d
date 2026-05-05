@@ -60,16 +60,26 @@ class live2d_Shop
             </div>
             <?php
             $userInfo = $this->userInfo;
+            // 准入门槛: 1) 必须已登录(sign != ''); 2) 必须已完成邮箱验证(role == 2)。
+            // 与 live2d-Login.php 中的判定保持完全一致(role==2 即"已激活邮箱"),
+            // 不再要求 userLevel>=1 (付费用户)。
+            // 后端 AJAX (live2d-SDK.php DownloadV1Model / OpenZip / ClearFiles ...)
+            // 仅校验 manage_options capability + nonce + sign != '', 与此 UI 门槛
+            // 同等; 真正的资源访问能否拿到 zip 由上游 download.live2dweb.com 的
+            // Bearer/Referer 鉴权决定, 与本地 userLevel 无关。
             if (!isset($userInfo) || empty($userInfo["sign"])) {
             ?>
                 <div>
-                    <?php esc_html_e('您需要登陆并付费才可以使用此功能。', 'live-2d'); ?>
+                    <?php esc_html_e('您需要登录并完成邮箱验证才可以使用此功能。', 'live-2d'); ?>
                 </div>
             <?php
-            } else if (intval($userInfo["userLevel"]) < 1) {
+            } else if (intval($userInfo["role"]) != 2) {
             ?>
                 <div>
-                    <?php esc_html_e('您需要付费才可以使用此功能。', 'live-2d'); ?>
+                    <?php echo wp_kses(
+                        __('您的邮箱未激活, 请<a href="https://www.live2dweb.com/Email" target="_blank">点击此处</a>激活邮箱', 'live-2d'),
+                        array('a' => array('href' => array(), 'target' => array()))
+                    ); ?>
                 </div>
             <?php
             } else {

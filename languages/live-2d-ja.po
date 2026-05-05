@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Live 2D 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-05 06:51+0000\n"
-"PO-Revision-Date: 2026-05-05 06:51+0000\n"
+"POT-Creation-Date: 2026-05-05 07:13+0000\n"
+"PO-Revision-Date: 2026-05-05 07:13+0000\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -60,6 +60,7 @@ msgid "此站点未绑定, 请<a href=\"https://www.live2dweb.com/Sites\" target
 msgstr "このサイトは未登録です。<a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">こちら</a>から登録してください。登録時は WordPress の「サイトアドレス（URL）」と一致させてください。"
 
 #: src/live2d-Login.php:114
+#: src/live2d-Shop.php:80
 msgid "您的邮箱未激活, 请<a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">点击此处</a>激活邮箱"
 msgstr "メールアドレスが未有効化です。<a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">こちら</a>から有効化してください。"
 
@@ -122,45 +123,41 @@ msgstr "ご利用いただけるモデルの一覧です。"
 msgid "下载方式与浏览器扩展一致:直接 GET <code>download.live2dweb.com/model/{name}.zip</code>,由后端 PHP 解压到 <code>model/{name}</code>。"
 msgstr "ダウンロード方法はブラウザ拡張と同じです。<code>download.live2dweb.com/model/{name}.zip</code> を GET し、サーバー側の PHP が <code>model/{name}</code> に展開します。"
 
-#: src/live2d-Shop.php:66
-msgid "您需要登陆并付费才可以使用此功能。"
-msgstr "この機能を使用するにはログインと課金が必要です。"
+#: src/live2d-Shop.php:73
+msgid "您需要登录并完成邮箱验证才可以使用此功能。"
+msgstr "この機能を使用するにはログインとメールアドレスの認証が必要です。"
 
-#: src/live2d-Shop.php:72
-msgid "您需要付费才可以使用此功能。"
-msgstr "この機能を使用するには課金が必要です。"
-
-#: src/live2d-Shop.php:94
-#: src/live2d-Shop.php:122
+#: src/live2d-Shop.php:104
+#: src/live2d-Shop.php:132
 msgid "已启用"
 msgstr "インストール済み"
 
-#: src/live2d-Shop.php:96
-#: src/live2d-Shop.php:123
+#: src/live2d-Shop.php:106
+#: src/live2d-Shop.php:133
 msgid "下载"
 msgstr "ダウンロード"
 
-#: src/live2d-Shop.php:103
+#: src/live2d-Shop.php:113
 msgid "没有可用的模型。"
 msgstr "利用できるモデルがありません。"
 
-#: src/live2d-Shop.php:120
+#: src/live2d-Shop.php:130
 msgid "正在下载..."
 msgstr "ダウンロード中…"
 
-#: src/live2d-Shop.php:121
+#: src/live2d-Shop.php:131
 msgid "正在解压..."
 msgstr "展開中…"
 
-#: src/live2d-Shop.php:124
+#: src/live2d-Shop.php:134
 msgid "解压失败,文件可能损坏。"
 msgstr "展開に失敗しました。ファイルが破損している可能性があります。"
 
-#: src/live2d-Shop.php:125
+#: src/live2d-Shop.php:135
 msgid "下载失败"
 msgstr "ダウンロードに失敗しました"
 
-#: src/live2d-Shop.php:126
+#: src/live2d-Shop.php:136
 msgid "下载请求失败,请检查网络或登录状态。"
 msgstr "ダウンロード要求に失敗しました。ネットワークまたはログイン状態を確認してください。"
 
@@ -306,76 +303,84 @@ msgstr "デフォルトテクスチャ ID"
 msgid "模型目录"
 msgstr "モデルディレクトリ"
 
-#: src/waifu-Settings-Base.php:80
+#: src/waifu-Settings-Base.php:83
+msgid "待机动画文件名"
+msgstr "アイドルアニメーションのファイル名"
+
+#: src/waifu-Settings-Base.php:94
 msgid "Cubism Core for Web <br/> 引用地址"
 msgstr "Cubism Core for Web<br/>スクリプト URL"
 
-#: src/waifu-Settings-Base.php:115
+#: src/waifu-Settings-Base.php:129
 msgid "本地部署旧版模型"
 msgstr "ローカルの旧モデル"
 
-#: src/waifu-Settings-Base.php:118
+#: src/waifu-Settings-Base.php:132
 msgid "点击进入下载页面"
 msgstr "ダウンロードページを開く"
 
-#: src/waifu-Settings-Base.php:120
+#: src/waifu-Settings-Base.php:134
 msgid "模型文件由本插件托管,模型 API 自动指向本站,不会向外网发起请求。"
 msgstr "モデルファイルはこのプラグインで管理され、モデル API は自動的に自サイトを参照します。外部へのリクエストは行いません。"
 
-#: src/waifu-Settings-Base.php:124
+#: src/waifu-Settings-Base.php:138
 msgid "自行部署旧版模型"
 msgstr "自前ホストの旧モデル"
 
-#: src/waifu-Settings-Base.php:126
+#: src/waifu-Settings-Base.php:140
 msgid "对接你自己部署的旧版 V1/V2 模型 API(例如 fghrsh-style 的 /get/?id= 路由)。"
 msgstr "ご自身でホストする旧版 V1/V2 モデル API（例：fghrsh 形式の /get/?id= ルート）に接続します。"
 
-#: src/waifu-Settings-Base.php:131
-#: src/waifu-Settings-Base.php:139
+#: src/waifu-Settings-Base.php:145
+#: src/waifu-Settings-Base.php:153
 msgid "自定义新版模型路径"
 msgstr "カスタム新形式モデルパス"
 
-#: src/waifu-Settings-Base.php:133
+#: src/waifu-Settings-Base.php:147
 msgid "Cubism 4+ 模型(*.model3.json),可填模型直链或目录根并在下方\"模型目录\"中列出多个模型。"
 msgstr "Cubism 4+ モデル（*.model3.json）。直接 URL またはディレクトリのルートを指定し、下の「モデルディレクトリ」で複数モデルを列挙できます。"
 
-#: src/waifu-Settings-Base.php:138
+#: src/waifu-Settings-Base.php:152
 msgid "完成登录并付费后可用"
 msgstr "ログインおよび課金後に利用可能"
 
-#: src/waifu-Settings-Base.php:141
+#: src/waifu-Settings-Base.php:155
 msgid "Cubism 4+ 模型: 完成登录并付费后可用。"
 msgstr "Cubism 4+ モデル：ログインおよび課金後に利用可能です。"
 
-#: src/waifu-Settings-Base.php:154
+#: src/waifu-Settings-Base.php:168
 msgid "页面"
 msgstr "ページ"
 
-#: src/waifu-Settings-Base.php:155
+#: src/waifu-Settings-Base.php:169
 msgid "小工具(beta)"
 msgstr "ウィジェット（Beta）"
 
-#: src/waifu-Settings-Base.php:171
+#: src/waifu-Settings-Base.php:185
 msgid "上面「API 方式」选不同选项时, 此处填写要求不同。"
 msgstr "上の「API モード」の選択により、ここに入力すべき内容が変わります。"
 
-#: src/waifu-Settings-Base.php:183
+#: src/waifu-Settings-Base.php:197
 msgid "选择或填写默认加载的模型 ID(具体要求取决于上面「API 方式」)。"
 msgstr "デフォルトで読み込むモデル ID を選択／入力してください（要件は上の「API モード」に依存します）。"
 
-#: src/waifu-Settings-Base.php:193
+#: src/waifu-Settings-Base.php:207
 msgid "选择或填写默认皮肤 ID;新版模型不使用此项, 可留空。"
 msgstr "デフォルトのテクスチャ ID を選択／入力します。新形式モデルでは使用しないため、空欄でも構いません。"
 
-#: src/waifu-Settings-Base.php:199
+#: src/waifu-Settings-Base.php:213
 msgid "可切换的模型名称，程序会通过Model API来按顺序获取模型的信息，请保证模型目录的名称和 model3.json 一致"
 msgstr "切り替え可能なモデル名。プラグインは Model API を順に呼び出すため、ディレクトリ名と model3.json を一致させてください。"
 
-#: src/waifu-Settings-Base.php:215
+#: src/waifu-Settings-Base.php:221
+msgid "待机动画文件名, 文件是*.motion3.json"
+msgstr "アイドルアニメーションのファイル名。ファイルは *.motion3.json です。"
+
+#: src/waifu-Settings-Base.php:237
 msgid "如未授权请勿修改此地址，擅自修改此地址引发的法律问题与插件作者无关。"
 msgstr "正規のライセンスがない限り、この URL を変更しないでください。無断変更による法的問題について、プラグイン作者は責任を負いません。"
 
-#: src/waifu-Settings-Base.php:216
+#: src/waifu-Settings-Base.php:238
 msgid "软件许可协议："
 msgstr "ソフトウェアライセンス："
 
@@ -555,66 +560,58 @@ msgstr "Hitokoto API"
 msgid "待机动画延迟时间（毫秒）"
 msgstr "アイドルアニメーションの遅延時間（ミリ秒）"
 
-#: src/waifu-Settings-Tips.php:41
-msgid "待机动画文件名"
-msgstr "アイドルアニメーションのファイル名"
-
-#: src/waifu-Settings-Tips.php:49
+#: src/waifu-Settings-Tips.php:46
 msgid "显示“复制内容”提示"
 msgstr "「コピー」メッセージを表示"
 
-#: src/waifu-Settings-Tips.php:57
+#: src/waifu-Settings-Tips.php:54
 msgid "显示进入面页欢迎词"
 msgstr "ページ読込時のウェルカムメッセージを表示"
 
-#: src/waifu-Settings-Tips.php:65
+#: src/waifu-Settings-Tips.php:62
 msgid "提示框大小"
 msgstr "メッセージボックスのサイズ"
 
-#: src/waifu-Settings-Tips.php:73
+#: src/waifu-Settings-Tips.php:70
 msgid "提示框字号(px)"
 msgstr "メッセージボックスのフォントサイズ (px)"
 
-#: src/waifu-Settings-Tips.php:80
+#: src/waifu-Settings-Tips.php:77
 msgid "提示框位置(px)"
 msgstr "メッセージボックスの位置 (px)"
 
-#: src/waifu-Settings-Tips.php:88
+#: src/waifu-Settings-Tips.php:85
 msgid "提示框背景色"
 msgstr "メッセージボックスの背景色"
 
-#: src/waifu-Settings-Tips.php:96
+#: src/waifu-Settings-Tips.php:93
 msgid "边框颜色"
 msgstr "枠線の色"
 
-#: src/waifu-Settings-Tips.php:104
+#: src/waifu-Settings-Tips.php:101
 msgid "阴影颜色"
 msgstr "影の色"
 
-#: src/waifu-Settings-Tips.php:112
+#: src/waifu-Settings-Tips.php:109
 msgid "提示框文字颜色"
 msgstr "メッセージ文字の色"
 
-#: src/waifu-Settings-Tips.php:120
+#: src/waifu-Settings-Tips.php:117
 msgid "高亮文字颜色"
 msgstr "ハイライト色"
 
-#: src/waifu-Settings-Tips.php:133
-#: src/waifu-Settings-Tips.php:153
+#: src/waifu-Settings-Tips.php:130
+#: src/waifu-Settings-Tips.php:150
 msgid "秒"
 msgstr "秒"
 
-#: src/waifu-Settings-Tips.php:134
-#: src/waifu-Settings-Tips.php:154
+#: src/waifu-Settings-Tips.php:131
+#: src/waifu-Settings-Tips.php:151
 msgid "待机动画延迟时间，单位为秒，默认值为30秒。如果设置为0，则禁用待机动画。"
 msgstr "アイドルアニメーションの遅延（秒）。デフォルトは 30 秒。0 に設定するとアイドルアニメーションを無効化します。"
 
-#: src/waifu-Settings-Tips.php:162
-msgid "待机动画文件名, 文件是*.motion3.json"
-msgstr "アイドルアニメーションのファイル名。ファイルは *.motion3.json です。"
-
-#: src/waifu-Settings-Tips.php:167
-#: src/waifu-Settings-Tips.php:174
+#: src/waifu-Settings-Tips.php:161
+#: src/waifu-Settings-Tips.php:168
 #: src/waifu-Settings-Toolbar.php:150
 #: src/waifu-Settings-Toolbar.php:157
 #: src/waifu-Settings-Toolbar.php:171
@@ -626,8 +623,8 @@ msgstr "アイドルアニメーションのファイル名。ファイルは *.
 msgid "显示"
 msgstr "表示"
 
-#: src/waifu-Settings-Tips.php:169
-#: src/waifu-Settings-Tips.php:176
+#: src/waifu-Settings-Tips.php:163
+#: src/waifu-Settings-Tips.php:170
 #: src/waifu-Settings-Toolbar.php:152
 #: src/waifu-Settings-Toolbar.php:159
 #: src/waifu-Settings-Toolbar.php:173
@@ -639,11 +636,11 @@ msgstr "表示"
 msgid "隐藏"
 msgstr "非表示"
 
-#: src/waifu-Settings-Tips.php:183
+#: src/waifu-Settings-Tips.php:177
 msgid "由于提示大小不同，请自行设置：宽度 x 高度"
 msgstr "メッセージボックスのサイズは個別に異なるため、幅 x 高さを各自で設定してください。"
 
-#: src/waifu-Settings-Tips.php:199
+#: src/waifu-Settings-Tips.php:193
 msgid "数字越大越靠上"
 msgstr "数値が大きいほど上に寄ります"
 

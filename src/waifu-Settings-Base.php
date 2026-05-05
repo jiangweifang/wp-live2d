@@ -72,6 +72,20 @@ class live2D_Settings_Base
                 'live_2d_setting_base_section' // section
             );
 
+            // 待机动画文件名 (idle_motion) 原本在 "提示消息选项" 页. 与 modelDir
+            // 共用 "Custom new-format model path" 的联动: 仅 apiType=='custom'
+            // 且 modelAPI 不以 .json 结尾时显示 (live2d-admin.ts refreshModelDirRow
+            // 已扩展为同时 toggle .modelDir / .idle_motion 两行). 付费门槛与
+            // modelDir 同一 block, userLevel<1 不 register, sanitize 兜底见
+            // src/waifu-Settings.php (空串过滤 + 数组校验, 防止 404).
+            add_settings_field(
+                'idle_motion', // id
+                __('待机动画文件名', 'live-2d'), // title
+                array($this, 'idle_motion_callback'), // callback
+                'live-2d-settings-base', // page
+                'live_2d_setting_base_section' // section
+            );
+
             // 模型缩放倍数 / 看板娘位置 已迁移到 "样式" 设置页 (waifu-Settings-Style.php),
             // 仍读写同一个 modelPoint 字段, JS 端 (lappdelegate.ts initialize) 无须改动.
 
@@ -197,6 +211,14 @@ class live2D_Settings_Base
     {
         live2D_Utils::loopMsg('modelDir','List',true,'live_2d_settings_option_name');
         echo '<p>' . esc_html__('可切换的模型名称，程序会通过Model API来按顺序获取模型的信息，请保证模型目录的名称和 model3.json 一致','live-2d').'</p>';
+    }
+
+    // 待机动画文件名 — loopMsg 渲染的 <p class="idle_motion"> 会被
+    // live2d-admin.ts 的 refreshModelDirRow 一并 toggle (与 modelDir 同步).
+    public function idle_motion_callback()
+    {
+        live2D_Utils::loopMsg('idle_motion','List',true,'live_2d_settings_option_name');
+        echo '<p>' . esc_html__('待机动画文件名, 文件是*.motion3.json','live-2d') . '</p>';
     }
 
     // modelZoomNumberV2_callback / modelXYaxis_callback 已迁移到
