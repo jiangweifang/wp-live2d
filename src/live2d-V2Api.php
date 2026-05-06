@@ -117,16 +117,28 @@ class live2d_V2Api
         $sessionSecret = hash_hmac('sha256', $token, $masterKey, true);
         $exp           = time() + self::TTL;
 
-        $baseDir = self::base_dir($modelApi);
+        $baseDir  = self::base_dir($modelApi);
+        $slug     = self::derive_slug($modelApi);
+        $localDir = $slug !== '' ? self::model_local_dir($slug) : '';
         $mapping = array();
 
-        $protect = function ($raw) use (&$mapping, $baseDir, $sessionSecret, $token, $exp) {
+        // 闭包优先映射到本地副本 (model/{slug}/{relPath}),本地不在才存原始 URL。
+        // 这样已下载模型的子资源走 readfile,未下载 / 不可识别路径的部分走远端代理。
+        $protect = function ($raw) use (&$mapping, $baseDir, $localDir, $sessionSecret, $token, $exp) {
             if (!is_string($raw) || $raw === '') {
                 return $raw;
             }
             $realUrl = self::resolve_url($baseDir, $raw);
+            // 仅对「原始相对路径」尝试本地 — 完整 URL / data: 不可能是本地文件。
+            $local = '';
+            if ($localDir !== '' && !preg_match('#^(https?:|data:)#i', $raw)) {
+                $candidate = wp_normalize_path($localDir . '/' . ltrim($raw, '/'));
+                if (is_file($candidate) && is_readable($candidate)) {
+                    $local = $candidate;
+                }
+            }
             $alias   = self::random_base64url(self::ALIAS_BYTES);
-            $mapping[$alias] = $realUrl;
+            $mapping[$alias] = $local !== '' ? $local : $realUrl;
             $sig = self::sign($sessionSecret, $token, $alias, $exp);
             // 输出相对路径 —— 不带 baseUrl/token 前缀。
             // Cubism Web Framework 的 LAppModel.loadAssets / setupTextures 是
@@ -330,16 +342,43 @@ class live2d_V2Api
     }
 
     /**
-     * 资源流出入口:同站 wp-content 走 readfile;其余走服务端代理。
-     * 两者都不出现真实 URL,客户端 Network 面板只能看到 `…/v2/m/{token}/{alias}`。
+     * 资源流出入口 — mapping 值是 http(s) URL 走跨域 cURL 代理;其它一律当本地 absPath 走 readfile。
+     * 同站 wp-content URL 不会出现在新版 mapping 里(create_session 会提前转为 absPath)。
      */
     private static function stream_asset($realUrl)
     {
-        $contentDirUrl = trailingslashit(content_url());
-        if (strpos($realUrl, $contentDirUrl) === 0) {
-            return self::stream_local($realUrl);
+        if (preg_match('#^https?://#i', $realUrl)) {
+            return self::stream_remote($realUrl);
         }
-        return self::stream_remote($realUrl);
+        return self::stream_local_path($realUrl);
+    }
+
+    /**
+     * readfile 本地 absPath。路径必须位于 model/ 目录下(防 path traversal)。
+     */
+    private static function stream_local_path($absPath)
+    {
+        $modelRootReal = realpath(self::model_root_dir());
+        $fileReal      = $absPath ? realpath($absPath) : false;
+        if ($modelRootReal === false || $fileReal === false) {
+            return self::ok_one_pixel_png();
+        }
+        $modelRootReal = wp_normalize_path($modelRootReal);
+        $fileReal      = wp_normalize_path($fileReal);
+        if (strpos($fileReal, $modelRootReal) !== 0) {
+            return self::ok_one_pixel_png();
+        }
+        if (!is_file($fileReal) || !is_readable($fileReal)) {
+            return self::ok_one_pixel_png();
+        }
+        $mime = self::guess_mime($fileReal);
+        nocache_headers();
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($fileReal));
+        header('Cache-Control: no-store, private');
+        header('X-Content-Type-Options: nosniff');
+        readfile($fileReal);
+        exit;
     }
 
     /**
@@ -572,5 +611,325 @@ class live2d_V2Api
         header('Content-Length: ' . strlen($bytes));
         echo $bytes;
         exit;
+    }
+
+    // ============================================================
+    //  V3 模型本地缓存(protectV2='local')
+    //  - 与 V1 共用 model/ 目录;DOWNLOAD_DIR 常量在 src/live2d-SDK.php 定义。
+    //  - 单模型按 slug 子目录存放,保留 model3.json 引用的相对路径结构。
+    //  - 下载失败原子化清理(rename .tmp-{slug} → {slug}),不留半成品。
+    //  - 公开方法供 src/live2d-Shop.php 注册的 wp_ajax_v2_* 调用。
+    // ============================================================
+
+    /** model/ 根目录 absPath(必带尾斜杠 /) */
+    public static function model_root_dir()
+    {
+        if (defined('DOWNLOAD_DIR')) {
+            return DOWNLOAD_DIR; // 与 V1 完全同址
+        }
+        return wp_normalize_path(plugin_dir_path(dirname(__FILE__)) . 'model/');
+    }
+
+    /** model/{slug}/ */
+    public static function model_local_dir($slug)
+    {
+        return self::model_root_dir() . $slug;
+    }
+
+    /**
+     * 由 modelApi URL 派生 slug:
+     *   https://.../Mao/Mao.model3.json -> 'Mao'
+     *   https://.../foo.model.json      -> 'foo'
+     *   https://.../bar.json            -> 'bar'
+     * 经 sanitize_file_name 清洗,空 / 非法 → ''
+     */
+    public static function derive_slug($modelApi)
+    {
+        $path = wp_parse_url($modelApi, PHP_URL_PATH);
+        if (!is_string($path) || $path === '') return '';
+        $base = basename($path);
+        if ($base === '') return '';
+        // 剥两层扩展:".model3.json" / ".model.json" / ".json"
+        $stem = preg_replace('#\.(model3|model)\.json$#i', '', $base);
+        if ($stem === $base) {
+            $stem = preg_replace('#\.[^.]+$#', '', $base);
+        }
+        $san = sanitize_file_name($stem);
+        return $san === '' ? '' : $san;
+    }
+
+    /**
+     * 查询某 modelApi 在本地的下载状态。供前端展示用。
+     * 返回:
+     *   array(
+     *     'slug'     => string,
+     *     'exists'   => bool,                     // model3.json 是否落地
+     *     'fileCount'=> int,                      // {slug}/ 下文件数(不含子目录)
+     *     'totalBytes'=> int,                     // 总字节
+     *   )
+     */
+    public static function get_local_status($modelApi)
+    {
+        $slug = self::derive_slug($modelApi);
+        $out = array('slug' => $slug, 'exists' => false, 'fileCount' => 0, 'totalBytes' => 0);
+        if ($slug === '') return $out;
+        $dir = self::model_local_dir($slug);
+        if (!is_dir($dir)) return $out;
+        // model3.json 是否在本地
+        $base = basename(wp_parse_url($modelApi, PHP_URL_PATH));
+        $manifestLocal = $dir . '/' . $base;
+        $out['exists'] = is_file($manifestLocal);
+        // 全量统计(递归)
+        try {
+            $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS));
+            foreach ($rii as $f) {
+                if ($f->isFile()) {
+                    $out['fileCount']++;
+                    $out['totalBytes'] += (int) $f->getSize();
+                }
+            }
+        } catch (Exception $e) {
+            // 目录读不全也认账,只是计数 0
+            error_log('live2d_V2Api get_local_status iterate fail: ' . $e->getMessage() . ' slug=' . $slug);
+        }
+        return $out;
+    }
+
+    /**
+     * 把 modelApi 指向的整个 V3 模型下载到 model/{slug}/。
+     * 全部成功才落地(原子 rename .tmp-{slug} → {slug});任一失败清理 + 回错。
+     *
+     * 返回数组(供 wp_send_json):
+     *   成功:array('errorCode'=>200, 'slug'=>..., 'fileCount'=>N, 'totalBytes'=>N)
+     *   失败:array('errorCode'=>非 200, 'errorMsg'=>..., 'failedUrl'=>...)
+     *
+     * @param string $modelApi 用户后台填的 model3.json 直链
+     */
+    public static function download_model_to_local($modelApi)
+    {
+        $modelApi = trim((string) $modelApi);
+        if ($modelApi === '' || !preg_match('#^https?://#i', $modelApi)) {
+            return array('errorCode' => 400, 'errorMsg' => 'modelApi 必须是 http(s) URL');
+        }
+        $slug = self::derive_slug($modelApi);
+        if ($slug === '') {
+            return array('errorCode' => 400, 'errorMsg' => '无法从 modelApi 派生有效的目录名');
+        }
+
+        $rootDir = self::model_root_dir();
+        if (!file_exists($rootDir) && !wp_mkdir_p($rootDir)) {
+            return array('errorCode' => 500, 'errorMsg' => 'model/ 目录创建失败');
+        }
+        $finalDir = $rootDir . $slug;
+        $tmpDir   = $rootDir . '.tmp-' . $slug;
+
+        // 已下载过:清掉旧 final,确保本次是全新下载(避免新模型与旧模型残留混存)
+        if (is_dir($finalDir)) {
+            self::rmdir_recursive($finalDir);
+        }
+        if (is_dir($tmpDir)) {
+            self::rmdir_recursive($tmpDir);
+        }
+        if (!wp_mkdir_p($tmpDir)) {
+            return array('errorCode' => 500, 'errorMsg' => '临时目录创建失败:' . $tmpDir);
+        }
+
+        // 1) 拉 model3.json
+        $manifestBase = basename(wp_parse_url($modelApi, PHP_URL_PATH));
+        $manifestDest = $tmpDir . '/' . $manifestBase;
+        $r = self::download_one_file($modelApi, $manifestDest);
+        if (!$r['ok']) {
+            self::rmdir_recursive($tmpDir);
+            return array('errorCode' => $r['code'], 'errorMsg' => $r['msg'], 'failedUrl' => $modelApi);
+        }
+        $manifestText = (string) @file_get_contents($manifestDest);
+        $manifest = json_decode($manifestText, true);
+        if (!is_array($manifest) || !isset($manifest['FileReferences'])) {
+            self::rmdir_recursive($tmpDir);
+            return array('errorCode' => 422, 'errorMsg' => 'model3.json 不是合法 manifest');
+        }
+
+        // 2) 枚举所有子资源并下载
+        $baseDir = self::base_dir($modelApi);
+        $relList = self::collect_relative_files($manifest['FileReferences']);
+        foreach ($relList as $rel) {
+            if (!is_string($rel) || $rel === '') continue;
+            // 完整 URL 跳过(model3.json 里偶尔有 https:// 直链)— 不下载,运行时走 stream_remote
+            if (preg_match('#^(https?:|data:)#i', $rel)) continue;
+
+            $url  = self::resolve_url($baseDir, $rel);
+            $dest = $tmpDir . '/' . ltrim($rel, '/');
+            // 防 zip-slip:dest 必须仍在 tmpDir 内
+            $tmpReal = wp_normalize_path(realpath($tmpDir));
+            $destNorm = wp_normalize_path($dest);
+            if ($tmpReal === false || strpos($destNorm, $tmpReal) !== 0) {
+                self::rmdir_recursive($tmpDir);
+                return array('errorCode' => 422, 'errorMsg' => '非法相对路径:' . $rel);
+            }
+            // 父目录按需创建
+            $parent = dirname($dest);
+            if (!is_dir($parent) && !wp_mkdir_p($parent)) {
+                self::rmdir_recursive($tmpDir);
+                return array('errorCode' => 500, 'errorMsg' => '子目录创建失败:' . $parent);
+            }
+            $r = self::download_one_file($url, $dest);
+            if (!$r['ok']) {
+                self::rmdir_recursive($tmpDir);
+                return array('errorCode' => $r['code'], 'errorMsg' => $r['msg'], 'failedUrl' => $url);
+            }
+        }
+
+        // 3) atomic rename .tmp → final
+        if (!@rename($tmpDir, $finalDir)) {
+            // 跨文件系统时 rename 会失败 → 退回到逐文件 copy
+            if (!self::move_dir_recursive($tmpDir, $finalDir)) {
+                self::rmdir_recursive($tmpDir);
+                return array('errorCode' => 500, 'errorMsg' => '保存失败:' . $finalDir);
+            }
+        }
+
+        $status = self::get_local_status($modelApi);
+        return array(
+            'errorCode'  => 200,
+            'slug'       => $status['slug'],
+            'fileCount'  => $status['fileCount'],
+            'totalBytes' => $status['totalBytes'],
+        );
+    }
+
+    /**
+     * 删除某 modelApi 对应的本地副本(model/{slug}/)。
+     * 返回:array('errorCode'=>200|404, 'slug'=>..., 'deleted'=>bool)
+     */
+    public static function delete_model_local($modelApi)
+    {
+        $slug = self::derive_slug($modelApi);
+        if ($slug === '') {
+            return array('errorCode' => 400, 'errorMsg' => '无法从 modelApi 派生 slug');
+        }
+        $dir = self::model_local_dir($slug);
+        if (!is_dir($dir)) {
+            return array('errorCode' => 200, 'slug' => $slug, 'deleted' => false);
+        }
+        $ok = self::rmdir_recursive($dir);
+        return array('errorCode' => $ok ? 200 : 500, 'slug' => $slug, 'deleted' => (bool) $ok);
+    }
+
+    /**
+     * 单文件下载:wp_remote_get(stream),失败返 array('ok'=>false,'code','msg')。
+     * 单文件 50MB 上限可由 LIVE2D_V2API_MODEL_MAX_FILE_BYTES 覆盖。
+     */
+    private static function download_one_file($url, $destPath)
+    {
+        $maxBytes = defined('LIVE2D_V2API_MODEL_MAX_FILE_BYTES') ? (int) LIVE2D_V2API_MODEL_MAX_FILE_BYTES : (50 * 1024 * 1024);
+        $args = array(
+            'timeout'  => 60,
+            'redirection' => 5,
+            'sslverify' => true,
+            'stream'   => true,
+            'filename' => $destPath,
+            'headers'  => array(),
+        );
+        if (defined('LIVE2D_V2API_PROXY_REFERER') && is_string(LIVE2D_V2API_PROXY_REFERER) && LIVE2D_V2API_PROXY_REFERER !== '') {
+            $args['headers']['Referer'] = LIVE2D_V2API_PROXY_REFERER;
+        }
+        $resp = wp_remote_get($url, $args);
+        if (is_wp_error($resp)) {
+            @unlink($destPath);
+            return array('ok' => false, 'code' => 500, 'msg' => 'cURL 错误: ' . $resp->get_error_message());
+        }
+        $code = (int) wp_remote_retrieve_response_code($resp);
+        if ($code !== 200) {
+            @unlink($destPath);
+            return array('ok' => false, 'code' => $code, 'msg' => '下载失败 HTTP ' . $code);
+        }
+        $size = is_file($destPath) ? (int) filesize($destPath) : 0;
+        if ($size <= 0) {
+            @unlink($destPath);
+            return array('ok' => false, 'code' => 502, 'msg' => '响应为空');
+        }
+        if ($size > $maxBytes) {
+            @unlink($destPath);
+            return array('ok' => false, 'code' => 413, 'msg' => '单文件超过限额 ' . size_format($maxBytes));
+        }
+        @chmod($destPath, 0644);
+        return array('ok' => true, 'size' => $size);
+    }
+
+    /** 列出 FileReferences 里所有相对文件路径(扁平字符串数组)。 */
+    private static function collect_relative_files($fr)
+    {
+        $out = array();
+        if (!is_array($fr)) return $out;
+        foreach (array('Moc', 'Physics', 'Pose', 'DisplayInfo', 'UserData', 'CdiFile') as $k) {
+            if (!empty($fr[$k]) && is_string($fr[$k])) $out[] = $fr[$k];
+        }
+        if (!empty($fr['Textures']) && is_array($fr['Textures'])) {
+            foreach ($fr['Textures'] as $t) if (is_string($t)) $out[] = $t;
+        }
+        if (!empty($fr['Expressions']) && is_array($fr['Expressions'])) {
+            foreach ($fr['Expressions'] as $e) {
+                if (!empty($e['File']) && is_string($e['File'])) $out[] = $e['File'];
+            }
+        }
+        if (!empty($fr['Motions']) && is_array($fr['Motions'])) {
+            foreach ($fr['Motions'] as $items) {
+                if (!is_array($items)) continue;
+                foreach ($items as $m) {
+                    if (!empty($m['File']) && is_string($m['File'])) $out[] = $m['File'];
+                    if (!empty($m['Sound']) && is_string($m['Sound'])) $out[] = $m['Sound']; // motion 可能挂语音
+                }
+            }
+        }
+        return array_values(array_unique($out));
+    }
+
+    /** 递归删除目录(同 V1 OpenZip 失败清理用法)。 */
+    private static function rmdir_recursive($dir)
+    {
+        if (!is_dir($dir)) return true;
+        try {
+            $rii = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::CHILD_FIRST
+            );
+            foreach ($rii as $item) {
+                if ($item->isDir()) {
+                    @rmdir($item->getPathname());
+                } else {
+                    @unlink($item->getPathname());
+                }
+            }
+        } catch (Exception $e) {
+            error_log('live2d_V2Api rmdir_recursive iterate fail: ' . $e->getMessage() . ' dir=' . $dir);
+        }
+        return @rmdir($dir);
+    }
+
+    /** 跨文件系统时 rename 失败 → 逐文件 copy 兜底。 */
+    private static function move_dir_recursive($src, $dst)
+    {
+        if (!wp_mkdir_p($dst)) return false;
+        try {
+            $rii = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($src, FilesystemIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
+            foreach ($rii as $item) {
+                $rel = substr($item->getPathname(), strlen($src) + 1);
+                $target = $dst . '/' . $rel;
+                if ($item->isDir()) {
+                    if (!is_dir($target) && !wp_mkdir_p($target)) return false;
+                } else {
+                    if (!@copy($item->getPathname(), $target)) return false;
+                    @chmod($target, 0644);
+                }
+            }
+        } catch (Exception $e) {
+            error_log('live2d_V2Api move_dir_recursive fail: ' . $e->getMessage());
+            return false;
+        }
+        self::rmdir_recursive($src);
+        return true;
     }
 }

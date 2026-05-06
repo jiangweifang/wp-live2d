@@ -236,19 +236,60 @@ class live2D_Settings_Base
     }
 
     /**
-     * 防盗链开关 — 默认关闭. 老站升级行为零变化, 主动勾选后才进入 alias 化链路.
-     * 持久化为 bool, sanitize 在 src/waifu-Settings.php 兜底, 缺键 -> false.
-     * 运行时由 wordpress-live2d.php live2D_style() 决定是否注入 v2SessionUrl.
+     * V3 模型保护策略 — 三态 radio,默认 'direct'。
+     *   - 'oss'    使用第三方对象存储工具:信任源站自带防盗链机制(Referer / 签名 URL),
+     *              插件不做额外处理, modelAPI 原样交给 SDK。
+     *   - 'local'  缓存到本地:插件会主动如何 alias 化所有模型资源,访客 F12 只看到
+     *              临时签名 URL。需要在下面点「下载到本地」把模型文件拉进插件 model/ 目录。
+     *   - 'direct' 不缓存(默认):不启用防盗链。适合调试 / 临时模型 / 访客能看到真实路径也无所谓的场景。
+     *
+     * 运行时由 wordpress-live2d.php live2D_style() 决定是否注入 v2SessionUrl(仅 'local' 注入)。
+     * 下载区域 (#protectV2-models-section) 的可见性由 live2d-admin.ts 根据 radio 状态 toggle。
      */
     public function protectV2_callback()
     {
-        $checked = !empty($this->live_2d__options['protectV2']);
-        printf(
-            '<label><input type="checkbox" name="live_2d_settings_option_name[protectV2]" id="protectV2" value="1" %s> %s</label>',
-            $checked ? 'checked' : '',
-            esc_html__('开启 V3 模型防盗链', 'live-2d')
-        );
-        echo '<p class="description">' . esc_html__('开启后,访客在 F12 网络面板只能看到形如 …/wp-json/live2d/v2/m/{token}/{alias} 的临时签名 URL,真实模型路径(*.model3.json / *.moc3 / *.png)不会暴露;模型加载会绕一道服务器代理,跨域 modelAPI 也由本站代为下载,可能略增带宽与首屏延迟。仅对"自定义新版模型路径"(apiType=custom)生效。', 'live-2d') . '</p>';
+        $current = isset($this->live_2d__options['protectV2']) ? $this->live_2d__options['protectV2'] : 'direct';
+        // 老版本存的是 bool 或 "1"/"0":迁移 true → 'local',false → 'direct'
+        if (is_bool($current)) {
+            $current = $current ? 'local' : 'direct';
+        } elseif (!in_array($current, array('oss', 'local', 'direct'), true)) {
+            $current = 'direct';
+        }
+        ?>
+        <fieldset class="protectV2-fieldset">
+            <label for="protectV2-direct">
+                <input type="radio" name="live_2d_settings_option_name[protectV2]" id="protectV2-direct" class="protectV2" value="direct" <?php checked($current, 'direct'); ?>>
+                <?php esc_html_e('不缓存 (默认)', 'live-2d'); ?>
+            </label>
+            <span class="description" style="margin-left:8px;"><?php esc_html_e('不启用防盗链;访客 F12 可看到真实模型路径。', 'live-2d'); ?></span><br>
+
+            <label for="protectV2-oss">
+                <input type="radio" name="live_2d_settings_option_name[protectV2]" id="protectV2-oss" class="protectV2" value="oss" <?php checked($current, 'oss'); ?>>
+                <?php esc_html_e('使用第三方对象存储工具', 'live-2d'); ?>
+            </label>
+            <span class="description" style="margin-left:8px;"><?php esc_html_e('源站已启 Referer 防盗链 / 签名 URL,不需要插件额外代理。行为等同于「不缓存」。', 'live-2d'); ?></span><br>
+
+            <label for="protectV2-local">
+                <input type="radio" name="live_2d_settings_option_name[protectV2]" id="protectV2-local" class="protectV2" value="local" <?php checked($current, 'local'); ?>>
+                <?php esc_html_e('缓存到本地 (推荐)', 'live-2d'); ?>
+            </label>
+            <span class="description" style="margin-left:8px;"><?php esc_html_e('访客只看到临时签名 URL,真实 *.model3.json / *.moc3 / *.png 不会暴露;需要下载模型到本地 model/ 目录。', 'live-2d'); ?></span>
+        </fieldset>
+
+        <?php // 下载区域 —— 默认隐藏, live2d-admin.ts 会在 protectV2='local' 时显示。
+              // 后端 AJAX 在 src/live2d-V2Api.php 里实现,接入点在 src/live2d-Shop.php。 ?>
+        <div id="protectV2-models-section" style="display:none;margin-top:12px;padding:12px;border:1px solid #ddd;background:#fafafa;border-radius:4px;">
+            <strong><?php esc_html_e('模型本地缓存', 'live-2d'); ?></strong>
+            <p class="description" style="margin:6px 0;">
+                <?php esc_html_e('点击下面按钮,插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。', 'live-2d'); ?>
+            </p>
+            <div id="protectV2-models-list">
+                <?php // 由 admin TS 动态填充列表条目:当前 slug + 状态(未下载 / 已下载 X 个文件 N KB) + [下载/删除] 按钮 ?>
+                <span class="description"><?php esc_html_e('正在读取状态…', 'live-2d'); ?></span>
+            </div>
+            <p id="protectV2-models-msg" style="margin:6px 0;color:#1d2327;"></p>
+        </div>
+        <?php
     }
 
     // modelZoomNumberV2_callback / modelXYaxis_callback 已迁移到

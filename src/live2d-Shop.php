@@ -3,6 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 include_once(dirname(__FILE__)  . '/live2d-SDK.php');
+include_once(dirname(__FILE__)  . '/live2d-V2Api.php');
 //下载模型ajax(V1 直链下载,对齐 Chromium 扩展 v1ModelCache.ts 的 downloadAndCacheV1Model)
 add_action("wp_ajax_download_v1_model", array(new live2d_SDK, 'DownloadV1Model'));
 //解压缩ajax
@@ -13,6 +14,45 @@ add_action("wp_ajax_clear_files", array(new live2d_SDK, 'ClearFiles'));
 add_action("wp_ajax_get_model_list", array(new live2d_SDK, 'GetModelMotions'));
 //设置页 modelTexturesId 下拉框拉取材质列表
 add_action("wp_ajax_get_texture_list", array(new live2d_SDK, 'GetTextureList'));
+
+// V3 模型本地缓存(protectV2='local')— 后台 AJAX 入口。
+// nonce 沿用 'live2d_shop_action'(与 live2d-SDK.php 内一致);capability=manage_options。
+// 入参 modelApi 直接来自 admin TS,服务端用 wp_unslash + 简单 URL 校验,不依赖白名单。
+add_action('wp_ajax_v2_local_status',   'live2d_v2_ajax_local_status');
+add_action('wp_ajax_v2_download_model', 'live2d_v2_ajax_download_model');
+add_action('wp_ajax_v2_delete_model',   'live2d_v2_ajax_delete_model');
+
+function live2d_v2_ajax_verify()
+{
+    if (!is_user_logged_in() || !current_user_can('manage_options')) {
+        wp_send_json_error(array('errorCode' => 403, 'errorMsg' => 'forbidden'), 403);
+    }
+    check_ajax_referer('live2d_shop_action', '_wpnonce');
+}
+
+function live2d_v2_ajax_local_status()
+{
+    live2d_v2_ajax_verify();
+    $modelApi = isset($_POST['modelApi']) ? wp_unslash($_POST['modelApi']) : '';
+    wp_send_json(live2d_V2Api::get_local_status($modelApi));
+}
+
+function live2d_v2_ajax_download_model()
+{
+    live2d_v2_ajax_verify();
+    $modelApi = isset($_POST['modelApi']) ? wp_unslash($_POST['modelApi']) : '';
+    // 大模型可能下几十秒;给 PHP 关掉默认 30s 限制(后端 streaming 下载本身有 60s 单文件 timeout)
+    @set_time_limit(0);
+    $result = live2d_V2Api::download_model_to_local($modelApi);
+    wp_send_json($result);
+}
+
+function live2d_v2_ajax_delete_model()
+{
+    live2d_v2_ajax_verify();
+    $modelApi = isset($_POST['modelApi']) ? wp_unslash($_POST['modelApi']) : '';
+    wp_send_json(live2d_V2Api::delete_model_local($modelApi));
+}
 
 class live2d_Shop
 {

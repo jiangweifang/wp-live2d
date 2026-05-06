@@ -160,10 +160,10 @@ function live2D_style()
         'settings' => $live2dSettings,
         'localPath' => plugin_dir_url(__FILE__) . 'model',
         // V2 模型(Cubism 4/5)防盗链 endpoint(对应 src/live2d-V2Api.php)。
-        // 仅在后台开关 protectV2=true 时注入完整 URL;关闭则注入空串 ->
-        // 前端 Wordpress/live2d-tips.ts 的 signOneModel 早退到裸链,
-        // 老站升级行为零变化。
-        'v2SessionUrl' => (is_array($live2dSettings) && !empty($live2dSettings['protectV2']))
+        // 仅在后台选 protectV2='local' 时注入完整 URL;其它取值('oss'/'direct') 注入空串
+        // -> 前端 Wordpress/live2d-tips.ts 的 signOneModel 早退到裸链。
+        // 'oss' 与 'direct' 运行时等价,只是后台 UI 与下载按钮可见性不同。
+        'v2SessionUrl' => (is_array($live2dSettings) && isset($live2dSettings['protectV2']) && $live2dSettings['protectV2'] === 'local')
             ? rest_url('live2d/v2/session')
             : '',
         'currentPage' => array('get_the_id' => get_the_id(), 'is_home' => is_front_page(), 'is_single' => is_single())

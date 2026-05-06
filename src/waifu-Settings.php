@@ -59,9 +59,18 @@ class live2D_Settings
 			$sanitary_values['modelDir'] = $input['modelDir'];
 		} 
 
-		// 防盗链开关持久化为 bool. checkbox 未勾选时 POST 里没有这个键,
-		// 所以必须显式 isset 兜底为 false, 才能让"取消勾选 + 保存"真正落到 false.
-		$sanitary_values['protectV2'] = !empty($input['protectV2']);
+		// 防盗链保护策略 — 三态字符串: 'oss' | 'local' | 'direct'
+		//   - 老版本 bool true  → 'local'
+		//   - 老版本 bool false → 'direct'
+		//   - radio 未提交 / 未知值 → 'direct' (默认不启用,升级零感知)
+		$rawProtect = isset($input['protectV2']) ? $input['protectV2'] : null;
+		if (is_bool($rawProtect)) {
+			$sanitary_values['protectV2'] = $rawProtect ? 'local' : 'direct';
+		} elseif (in_array($rawProtect, array('oss', 'local', 'direct'), true)) {
+			$sanitary_values['protectV2'] = $rawProtect;
+		} else {
+			$sanitary_values['protectV2'] = 'direct';
+		}
 
 
 		if (isset($input['tipsMessage'])) {
@@ -327,8 +336,8 @@ class live2D_Settings
 			$defValue['modelPoint']['x'] = 0;
 			$defValue['modelPoint']['y'] = 0;
 			$defValue['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
-			// 防盗链 V3 模型开关 — 默认关闭, 升级老站不改变行为
-			$defValue['protectV2'] = false;
+			// V3 模型保护策略 — 默认 'direct' (不缓存),升级老站不改变行为
+			$defValue['protectV2'] = 'direct';
 			$defValue['showToolMenu'] = true;
 			$defValue['isBotButton'] = true;
 			$defValue['canCloseLive2d'] = true;
