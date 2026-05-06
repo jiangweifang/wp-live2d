@@ -94,7 +94,7 @@ class live2D_Settings_Base
             // 'local'/'remote' (旧 V1 PHP) 不受影响, 模型本来就托管在站内不需要 alias.
             add_settings_field(
                 'protectV2',
-                __('防盗链(V3 模型)', 'live-2d'),
+                __('防盗链(Cubism 4+ 模型)', 'live-2d'),
                 array($this, 'protectV2_callback'),
                 'live-2d-settings-base',
                 'live_2d_setting_base_section'
@@ -128,11 +128,11 @@ class live2D_Settings_Base
     public function apiType_callback()
     {
         // apiType 三态字符串,详见 src/live2d-V1Api.php live2d_normalize_api_type()。
-        // 旧 DB 里 bool true→'local'、false→'remote';新 'custom' 用于 .model3.json / V3 目录。
+        // 旧 DB 里 bool true→'local'、false→'remote';新 'custom' 用于 .model3.json / Cubism 4+ 目录。
         $current = function_exists('live2d_normalize_api_type')
             ? live2d_normalize_api_type(isset($this->live_2d__options['apiType']) ? $this->live_2d__options['apiType'] : null)
             : 'remote';
-        // 'local' 走本地 model/ 目录,无需付费/登录;'custom' (V3+) 走自定义 URL,
+        // 'local' 走本地 model/ 目录,无需付费/登录;'custom' (Cubism 4+) 走自定义 URL,
         // 与原 V2 自定 API 行为一致,沿用付费门槛。
         $hasPaid = !empty($this->userInfo["userLevel"]) && intval($this->userInfo["userLevel"]) > 0;
         $shopUrl = esc_url(admin_url('admin.php?page=live-2d-shop'));
@@ -236,7 +236,7 @@ class live2D_Settings_Base
     }
 
     /**
-     * V3 模型保护策略 — 三态 radio,默认 'direct'。
+     * Cubism 4+ 模型保护策略 — 三态 radio,默认 'direct'。
      *   - 'oss'    使用第三方对象存储工具:信任源站自带防盗链机制(Referer / 签名 URL),
      *              插件不做额外处理, modelAPI 原样交给 SDK。
      *   - 'local'  缓存到本地:插件会主动如何 alias 化所有模型资源,访客 F12 只看到
