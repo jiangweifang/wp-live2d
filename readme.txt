@@ -28,7 +28,7 @@ License URI: https://opensource.org/licenses/MIT
 - 新增：内置本地 V1 模型 API（`/wp-json/live2d/v1/model/*`），Pio / Tia / 22 / 33 等经典 moc 模型不再依赖 fghrsh.net 等第三方接口，完全本地化运行。
 - 新增：创意工坊 API 类型升级为三态（本地 / 远程创意工坊 / 自定义），其中“本地”选项免费开放，未购买授权也可使用 V1 模型。
 - 新增：`assets/v1/` 内置常见 V1 模型的 `textures.json` 与预览图，首次启用插件即可开箱使用。
-- 新增：超采样功能，可以让贴图更清晰。
+- 新增：超采样功能，可以让贴图更清晰。（此功能只能使用在model3模型中）
 - 优化：`live2d-SDK.php` 重构 V1 模型下载与解压链路，新增 zip-slip 防御和失败回收，创意工坊下载更稳定。
 - 优化：多语言系统重做，新增 `languages/build-i18n.py` 自动构建脚本与 `translations.json`，补全大量翻译条目，新增日语 (ja) 翻译。
 - 修复：一批 PHP 安全告警与设置页 / 创意工坊 AJAX 的 nonce 竞态问题。
