@@ -236,12 +236,10 @@ class live2D_Settings_Base
     }
 
     /**
-     * Cubism 4+ 模型保护策略 — 三态 radio,默认 'direct'。
-     *   - 'oss'    使用第三方对象存储工具:信任源站自带防盗链机制(Referer / 签名 URL),
-     *              插件不做额外处理, modelAPI 原样交给 SDK。
-     *   - 'local'  缓存到本地:插件会主动如何 alias 化所有模型资源,访客 F12 只看到
-     *              临时签名 URL。需要在下面点「下载到本地」把模型文件拉进插件 model/ 目录。
-     *   - 'direct' 不缓存(默认):不启用防盗链。适合调试 / 临时模型 / 访客能看到真实路径也无所谓的场景。
+     * Cubism 4+ 模型保护策略 — 二态 radio,默认 'direct'。
+     *   - 'direct' 不缓存(默认):不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选这个。
+     *   - 'local'  缓存到本地:插件会 alias 化所有模型资源,访客 F12 只看到临时签名 URL。
+     *              需要在下面点「下载到本地」把模型文件拉进插件 model/ 目录。
      *
      * 运行时由 wordpress-live2d.php live2D_style() 决定是否注入 v2SessionUrl(仅 'local' 注入)。
      * 下载区域 (#protectV2-models-section) 的可见性由 live2d-admin.ts 根据 radio 状态 toggle。
@@ -249,10 +247,10 @@ class live2D_Settings_Base
     public function protectV2_callback()
     {
         $current = isset($this->live_2d__options['protectV2']) ? $this->live_2d__options['protectV2'] : 'direct';
-        // 老版本存的是 bool 或 "1"/"0":迁移 true → 'local',false → 'direct'
+        // 老版本存的是 bool 或 'oss':bool true → 'local',其余非 'local' 一律归为 'direct'
         if (is_bool($current)) {
             $current = $current ? 'local' : 'direct';
-        } elseif (!in_array($current, array('oss', 'local', 'direct'), true)) {
+        } elseif (!in_array($current, array('local', 'direct'), true)) {
             $current = 'direct';
         }
         ?>
@@ -261,13 +259,7 @@ class live2D_Settings_Base
                 <input type="radio" name="live_2d_settings_option_name[protectV2]" id="protectV2-direct" class="protectV2" value="direct" <?php checked($current, 'direct'); ?>>
                 <?php esc_html_e('不缓存 (默认)', 'live-2d'); ?>
             </label>
-            <span class="description" style="margin-left:8px;"><?php esc_html_e('不启用防盗链;访客 F12 可看到真实模型路径。', 'live-2d'); ?></span><br>
-
-            <label for="protectV2-oss">
-                <input type="radio" name="live_2d_settings_option_name[protectV2]" id="protectV2-oss" class="protectV2" value="oss" <?php checked($current, 'oss'); ?>>
-                <?php esc_html_e('使用第三方对象存储工具', 'live-2d'); ?>
-            </label>
-            <span class="description" style="margin-left:8px;"><?php esc_html_e('源站已启 Referer 防盗链 / 签名 URL,不需要插件额外代理。行为等同于「不缓存」。', 'live-2d'); ?></span><br>
+            <span class="description" style="margin-left:8px;"><?php esc_html_e('不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选择这个。', 'live-2d'); ?></span><br>
 
             <label for="protectV2-local">
                 <input type="radio" name="live_2d_settings_option_name[protectV2]" id="protectV2-local" class="protectV2" value="local" <?php checked($current, 'local'); ?>>

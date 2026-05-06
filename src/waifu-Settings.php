@@ -59,14 +59,13 @@ class live2D_Settings
 			$sanitary_values['modelDir'] = $input['modelDir'];
 		} 
 
-		// 防盗链保护策略 — 三态字符串: 'oss' | 'local' | 'direct'
+		// 防盗链保护策略 — 二态字符串: 'local' | 'direct'
 		//   - 老版本 bool true  → 'local'
-		//   - 老版本 bool false → 'direct'
-		//   - radio 未提交 / 未知值 → 'direct' (默认不启用,升级零感知)
+		//   - 老版本 bool false / 已废弃的 'oss' / 未知值 → 'direct' (默认不启用,升级零感知)
 		$rawProtect = isset($input['protectV2']) ? $input['protectV2'] : null;
 		if (is_bool($rawProtect)) {
 			$sanitary_values['protectV2'] = $rawProtect ? 'local' : 'direct';
-		} elseif (in_array($rawProtect, array('oss', 'local', 'direct'), true)) {
+		} elseif (in_array($rawProtect, array('local', 'direct'), true)) {
 			$sanitary_values['protectV2'] = $rawProtect;
 		} else {
 			$sanitary_values['protectV2'] = 'direct';
