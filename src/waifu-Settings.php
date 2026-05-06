@@ -59,6 +59,10 @@ class live2D_Settings
 			$sanitary_values['modelDir'] = $input['modelDir'];
 		} 
 
+		// 防盗链开关持久化为 bool. checkbox 未勾选时 POST 里没有这个键,
+		// 所以必须显式 isset 兜底为 false, 才能让"取消勾选 + 保存"真正落到 false.
+		$sanitary_values['protectV2'] = !empty($input['protectV2']);
+
 
 		if (isset($input['tipsMessage'])) {
 			$sanitary_values['tipsMessage'] = sanitize_text_field($input['tipsMessage']);
@@ -323,6 +327,8 @@ class live2D_Settings
 			$defValue['modelPoint']['x'] = 0;
 			$defValue['modelPoint']['y'] = 0;
 			$defValue['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
+			// 防盗链 V3 模型开关 — 默认关闭, 升级老站不改变行为
+			$defValue['protectV2'] = false;
 			$defValue['showToolMenu'] = true;
 			$defValue['isBotButton'] = true;
 			$defValue['canCloseLive2d'] = true;

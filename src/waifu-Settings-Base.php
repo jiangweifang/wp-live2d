@@ -86,6 +86,20 @@ class live2D_Settings_Base
                 'live_2d_setting_base_section' // section
             );
 
+            // V2(Cubism 4/5)模型防盗链开关 — 仅对 apiType='custom' (.model3.json) 链路生效.
+            // 关闭(默认): wordpress-live2d.php 注入 v2SessionUrl='', 前端 signOneModel 早退到裸链,
+            //            行为与未引入开关前完全一致 (老站升级零感知).
+            // 开启:      注入完整 rest_url, 前端拉 alias 化 manifest, 子资源全部走
+            //            …/v2/m/{token}/{alias}?e=&s=, 访客 F12 看不到真实 modelAPI / *.moc3 / *.png.
+            // 'local'/'remote' (旧 V1 PHP) 不受影响, 模型本来就托管在站内不需要 alias.
+            add_settings_field(
+                'protectV2',
+                __('防盗链(V3 模型)', 'live-2d'),
+                array($this, 'protectV2_callback'),
+                'live-2d-settings-base',
+                'live_2d_setting_base_section'
+            );
+
             // 模型缩放倍数 / 看板娘位置 已迁移到 "样式" 设置页 (waifu-Settings-Style.php),
             // 仍读写同一个 modelPoint 字段, JS 端 (lappdelegate.ts initialize) 无须改动.
 
@@ -219,6 +233,22 @@ class live2D_Settings_Base
     {
         live2D_Utils::loopMsg('idle_motion','List',true,'live_2d_settings_option_name');
         echo '<p>' . esc_html__('待机动画文件名, 文件是*.motion3.json','live-2d') . '</p>';
+    }
+
+    /**
+     * 防盗链开关 — 默认关闭. 老站升级行为零变化, 主动勾选后才进入 alias 化链路.
+     * 持久化为 bool, sanitize 在 src/waifu-Settings.php 兜底, 缺键 -> false.
+     * 运行时由 wordpress-live2d.php live2D_style() 决定是否注入 v2SessionUrl.
+     */
+    public function protectV2_callback()
+    {
+        $checked = !empty($this->live_2d__options['protectV2']);
+        printf(
+            '<label><input type="checkbox" name="live_2d_settings_option_name[protectV2]" id="protectV2" value="1" %s> %s</label>',
+            $checked ? 'checked' : '',
+            esc_html__('开启 V3 模型防盗链', 'live-2d')
+        );
+        echo '<p class="description">' . esc_html__('开启后,访客在 F12 网络面板只能看到形如 …/wp-json/live2d/v2/m/{token}/{alias} 的临时签名 URL,真实模型路径(*.model3.json / *.moc3 / *.png)不会暴露;模型加载会绕一道服务器代理,跨域 modelAPI 也由本站代为下载,可能略增带宽与首屏延迟。仅对"自定义新版模型路径"(apiType=custom)生效。', 'live-2d') . '</p>';
     }
 
     // modelZoomNumberV2_callback / modelXYaxis_callback 已迁移到

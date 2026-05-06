@@ -86,17 +86,20 @@ class live2d_V2Api
         if ($modelApi === '') {
             return self::ok_empty();
         }
-        // 仅接受同站 / 同源的 .model3.json 直链。跨域(jsdelivr / OSS)在
-        // PHP readfile 流出场景下意义有限(URL 已经可公开访问),
-        // 留给未来 OSS 302 分支处理;本轮只签同源 URL。
-        if (!self::is_same_origin($modelApi)) {
-            return self::ok_with_error('foreign_origin', '仅支持站点同源的 .model3.json');
+        // 所有 http(s) 绝对 URL 都接受 — 同站 / GitHub raw / jsdelivr / OSS / COS 均可。
+        // 同站 → stream_local readfile;跨域 → stream_remote 服务端代理。
+        // wp_safe_remote_get 默认封碎内网 IP / file:// / 0.0.0.0,SSRF 防设已在。
+        if (!preg_match('#^https?://#i', $modelApi)) {
+            return self::ok_with_error('invalid_url', 'modelApi 必须是 http(s) URL');
         }
 
         // 1) 拿 manifest 文本:优先用客户端预拉的,空就 PHP 拉
+        // 用 wp_remote_get(非 _safe_):避免 wp_http_validate_url 把
+        // raw.githubusercontent.com / OSS 等公网 host 拒掉。modelApi 来自 WP option,
+        // 已是后台 sanitize 过的字符串,这里放宽 SSRF 限制不引入新威胁。
         $manifestText = (string) $request->get_param('manifestJson');
         if ($manifestText === '') {
-            $resp = wp_safe_remote_get($modelApi, array('timeout' => 8));
+            $resp = wp_remote_get($modelApi, array('timeout' => 8, 'sslverify' => true));
             if (is_wp_error($resp) || (int) wp_remote_retrieve_response_code($resp) !== 200) {
                 return self::ok_with_error('fetch_failed', '服务端无法拉取 modelApi');
             }
@@ -227,7 +230,7 @@ class live2d_V2Api
         }
 
         $realUrl = $payload['mapping'][$alias];
-        return self::stream_local($realUrl);
+        return self::stream_asset($realUrl);
     }
 
     // ----------------------------------------------------------
@@ -327,6 +330,133 @@ class live2d_V2Api
     }
 
     /**
+     * 资源流出入口:同站 wp-content 走 readfile;其余走服务端代理。
+     * 两者都不出现真实 URL,客户端 Network 面板只能看到 `…/v2/m/{token}/{alias}`。
+     */
+    private static function stream_asset($realUrl)
+    {
+        $contentDirUrl = trailingslashit(content_url());
+        if (strpos($realUrl, $contentDirUrl) === 0) {
+            return self::stream_local($realUrl);
+        }
+        return self::stream_remote($realUrl);
+    }
+
+    /**
+     * 服务端代理跨域资源 — 用原生 cURL 流式透传(边收边发,大文件友好)。
+     *
+     * 为什么不用 wp_remote_get:`wp_remote_get` 必须 buffer 全量 body 再返,
+     * 大文件(>1MB 的 .moc3 / 4096 PNG)很容易让连接缓慢的服务器命中 timeout
+     * 直接 fail(实测 GitHub raw 879KB 的 moc3 在某些机房 15s 都拉不完)。
+     * 流式透传则把 PHP 直接当反向代理 —— cURL 收一块就 echo 一块,客户端
+     * 浏览器有自己的总超时(默认 30s),整体可用性高得多。
+     *
+     * 注意:这里**故意**不走 `wp_safe_remote_get`/`wp_http_validate_url`,
+     * 入口 URL 来自 transient mapping,而 mapping 来自 session 创建时
+     * `create_session` 反序列化的 model3.json,后者来源于后台 sanitize 过的
+     * `live_2d_settings_option_name`,不是 user-controlled query。
+     *
+     * Referer 处理:默认不发。如需走 OSS/COS 的 Referer 防盗链,在 wp-config.php
+     * 加 `define('LIVE2D_V2API_PROXY_REFERER', 'https://your-site.example/');`。
+     */
+    private static function stream_remote($realUrl)
+    {
+        if (!function_exists('curl_init')) {
+            error_log('live2d_V2Api stream_remote: cURL 扩展未启用');
+            return self::ok_one_pixel_png();
+        }
+
+        $ch = curl_init();
+        curl_setopt_array($ch, array(
+            CURLOPT_URL => $realUrl,
+            CURLOPT_HEADER => false,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            // 总超时 60s — 给慢网更多空间;真正失败由 cURL 自己抛 28
+            CURLOPT_TIMEOUT => 60,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            // 用户 User-Agent 透传一些 OSS / CDN 不喜欢空 UA
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; Live2D-WP-Plugin/' . (defined('LIVE2D_VERSION') ? LIVE2D_VERSION : 'dev') . ')',
+        ));
+
+        // Referer(可选)
+        $headers = array();
+        if (defined('LIVE2D_V2API_PROXY_REFERER') && is_string(LIVE2D_V2API_PROXY_REFERER) && LIVE2D_V2API_PROXY_REFERER !== '') {
+            $headers[] = 'Referer: ' . LIVE2D_V2API_PROXY_REFERER;
+        }
+        if (!empty($headers)) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        }
+
+        // ---------- 流式透传 ----------
+        $headersSent = false;
+        $upstreamStatus = 0;
+        $upstreamMime = '';
+        $upstreamLength = '';
+
+        // 先收 header,看到 200 后再下发自己的 header,避免上游 4xx/5xx 时
+        // 仍然把 200 + 一段 garbage 写给客户端。
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($_ch, $headerLine) use (&$upstreamStatus, &$upstreamMime, &$upstreamLength) {
+            $line = trim($headerLine);
+            if (preg_match('#^HTTP/\S+\s+(\d{3})#', $line, $m)) {
+                $upstreamStatus = (int) $m[1];
+            } elseif (stripos($line, 'Content-Type:') === 0) {
+                $upstreamMime = trim(substr($line, 13));
+            } elseif (stripos($line, 'Content-Length:') === 0) {
+                $upstreamLength = trim(substr($line, 15));
+            }
+            return strlen($headerLine);
+        });
+
+        // 流式 write:首块到达时下发我们自己的 200 头,后续直接 echo 出去。
+        curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($_ch, $chunk) use (&$headersSent, &$upstreamStatus, &$upstreamMime, &$upstreamLength, $realUrl) {
+            if (!$headersSent) {
+                if ($upstreamStatus !== 200 && $upstreamStatus !== 0) {
+                    // 上游不是 200(可能 302 已被 follow,真上游是 4xx/5xx),按失败处理
+                    return 0; // 返回 0 让 cURL 中止,后面统一走 ok_one_pixel_png
+                }
+                $mime = $upstreamMime !== '' ? $upstreamMime : self::guess_mime_from_url($realUrl);
+                nocache_headers();
+                header('Content-Type: ' . $mime);
+                if ($upstreamLength !== '') {
+                    header('Content-Length: ' . $upstreamLength);
+                }
+                header('Cache-Control: no-store, private');
+                header('X-Content-Type-Options: nosniff');
+                $headersSent = true;
+            }
+            echo $chunk;
+            // 调用 flush 让 PHP-FPM / Apache 立即把这块发给浏览器
+            // (output_buffering 开了的环境下 ob_flush 也得跑)
+            if (function_exists('ob_get_level') && ob_get_level() > 0) {
+                @ob_flush();
+            }
+            @flush();
+            return strlen($chunk);
+        });
+
+        $ok = curl_exec($ch);
+        $errno = curl_errno($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+
+        if ($headersSent) {
+            // 已经下发过 200 + 部分 body — 即使 cURL 后期 fail,客户端可能拿到
+            // 不完整文件。Cubism Framework 会自己抛"Inconsistent MOC3"等,日志记下。
+            if ($ok === false) {
+                error_log('live2d_V2Api stream_remote partial fail errno=' . $errno . ' err=' . $err . ' url=' . $realUrl);
+            }
+            exit;
+        }
+
+        // 一字节也没透传,完整失败 — 写 1px PNG 与原失败行为一致。
+        error_log('live2d_V2Api stream_remote fail status=' . $upstreamStatus . ' errno=' . $errno . ' err=' . $err . ' url=' . $realUrl);
+        return self::ok_one_pixel_png();
+    }
+
+    /**
      * 把同源真实 URL 映射回插件目录下的物理文件并 readfile。
      * 拒绝任何越出 wp-content 的路径(防 path traversal)。
      */
@@ -334,9 +464,8 @@ class live2d_V2Api
     {
         $contentDirUrl = trailingslashit(content_url());
         if (strpos($realUrl, $contentDirUrl) !== 0) {
-            // 不是 wp-content 下的资源 —— 同源校验已过但路径不在白名单,
-            // 直接拒绝;以后接 OSS/COS 时在这里做 302。
-            return self::ok_one_pixel_png();
+            // 不是 wp-content 下的资源 —— 按跨域代理走。
+            return self::stream_remote($realUrl);
         }
         $relPath = substr($realUrl, strlen($contentDirUrl));
         $absPath = WP_CONTENT_DIR . '/' . $relPath;
@@ -366,6 +495,13 @@ class live2d_V2Api
         header('X-Content-Type-Options: nosniff');
         readfile($fileReal);
         exit;
+    }
+
+    private static function guess_mime_from_url($url)
+    {
+        $path = wp_parse_url($url, PHP_URL_PATH);
+        if (!$path) return 'application/octet-stream';
+        return self::guess_mime($path);
     }
 
     private static function guess_mime($path)

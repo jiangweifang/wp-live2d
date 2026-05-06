@@ -3,7 +3,7 @@
  * Plugin Name: Live 2D
  * Plugin URI: https://www.live2dweb.com/
  * Description: 看板娘插件
- * Version: 2.1.3
+ * Version: 2.2.0
  * Requires PHP: 7.4
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 //定义目录
 define('LIVE2D_ASSETS', plugin_dir_url(__FILE__) . 'assets/'); //资源目录
 define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)) . '/languages'); //基础目录
-define('LIVE2D_VERSION', '2.1.3'); //资源版本号, 用于缓存破坏
+define('LIVE2D_VERSION', '2.2.0'); //资源版本号, 用于缓存破坏
 
 /**
  * 把 wp_enqueue_script 注册的脚本标记为 ES module。
@@ -160,10 +160,12 @@ function live2D_style()
         'settings' => $live2dSettings,
         'localPath' => plugin_dir_url(__FILE__) . 'model',
         // V2 模型(Cubism 4/5)防盗链 endpoint(对应 src/live2d-V2Api.php)。
-        // 前端 Wordpress/live2d-tips.ts 在 ApiUrlType.JsonFile 分支会先 POST 这里
-        // 拿 alias 化的 manifestUrl 替换 modelAPI;失败则降级到裸链。
-        // 用 rest_url 而不是写死 /wp-json,可以兼容 plain permalink + 多站点子目录。
-        'v2SessionUrl' => rest_url('live2d/v2/session'),
+        // 仅在后台开关 protectV2=true 时注入完整 URL;关闭则注入空串 ->
+        // 前端 Wordpress/live2d-tips.ts 的 signOneModel 早退到裸链,
+        // 老站升级行为零变化。
+        'v2SessionUrl' => (is_array($live2dSettings) && !empty($live2dSettings['protectV2']))
+            ? rest_url('live2d/v2/session')
+            : '',
         'currentPage' => array('get_the_id' => get_the_id(), 'is_home' => is_front_page(), 'is_single' => is_single())
     ));
 }
