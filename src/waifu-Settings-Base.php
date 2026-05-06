@@ -269,14 +269,30 @@ class live2D_Settings_Base
         </fieldset>
 
         <?php // 下载区域 —— 默认隐藏, live2d-admin.ts 会在 protectV2='local' 时显示。
-              // 后端 AJAX 在 src/live2d-V2Api.php 里实现,接入点在 src/live2d-Shop.php。 ?>
+              // 后端 AJAX 在 src/live2d-V2Api.php 里实现,接入点在 src/live2d-Shop.php。
+              // 表格行 + 进度条 + 顶部总按钮的具体内容由 admin TS 动态生成。 ?>
         <div id="protectV2-models-section" style="display:none;margin-top:12px;padding:12px;border:1px solid #ddd;background:#fafafa;border-radius:4px;">
             <strong><?php esc_html_e('模型本地缓存', 'live-2d'); ?></strong>
             <p class="description" style="margin:6px 0;">
-                <?php esc_html_e('点击下面按钮,插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。', 'live-2d'); ?>
+                <?php esc_html_e('插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。', 'live-2d'); ?>
+                <br>
+                <?php esc_html_e('两种缓存方式:【自动】访客访问到该模型时,后台异步下载,首次访问仍走源站签名 URL,完成后立即生效;【手动】点击下方「全部下载」或单行下载按钮即时入队。', 'live-2d'); ?>
             </p>
+            <div id="protectV2-cache-toolbar" style="margin:8px 0;padding:8px;background:#fff;border:1px solid #e5e5e5;border-radius:3px;">
+                <button type="button" class="button button-primary" id="live2d-cache-download-all">
+                    <?php esc_html_e('全部下载', 'live-2d'); ?>
+                </button>
+                <button type="button" class="button" id="live2d-cache-cleanup-orphans" style="margin-left:6px;">
+                    <?php esc_html_e('清理孤儿', 'live-2d'); ?>
+                </button>
+                <button type="button" class="button" id="live2d-cache-cleanup-all" style="margin-left:6px;color:#b32d2e;">
+                    <?php esc_html_e('全部清理', 'live-2d'); ?>
+                </button>
+                <span id="live2d-cache-summary" style="margin-left:12px;color:#1d2327;"></span>
+            </div>
             <div id="protectV2-models-list">
-                <?php // 由 admin TS 动态填充列表条目:当前 slug + 状态(未下载 / 已下载 X 个文件 N KB) + [下载/删除] 按钮 ?>
+                <?php // 由 admin TS 动态填充列表条目:每个 modelApi 一行,
+                      // 包含 slug + 状态徽章 + 进度条 + 当前文件名 + 操作按钮 ?>
                 <span class="description"><?php esc_html_e('正在读取状态…', 'live-2d'); ?></span>
             </div>
             <p id="protectV2-models-msg" style="margin:6px 0;color:#1d2327;"></p>

@@ -122,6 +122,17 @@ class live2d_V2Api
         $localDir = $slug !== '' ? self::model_local_dir($slug) : '';
         $mapping = array();
 
+        // 自动懒下载:protectV2='local' 模式下,若本地无 manifest → 后台静默入队 + 立即触发 cron。
+        // 本次响应仍走远程签名 URL 兜底(完全不阻塞当前 session 响应)。
+        // 多访客并发命中同一 slug 由 enqueue_job 的幂等保护去重(同 jobId 只入一条)。
+        if ($slug !== '' && $localDir !== '') {
+            $manifestBase = basename(wp_parse_url($modelApi, PHP_URL_PATH));
+            $manifestLocal = $localDir . '/' . $manifestBase;
+            if (!is_file($manifestLocal)) {
+                self::enqueue_job($modelApi, 'auto');
+            }
+        }
+
         // 闭包优先映射到本地副本 (model/{slug}/{relPath}),本地不在才存原始 URL。
         // 这样已下载模型的子资源走 readfile,未下载 / 不可识别路径的部分走远端代理。
         $protect = function ($raw) use (&$mapping, $baseDir, $localDir, $sessionSecret, $token, $exp) {
@@ -703,9 +714,13 @@ class live2d_V2Api
      *   成功:array('errorCode'=>200, 'slug'=>..., 'fileCount'=>N, 'totalBytes'=>N)
      *   失败:array('errorCode'=>非 200, 'errorMsg'=>..., 'failedUrl'=>...)
      *
-     * @param string $modelApi 用户后台填的 model3.json 直链
+     * @param string        $modelApi         用户后台填的 model3.json 直链
+     * @param callable|null $progressCallback 可选,签名 fn(int $current, int $total, string $relPath):void
+     *                                        - 仅供 Cron 任务调用,写 transient 进度;
+     *                                        - 单条下载完成后才回调一次;
+     *                                        - $current=0,$relPath='' 表示「manifest 已解析,共 $total 个子资源,即将开始」。
      */
-    public static function download_model_to_local($modelApi)
+    public static function download_model_to_local($modelApi, $progressCallback = null)
     {
         $modelApi = trim((string) $modelApi);
         if ($modelApi === '' || !preg_match('#^https?://#i', $modelApi)) {
@@ -752,11 +767,20 @@ class live2d_V2Api
         // 2) 枚举所有子资源并下载
         $baseDir = self::base_dir($modelApi);
         $relList = self::collect_relative_files($manifest['FileReferences']);
+        // 过滤掉绝对 URL/data: — 它们运行时走 stream_remote,不下载
+        $relListFiltered = array();
         foreach ($relList as $rel) {
             if (!is_string($rel) || $rel === '') continue;
-            // 完整 URL 跳过(model3.json 里偶尔有 https:// 直链)— 不下载,运行时走 stream_remote
             if (preg_match('#^(https?:|data:)#i', $rel)) continue;
-
+            $relListFiltered[] = $rel;
+        }
+        $totalCount = count($relListFiltered);
+        if (is_callable($progressCallback)) {
+            // 通知:manifest 已就绪,共 N 个子资源,即将开始
+            call_user_func($progressCallback, 0, $totalCount, '');
+        }
+        $doneCount = 0;
+        foreach ($relListFiltered as $rel) {
             $url  = self::resolve_url($baseDir, $rel);
             $dest = $tmpDir . '/' . ltrim($rel, '/');
             // 防 zip-slip:dest 必须仍在 tmpDir 内
@@ -776,6 +800,10 @@ class live2d_V2Api
             if (!$r['ok']) {
                 self::rmdir_recursive($tmpDir);
                 return array('errorCode' => $r['code'], 'errorMsg' => $r['msg'], 'failedUrl' => $url);
+            }
+            $doneCount++;
+            if (is_callable($progressCallback)) {
+                call_user_func($progressCallback, $doneCount, $totalCount, $rel);
             }
         }
 
@@ -931,5 +959,350 @@ class live2d_V2Api
         }
         self::rmdir_recursive($src);
         return true;
+    }
+
+    // ============================================================
+    //  V3 模型本地缓存 — 异步任务队列(transient + WP Cron)
+    //  ----------------------------------------------------------
+    //  设计:每个 job 一个独立 transient key,key 派生自
+    //    jobId = sha1(modelApi|slug)
+    //  好处:
+    //    - 多访客并发 enqueue 同一 slug → 写同一 key,内容相同,无 read-modify-write 竞态
+    //    - 多 slug → key 隔离
+    //  无需自加互斥锁;WP 自带 _get_cron_lock() 保证同一时刻只跑一个 cron 进程。
+    //
+    //  下载入口统一为 enqueue_job + spawn_cron;前端 + 自动懒触发都走它。
+    // ============================================================
+
+    const CACHE_JOB_PREFIX = 'live2d_v2_cache_job_';
+    const CACHE_JOB_TTL    = DAY_IN_SECONDS;       // 24h,完成态保留同样时长(供 UI 显示"已缓存 12.4MB")
+    const CACHE_CRON_HOOK  = 'live2d_v2_run_cache_jobs';
+
+    /** 在 plugins_loaded 后挂 cron hook(由 wordpress-live2d.php 主入口调用) */
+    public static function register_cron()
+    {
+        add_action(self::CACHE_CRON_HOOK, array(__CLASS__, 'run_cache_jobs'));
+    }
+
+    /** 由 modelApi 派生稳定 jobId(slug 走 derive_slug) */
+    public static function job_id($modelApi, $slug = null)
+    {
+        if ($slug === null) $slug = self::derive_slug($modelApi);
+        return sha1((string) $modelApi . '|' . (string) $slug);
+    }
+
+    /** 单条 job transient key */
+    private static function job_key($jobId)
+    {
+        return self::CACHE_JOB_PREFIX . $jobId;
+    }
+
+    /** 取一条 job,返 null 表示不存在/过期 */
+    public static function get_job($jobId)
+    {
+        if (!preg_match('/^[a-f0-9]{40}$/', $jobId)) return null;
+        $j = get_transient(self::job_key($jobId));
+        return is_array($j) ? $j : null;
+    }
+
+    /** 写一条 job(刷 TTL) */
+    private static function save_job($job)
+    {
+        if (!is_array($job) || empty($job['jobId'])) return false;
+        return set_transient(self::job_key($job['jobId']), $job, self::CACHE_JOB_TTL);
+    }
+
+    /** 删一条 job */
+    public static function delete_job($jobId)
+    {
+        if (!preg_match('/^[a-f0-9]{40}$/', $jobId)) return false;
+        return delete_transient(self::job_key($jobId));
+    }
+
+    /**
+     * 列举当前所有 job(扫 wp_options LIKE)。
+     * 规模 < 几十条,性能可忽略。仅供 UI 展示;Cron 内部循环也用它。
+     * 返回数组按 queuedAt 升序。
+     */
+    public static function list_all_jobs()
+    {
+        global $wpdb;
+        $like = '_transient_' . self::CACHE_JOB_PREFIX . '%';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $rows = $wpdb->get_results($wpdb->prepare(
+            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+            $like
+        ));
+        if (!$rows) return array();
+        $out = array();
+        $prefixLen = strlen('_transient_' . self::CACHE_JOB_PREFIX);
+        foreach ($rows as $r) {
+            $jobId = substr($r->option_name, $prefixLen);
+            $j = self::get_job($jobId);
+            if ($j) $out[] = $j;
+        }
+        usort($out, function ($a, $b) {
+            return ((int) ($a['queuedAt'] ?? 0)) - ((int) ($b['queuedAt'] ?? 0));
+        });
+        return $out;
+    }
+
+    /**
+     * 入队一个下载任务。幂等:
+     *   - 同 jobId 已 pending/downloading → 直接返回原 job(不覆盖)
+     *   - 同 jobId 最近 1h 内 done → 返回原 job(不重复跑)
+     *   - 其余(无记录 / failed / 1h 前 done)→ 新建 pending
+     * 末尾自动 spawn_cron() 立即触发。
+     *
+     * @param string $modelApi
+     * @param string $trigger 'manual' | 'auto'
+     * @return array|WP_Error
+     */
+    public static function enqueue_job($modelApi, $trigger = 'manual')
+    {
+        $modelApi = trim((string) $modelApi);
+        if ($modelApi === '' || !preg_match('#^https?://#i', $modelApi)) {
+            return new WP_Error('invalid_url', 'modelApi 必须是 http(s) URL');
+        }
+        $slug = self::derive_slug($modelApi);
+        if ($slug === '') {
+            return new WP_Error('invalid_slug', '无法从 modelApi 派生有效目录名');
+        }
+        $jobId = self::job_id($modelApi, $slug);
+        $existing = self::get_job($jobId);
+        if ($existing) {
+            $st = $existing['status'] ?? '';
+            if ($st === 'pending' || $st === 'downloading') {
+                return $existing; // 正在排队/下载,不重复
+            }
+            if ($st === 'done') {
+                $age = time() - (int) ($existing['finishedAt'] ?? 0);
+                if ($age >= 0 && $age < HOUR_IN_SECONDS) {
+                    return $existing; // 1h 内刚完成,不重复
+                }
+            }
+            // failed / 1h 前 done → 重置为 pending,继续走下面的写入
+        }
+        $job = array(
+            'jobId'      => $jobId,
+            'modelApi'   => $modelApi,
+            'slug'       => $slug,
+            'status'     => 'pending',
+            'progress'   => array('current' => 0, 'total' => 0, 'currentFile' => ''),
+            'queuedAt'   => time(),
+            'startedAt'  => null,
+            'finishedAt' => null,
+            'error'      => null,
+            'trigger'    => in_array($trigger, array('manual', 'auto'), true) ? $trigger : 'manual',
+            'totalBytes' => null,
+            'fileCount'  => null,
+        );
+        self::save_job($job);
+        // 立即触发 cron(非阻塞)
+        if (!wp_next_scheduled(self::CACHE_CRON_HOOK)) {
+            wp_schedule_single_event(time(), self::CACHE_CRON_HOOK);
+        }
+        spawn_cron();
+        return $job;
+    }
+
+    /** 进度回调内部用 — 写当前文件 + 下载序号 */
+    private static function update_job_progress($jobId, $current, $total, $currentFile)
+    {
+        $job = self::get_job($jobId);
+        if (!$job) return;
+        $job['progress'] = array(
+            'current'     => (int) $current,
+            'total'       => (int) $total,
+            'currentFile' => (string) $currentFile,
+        );
+        self::save_job($job);
+    }
+
+    /**
+     * Cron hook 入口 — 顺序处理 pending 队列(每次 hook 跑 1 个,完成后再排一次自身接力)。
+     * WP 自带 _get_cron_lock() 保证同一时刻只有一个 cron 进程跑此 hook,无需自加锁。
+     */
+    public static function run_cache_jobs()
+    {
+        // 共享主机有的 30s,这里尽量解锁;失败时 wp_schedule_single_event 会接力。
+        @set_time_limit(0);
+        @ignore_user_abort(true);
+
+        $jobs = self::list_all_jobs();
+        $pending = null;
+        foreach ($jobs as $j) {
+            if (($j['status'] ?? '') === 'pending') { $pending = $j; break; }
+        }
+        if (!$pending) return; // 无待办,正常结束
+
+        $jobId = $pending['jobId'];
+        $pending['status']    = 'downloading';
+        $pending['startedAt'] = time();
+        $pending['error']     = null;
+        self::save_job($pending);
+
+        $cb = function ($current, $total, $relPath) use ($jobId) {
+            self::update_job_progress($jobId, $current, $total, $relPath);
+        };
+
+        $result = self::download_model_to_local($pending['modelApi'], $cb);
+
+        // 重新读一遍(下载期间可能被 cleanup 删了) — 没了就放弃写终态,不抛错
+        $job = self::get_job($jobId);
+        if (!$job) {
+            // 任务在执行中被外部删除,跳过
+        } else {
+            $job['finishedAt'] = time();
+            if (is_array($result) && (int) ($result['errorCode'] ?? 0) === 200) {
+                $job['status']     = 'done';
+                $job['error']      = null;
+                $job['fileCount']  = (int) ($result['fileCount'] ?? 0);
+                $job['totalBytes'] = (int) ($result['totalBytes'] ?? 0);
+                $job['progress']['current'] = $job['progress']['total'] ?: $job['fileCount'];
+                $job['progress']['currentFile'] = '';
+            } else {
+                $job['status'] = 'failed';
+                $msg = is_array($result) ? ($result['errorMsg'] ?? '未知错误') : '未知错误';
+                $url = is_array($result) ? ($result['failedUrl'] ?? '') : '';
+                $job['error'] = $url !== '' ? ($msg . ' (' . $url . ')') : $msg;
+            }
+            self::save_job($job);
+        }
+
+        // 还有 pending,1 秒后接力下一个,避免单进程被 max_execution_time 截断
+        $next = self::list_all_jobs();
+        foreach ($next as $j) {
+            if (($j['status'] ?? '') === 'pending') {
+                wp_schedule_single_event(time() + 1, self::CACHE_CRON_HOOK);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 「全部清理」— 删除 model/ 目录下所有 V2 模型(用 manifest 后缀区分,V1 的 model.json 不动)。
+     * 同时清理所有 done/failed 的 job 记录。
+     * 返回:array('errorCode'=>200,'deleted'=>['slug1','slug2',...])
+     */
+    public static function cleanup_all_v2()
+    {
+        $rootDir = self::model_root_dir();
+        $deleted = array();
+        if (!is_dir($rootDir)) {
+            return array('errorCode' => 200, 'deleted' => $deleted);
+        }
+        $entries = @scandir($rootDir);
+        if (!is_array($entries)) {
+            return array('errorCode' => 500, 'errorMsg' => 'model 目录读取失败');
+        }
+        foreach ($entries as $name) {
+            if ($name === '.' || $name === '..') continue;
+            $sub = $rootDir . $name;
+            if (!is_dir($sub)) continue;
+            // V2 标识:目录里有 *.model3.json
+            if (self::dir_has_v2_manifest($sub)) {
+                if (self::rmdir_recursive($sub)) {
+                    $deleted[] = $name;
+                }
+            }
+        }
+        // 同步清理已完成/失败的 job 记录(pending/downloading 不动,避免影响正在跑的任务)
+        foreach (self::list_all_jobs() as $j) {
+            $st = $j['status'] ?? '';
+            if ($st === 'done' || $st === 'failed') {
+                self::delete_job($j['jobId']);
+            }
+        }
+        return array('errorCode' => 200, 'deleted' => $deleted);
+    }
+
+    /**
+     * 「清理孤儿」— 与传入的 modelApi 列表对比,删磁盘上多余的 V2 目录。
+     * 入参 $keepModelApis 是当前 modelDir 展开 + JsonFile 模式下的 modelAPI(全集)。
+     * 返回:array('errorCode'=>200,'deleted'=>['slug1',...],'kept'=>['slug2',...])
+     */
+    public static function cleanup_orphans_v2($keepModelApis)
+    {
+        $rootDir = self::model_root_dir();
+        $deleted = array();
+        $kept    = array();
+        if (!is_dir($rootDir)) {
+            return array('errorCode' => 200, 'deleted' => $deleted, 'kept' => $kept);
+        }
+        $keepSlugs = array();
+        if (is_array($keepModelApis)) {
+            foreach ($keepModelApis as $url) {
+                $s = self::derive_slug((string) $url);
+                if ($s !== '') $keepSlugs[$s] = true;
+            }
+        }
+        $entries = @scandir($rootDir);
+        if (!is_array($entries)) {
+            return array('errorCode' => 500, 'errorMsg' => 'model 目录读取失败');
+        }
+        foreach ($entries as $name) {
+            if ($name === '.' || $name === '..') continue;
+            $sub = $rootDir . $name;
+            if (!is_dir($sub)) continue;
+            if (!self::dir_has_v2_manifest($sub)) continue; // 仅处理 V2,V1 不动
+            if (isset($keepSlugs[$name])) {
+                $kept[] = $name;
+                continue;
+            }
+            if (self::rmdir_recursive($sub)) {
+                $deleted[] = $name;
+                // 顺手删该 slug 关联的 job 记录(无 modelApi 反推不出 jobId,保守不动)
+            }
+        }
+        return array('errorCode' => 200, 'deleted' => $deleted, 'kept' => $kept);
+    }
+
+    /** 目录里是否存在 *.model3.json(用于 V2 vs V1 判定)。仅扫一层。 */
+    private static function dir_has_v2_manifest($dir)
+    {
+        $files = @scandir($dir);
+        if (!is_array($files)) return false;
+        foreach ($files as $f) {
+            if (substr($f, -strlen('.model3.json')) === '.model3.json') return true;
+        }
+        return false;
+    }
+
+    /**
+     * 从当前保存的 live_2d_settings_option_name 还原应该被缓存的全部 modelApi 列表。
+     * 与前端 protectV2Settings / protectV2ModelDirSettings 的 URL 推导规则一致:
+     *   - apiType='custom' && modelAPI 以 .json 结尾 → JsonFile 模式,单个 URL
+     *   - apiType='custom' && modelDir 非空           → ModelDir 模式,展开为 [${root}${dir}/${dir}.model3.json, ...]
+     *   - apiType='custom' && 其余                    → 空(没有合法 V2 模型可缓存)
+     *   - 其它 apiType                                → 空(本地/远程 V1 模式不走 V2 防盗链)
+     * 用于:批量入队、清理孤儿、UI 展示行列表。
+     *
+     * @return string[] 去重后的 URL 列表
+     */
+    public static function collect_configured_targets()
+    {
+        $opt = get_option('live_2d_settings_option_name');
+        if (!is_array($opt)) return array();
+        $apiType = isset($opt['apiType']) ? (string) $opt['apiType'] : '';
+        if ($apiType !== 'custom') return array();
+        $modelApi = isset($opt['modelAPI']) ? trim((string) $opt['modelAPI']) : '';
+        if ($modelApi === '' || !preg_match('#^https?://#i', $modelApi)) return array();
+
+        // JsonFile 模式
+        if (preg_match('#\.json$#i', $modelApi)) {
+            return array($modelApi);
+        }
+        // ModelDir 模式
+        $dirs = isset($opt['modelDir']) && is_array($opt['modelDir']) ? $opt['modelDir'] : array();
+        $root = $modelApi;
+        if (substr($root, -1) !== '/') $root .= '/';
+        $out = array();
+        foreach ($dirs as $dir) {
+            $dir = trim((string) $dir);
+            if ($dir === '') continue;
+            $out[] = $root . $dir . '/' . $dir . '.model3.json';
+        }
+        return array_values(array_unique($out));
     }
 }

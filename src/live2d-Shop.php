@@ -18,9 +18,15 @@ add_action("wp_ajax_get_texture_list", array(new live2d_SDK, 'GetTextureList'));
 // V3 模型本地缓存(protectV2='local')— 后台 AJAX 入口。
 // nonce 沿用 'live2d_shop_action'(与 live2d-SDK.php 内一致);capability=manage_options。
 // 入参 modelApi 直接来自 admin TS,服务端用 wp_unslash + 简单 URL 校验,不依赖白名单。
-add_action('wp_ajax_v2_local_status',   'live2d_v2_ajax_local_status');
-add_action('wp_ajax_v2_download_model', 'live2d_v2_ajax_download_model');
-add_action('wp_ajax_v2_delete_model',   'live2d_v2_ajax_delete_model');
+//
+// 所有「下载」类入口统一走 v2_cache_enqueue + WP Cron 异步队列(详见 live2d-V2Api.php 末尾)。
+// 旧版同步 v2_download_model 已下线 — 单行下载 / 批量下载 / 失败重试 / 访客懒触发 全部用 enqueue。
+add_action('wp_ajax_v2_local_status',           'live2d_v2_ajax_local_status');
+add_action('wp_ajax_v2_delete_model',           'live2d_v2_ajax_delete_model');
+add_action('wp_ajax_v2_cache_enqueue',          'live2d_v2_ajax_cache_enqueue');
+add_action('wp_ajax_v2_cache_status',           'live2d_v2_ajax_cache_status');
+add_action('wp_ajax_v2_cache_cleanup_all',      'live2d_v2_ajax_cache_cleanup_all');
+add_action('wp_ajax_v2_cache_cleanup_orphans',  'live2d_v2_ajax_cache_cleanup_orphans');
 
 function live2d_v2_ajax_verify()
 {
@@ -37,21 +43,113 @@ function live2d_v2_ajax_local_status()
     wp_send_json(live2d_V2Api::get_local_status($modelApi));
 }
 
-function live2d_v2_ajax_download_model()
-{
-    live2d_v2_ajax_verify();
-    $modelApi = isset($_POST['modelApi']) ? wp_unslash($_POST['modelApi']) : '';
-    // 大模型可能下几十秒;给 PHP 关掉默认 30s 限制(后端 streaming 下载本身有 60s 单文件 timeout)
-    @set_time_limit(0);
-    $result = live2d_V2Api::download_model_to_local($modelApi);
-    wp_send_json($result);
-}
-
 function live2d_v2_ajax_delete_model()
 {
     live2d_v2_ajax_verify();
     $modelApi = isset($_POST['modelApi']) ? wp_unslash($_POST['modelApi']) : '';
-    wp_send_json(live2d_V2Api::delete_model_local($modelApi));
+    $r = live2d_V2Api::delete_model_local($modelApi);
+    // 顺手把该 slug 残留的 done/failed job 记录清掉
+    if (is_array($r) && (int) ($r['errorCode'] ?? 0) === 200) {
+        $jobId = live2d_V2Api::job_id($modelApi);
+        $j = live2d_V2Api::get_job($jobId);
+        if ($j && in_array(($j['status'] ?? ''), array('done', 'failed'), true)) {
+            live2d_V2Api::delete_job($jobId);
+        }
+    }
+    wp_send_json($r);
+}
+
+/**
+ * 入队下载任务。统一入口 — 单行下载、批量下载、失败重试都走它。
+ * 入参:
+ *   modelApis[]  显式指定的 modelApi 列表(JSON 数组字符串或 form-data 数组);
+ *                空则使用 collect_configured_targets() 全集(批量"全部下载"用法)。
+ * 返回:
+ *   { errorCode:200, jobs:[{slug,jobId,status,modelApi,...}, ...] }
+ */
+function live2d_v2_ajax_cache_enqueue()
+{
+    live2d_v2_ajax_verify();
+    $modelApis = array();
+    if (isset($_POST['modelApis'])) {
+        $raw = wp_unslash($_POST['modelApis']);
+        if (is_array($raw)) {
+            $modelApis = $raw;
+        } elseif (is_string($raw) && $raw !== '') {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) $modelApis = $decoded;
+        }
+    }
+    if (empty($modelApis)) {
+        $modelApis = live2d_V2Api::collect_configured_targets();
+    }
+    $jobs = array();
+    foreach ($modelApis as $url) {
+        $url = trim((string) $url);
+        if ($url === '') continue;
+        $r = live2d_V2Api::enqueue_job($url, 'manual');
+        if (is_wp_error($r)) {
+            $jobs[] = array(
+                'modelApi' => $url,
+                'status'   => 'invalid',
+                'error'    => $r->get_error_message(),
+            );
+            continue;
+        }
+        $jobs[] = $r;
+    }
+    wp_send_json(array('errorCode' => 200, 'jobs' => $jobs));
+}
+
+/**
+ * 查询全部 job 状态 + 全部已配置 modelApi 的本地状态(供 UI 渲染)。
+ * 返回:
+ *   {
+ *     errorCode:200,
+ *     queueRunning:bool,
+ *     totals:{ pending,downloading,done,failed },
+ *     jobs:[ ...全部 job ],
+ *     targets:[ {modelApi, slug, exists, fileCount, totalBytes} ]   // 当前应被缓存的列表
+ *   }
+ */
+function live2d_v2_ajax_cache_status()
+{
+    live2d_v2_ajax_verify();
+    $jobs = live2d_V2Api::list_all_jobs();
+    $totals = array('pending' => 0, 'downloading' => 0, 'done' => 0, 'failed' => 0);
+    foreach ($jobs as $j) {
+        $st = $j['status'] ?? '';
+        if (isset($totals[$st])) $totals[$st]++;
+    }
+    $queueRunning = ($totals['pending'] + $totals['downloading']) > 0;
+
+    $targets = array();
+    foreach (live2d_V2Api::collect_configured_targets() as $url) {
+        $targets[] = array_merge(
+            array('modelApi' => $url),
+            live2d_V2Api::get_local_status($url)
+        );
+    }
+    wp_send_json(array(
+        'errorCode'    => 200,
+        'queueRunning' => $queueRunning,
+        'totals'       => $totals,
+        'jobs'         => $jobs,
+        'targets'      => $targets,
+    ));
+}
+
+function live2d_v2_ajax_cache_cleanup_all()
+{
+    live2d_v2_ajax_verify();
+    wp_send_json(live2d_V2Api::cleanup_all_v2());
+}
+
+function live2d_v2_ajax_cache_cleanup_orphans()
+{
+    live2d_v2_ajax_verify();
+    $keep = live2d_V2Api::collect_configured_targets();
+    wp_send_json(live2d_V2Api::cleanup_orphans_v2($keep));
 }
 
 class live2d_Shop

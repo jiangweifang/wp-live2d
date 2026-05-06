@@ -115,14 +115,16 @@ function live2D_style()
         $live2dSettings['apiType'] = live2d_api_type_is_local(isset($live2dSettings['apiType']) ? $live2dSettings['apiType'] : null);
     }
     // shaderDir 不再由 PHP 注入: SDK (live2d_sdk/src/v2/lappdefine.ts) 默认以
-    // import.meta.url 为基准解析到同级 ./Shaders/WebGL/, vite.config.wordpress.ts
-    // 会把 shader 文件拷贝到 assets/Shaders/WebGL/,跟随插件实际位置/站点 URL。
+    // import.meta.url 为基准解析到同级 ./shaders/WebGL/, vite.config.wordpress.ts
+    // 会把 shader 文件拷贝到 assets/shaders/WebGL/,跟随插件实际位置/站点 URL。
+    // 注意目录名必须全小写 shaders/(不是 Shaders/),
+    // 避免 Linux 部署下大小写敏感文件系统 404。
     //
     // 但旧版插件曾把 shaderDir(默认值 '../../Framework/Shaders/WebGL/') 写进
     // live_2d_settings_option_name; sanitize 已经不再回写, 但 get_option() 拿到的
     // 数组里仍可能残留这个老字段, 经 wp_localize_script -> live2d_settings.settings
     // -> LAppDelegate.initialize 的 `Oe.value = G.shaderDir || Oe.value` 一行,
-    // 会覆盖掉 import.meta.url 算出来的正确 assets/Shaders/WebGL/ 绝对 URL,
+    // 会覆盖掉 import.meta.url 算出来的正确 assets/shaders/WebGL/ 绝对 URL,
     // 让 fetch 退回到相对路径 '../../Framework/...' 命中 404。这里在传给 JS
     // 前显式剔掉, 避免老站点必须重新打开设置页 Save 一次才能恢复。
     if (is_array($live2dSettings)) {
@@ -247,6 +249,11 @@ add_action('rest_api_init', function () {
     // V2 模型(Cubism 4/5)防盗链 session/manifest/asset
     live2d_V2Api::register_routes();
 });
+
+// V2 模型本地缓存 — Cron hook 注册(异步任务队列入口,详见 live2d-V2Api.php 末尾)
+// 必须挂在 init 之前生效,否则 wp_schedule_single_event 触发的 cron 进程跑到这里
+// 时 hook 还没绑定就会丢任务。
+live2d_V2Api::register_cron();
 
 // 初始化加载
 function live2D_Init()

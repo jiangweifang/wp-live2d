@@ -1,6 +1,5 @@
 {
   "_comment": "Translations for the Live 2D WordPress plugin. Keys are the original Simplified Chinese msgid in the PHP source.",
-
   "zh_CN": {
     "设置": "设置",
     "发送": "发送",
@@ -171,9 +170,20 @@
     "3x（极致，显存约 9 倍）": "3×（极致，显存约 9 倍）",
     "叠加在浏览器 devicePixelRatio 之上的 SSAA 倍率，可消除模型边缘细线；倍率越高 GPU/显存压力越大。": "叠加在浏览器 devicePixelRatio 之上的 SSAA 倍率，可消除模型边缘细线；倍率越高 GPU／显存压力越大。",
     "开启（默认）": "开启（默认）",
-    "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。": "WebGL 多重采样抗锯齿（MSAA）。关闭后默认帧缓冲边缘可能出现锯齿；切换后建议刷新前台页面以生效。"
+    "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。": "WebGL 多重采样抗锯齿（MSAA）。关闭后默认帧缓冲边缘可能出现锯齿；切换后建议刷新前台页面以生效。",
+    "防盗链(Cubism 4+ 模型)": "防盗链（Cubism 4+ 模型）",
+    "不缓存 (默认)": "不缓存（默认）",
+    "不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选择这个。": "不启用防盗链；如果你使用了第三方对象存储工具，或者不需要防盗链，可选择此项。",
+    "缓存到本地 (推荐)": "缓存到本地（推荐）",
+    "访客只看到临时签名 URL,真实 *.model3.json / *.moc3 / *.png 不会暴露;需要下载模型到本地 model/ 目录。": "访客只看到临时签名 URL，真实 *.model3.json / *.moc3 / *.png 不会暴露；需要将模型下载到本地 model/ 目录。",
+    "模型本地缓存": "模型本地缓存",
+    "插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。": "插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录（与 V1 模型同位置）。之后访客加载该模型不再依赖源站。",
+    "两种缓存方式:【自动】访客访问到该模型时,后台异步下载,首次访问仍走源站签名 URL,完成后立即生效;【手动】点击下方「全部下载」或单行下载按钮即时入队。": "两种缓存方式：【自动】访客访问该模型时，后台异步下载；首次访问仍走源站签名 URL，完成后立即生效。【手动】点击下方「全部下载」或单行下载按钮即时入队。",
+    "全部下载": "全部下载",
+    "清理孤儿": "清理孤儿",
+    "全部清理": "全部清理",
+    "正在读取状态…": "正在读取状态…"
   },
-
   "zh_TW": {
     "设置": "設定",
     "发送": "傳送",
@@ -344,9 +354,20 @@
     "3x（极致，显存约 9 倍）": "3×（極致，顯示記憶體約 9 倍）",
     "叠加在浏览器 devicePixelRatio 之上的 SSAA 倍率，可消除模型边缘细线；倍率越高 GPU/显存压力越大。": "疊加在瀏覽器 devicePixelRatio 之上的 SSAA 倍率，可消除模型邊緣細線；倍率越高 GPU／顯示記憶體壓力越大。",
     "开启（默认）": "啟用（預設）",
-    "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。": "WebGL 多重取樣抗鋸齒（MSAA）。關閉後預設畫面緩衝邊緣可能出現鋸齒；切換後建議重新整理前台頁面以套用。"
+    "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。": "WebGL 多重取樣抗鋸齒（MSAA）。關閉後預設畫面緩衝邊緣可能出現鋸齒；切換後建議重新整理前台頁面以套用。",
+    "防盗链(Cubism 4+ 模型)": "防盜鏈（Cubism 4+ 模型）",
+    "不缓存 (默认)": "不快取（預設）",
+    "不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选择这个。": "不啟用防盜鏈；如果您使用了第三方物件儲存工具，或者不需要防盜鏈，可選擇此項。",
+    "缓存到本地 (推荐)": "快取到本機（推薦）",
+    "访客只看到临时签名 URL,真实 *.model3.json / *.moc3 / *.png 不会暴露;需要下载模型到本地 model/ 目录。": "訪客只會看到臨時簽名 URL，真實 *.model3.json / *.moc3 / *.png 不會曝光；需將模型下載到本機 model/ 目錄。",
+    "模型本地缓存": "模型本機快取",
+    "插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。": "外掛會把目前「模型 API」指向的 model3.json 及其全部子資源下載到本外掛的 model/ 目錄（與 V1 模型同位置）。之後訪客載入該模型不再依賴來源站。",
+    "两种缓存方式:【自动】访客访问到该模型时,后台异步下载,首次访问仍走源站签名 URL,完成后立即生效;【手动】点击下方「全部下载」或单行下载按钮即时入队。": "兩種快取方式：【自動】訪客存取該模型時，後台非同步下載；首次存取仍走來源站簽名 URL，完成後立即生效。【手動】點擊下方「全部下載」或單行下載按鈕即時加入佇列。",
+    "全部下载": "全部下載",
+    "清理孤儿": "清理孤兒",
+    "全部清理": "全部清理",
+    "正在读取状态…": "正在讀取狀態…"
   },
-
   "en_US": {
     "设置": "Settings",
     "发送": "Send",
@@ -517,9 +538,20 @@
     "3x（极致，显存约 9 倍）": "3× (maximum, ~9× VRAM)",
     "叠加在浏览器 devicePixelRatio 之上的 SSAA 倍率，可消除模型边缘细线；倍率越高 GPU/显存压力越大。": "SSAA factor multiplied on top of the browser's devicePixelRatio. Removes thin edge artifacts on models; higher values significantly increase GPU and VRAM cost.",
     "开启（默认）": "On (default)",
-    "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。": "WebGL multi-sample anti-aliasing (MSAA). Disabling it may show jagged edges on the default framebuffer; refresh the front-end page after toggling for the change to take effect."
+    "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。": "WebGL multi-sample anti-aliasing (MSAA). Disabling it may show jagged edges on the default framebuffer; refresh the front-end page after toggling for the change to take effect.",
+    "防盗链(Cubism 4+ 模型)": "Anti-Hotlink (Cubism 4+ Models)",
+    "不缓存 (默认)": "Do not cache (default)",
+    "不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选择这个。": "Anti-hotlink disabled. Choose this if you are using third-party object storage or simply do not need anti-hotlink protection.",
+    "缓存到本地 (推荐)": "Cache to local (recommended)",
+    "访客只看到临时签名 URL,真实 *.model3.json / *.moc3 / *.png 不会暴露;需要下载模型到本地 model/ 目录。": "Visitors will only see temporary signed URLs; the real *.model3.json / *.moc3 / *.png are never exposed. Models must be downloaded into the plugin’s local model/ directory.",
+    "模型本地缓存": "Model Local Cache",
+    "插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。": "The plugin will download the model3.json pointed to by the current \"Model API\" and all of its sub-resources into the plugin’s model/ directory (same location as V1 models). Visitors loading the model will then no longer depend on the origin server.",
+    "两种缓存方式:【自动】访客访问到该模型时,后台异步下载,首次访问仍走源站签名 URL,完成后立即生效;【手动】点击下方「全部下载」或单行下载按钮即时入队。": "Two caching modes: [Auto] when a visitor first accesses the model, the plugin downloads it asynchronously in the background; the first visit still goes through the origin via signed URLs, and takes effect on the next visit. [Manual] click \"Download All\" below or per-row download buttons to enqueue immediately.",
+    "全部下载": "Download All",
+    "清理孤儿": "Cleanup Orphans",
+    "全部清理": "Cleanup All",
+    "正在读取状态…": "Loading status…"
   },
-
   "ja": {
     "设置": "設定",
     "发送": "送信",
@@ -690,6 +722,18 @@
     "3x（极致，显存约 9 倍）": "3×（最大品質、VRAM 約 9 倍）",
     "叠加在浏览器 devicePixelRatio 之上的 SSAA 倍率，可消除模型边缘细线；倍率越高 GPU/显存压力越大。": "ブラウザの devicePixelRatio に乗算する SSAA 倍率です。モデル輪郭の細線を除去できますが、倍率が高いほど GPU・VRAM 負荷が増加します。",
     "开启（默认）": "オン（デフォルト）",
-    "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。": "WebGL マルチサンプルアンチエイリアス（MSAA）です。無効にするとデフォルトのフレームバッファ端にジャギーが出る場合があります。切り替え後はフロント画面を再読み込みしてください。"
+    "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。": "WebGL マルチサンプルアンチエイリアス（MSAA）です。無効にするとデフォルトのフレームバッファ端にジャギーが出る場合があります。切り替え後はフロント画面を再読み込みしてください。",
+    "防盗链(Cubism 4+ 模型)": "ホットリンク防止（Cubism 4+ モデル）",
+    "不缓存 (默认)": "キャッシュしない（デフォルト）",
+    "不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选择这个。": "ホットリンク防止を無効にします。サードパーティのオブジェクトストレージを利用している場合、またはホットリンク防止が不要な場合に選択してください。",
+    "缓存到本地 (推荐)": "ローカルにキャッシュ（推奨）",
+    "访客只看到临时签名 URL,真实 *.model3.json / *.moc3 / *.png 不会暴露;需要下载模型到本地 model/ 目录。": "訪問者には一時的な署名付き URL のみが見え、実際の *.model3.json / *.moc3 / *.png は公開されません。モデルをプラグインのローカル model/ ディレクトリにダウンロードする必要があります。",
+    "模型本地缓存": "モデルのローカルキャッシュ",
+    "插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。": "現在の「モデル API」が指す model3.json とそのすべてのサブリソースを、プラグインの model/ ディレクトリ（V1 モデルと同じ場所）にダウンロードします。その後、訪問者はモデル読み込み時にオリジンサーバーに依存しなくなります。",
+    "两种缓存方式:【自动】访客访问到该模型时,后台异步下载,首次访问仍走源站签名 URL,完成后立即生效;【手动】点击下方「全部下载」或单行下载按钮即时入队。": "2 つのキャッシュ方法：【自動】訪問者がモデルにアクセスした際、バックグラウンドで非同期ダウンロードし、初回アクセスはオリジンの署名付き URL を経由し、完了後にローカルへ切り替わります。【手動】下の「すべてダウンロード」または行単位のダウンロードボタンをクリックして即座にキューへ追加します。",
+    "全部下载": "すべてダウンロード",
+    "清理孤儿": "孤立キャッシュを削除",
+    "全部清理": "すべて削除",
+    "正在读取状态…": "状態を読み込み中…"
   }
 }

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../GitHub/wp-live2d-api"
+		}
+	],
+	"settings": {
+		"intelephense.diagnostics.undefinedFunctions": false,
+		"intelephense.diagnostics.undefinedConstants": false
+	}
+}

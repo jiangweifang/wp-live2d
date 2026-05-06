@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Live 2D 2.1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-05 07:13+0000\n"
-"PO-Revision-Date: 2026-05-05 07:13+0000\n"
+"POT-Creation-Date: 2026-05-06 15:11+0000\n"
+"PO-Revision-Date: 2026-05-06 15:11+0000\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: build-i18n.py\n"
 
-#: wordpress-live2d.php:205
+#: wordpress-live2d.php:214
 msgid "设置"
 msgstr "設定"
 
-#: wordpress-live2d.php:286
+#: wordpress-live2d.php:303
 #: src/live2d-Widget.php:38
 msgid "发送"
 msgstr "送信"
@@ -60,7 +60,7 @@ msgid "此站点未绑定, 请<a href=\"https://www.live2dweb.com/Sites\" target
 msgstr "このサイトは未登録です。<a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">こちら</a>から登録してください。登録時は WordPress の「サイトアドレス（URL）」と一致させてください。"
 
 #: src/live2d-Login.php:114
-#: src/live2d-Shop.php:80
+#: src/live2d-Shop.php:218
 msgid "您的邮箱未激活, 请<a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">点击此处</a>激活邮箱"
 msgstr "メールアドレスが未有効化です。<a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">こちら</a>から有効化してください。"
 
@@ -111,53 +111,53 @@ msgstr "スタイル設定"
 msgid "高级设置"
 msgstr "詳細設定"
 
-#: src/live2d-Shop.php:27
+#: src/live2d-Shop.php:165
 msgid "您没有访问该页面的权限。"
 msgstr "このページへのアクセス権限がありません。"
 
-#: src/live2d-Shop.php:55
+#: src/live2d-Shop.php:193
 msgid "列表中是您可以使用的模型。"
 msgstr "ご利用いただけるモデルの一覧です。"
 
-#: src/live2d-Shop.php:57
+#: src/live2d-Shop.php:195
 msgid "下载方式与浏览器扩展一致:直接 GET <code>download.live2dweb.com/model/{name}.zip</code>,由后端 PHP 解压到 <code>model/{name}</code>。"
 msgstr "ダウンロード方法はブラウザ拡張と同じです。<code>download.live2dweb.com/model/{name}.zip</code> を GET し、サーバー側の PHP が <code>model/{name}</code> に展開します。"
 
-#: src/live2d-Shop.php:73
+#: src/live2d-Shop.php:211
 msgid "您需要登录并完成邮箱验证才可以使用此功能。"
 msgstr "この機能を使用するにはログインとメールアドレスの認証が必要です。"
 
-#: src/live2d-Shop.php:104
-#: src/live2d-Shop.php:132
+#: src/live2d-Shop.php:242
+#: src/live2d-Shop.php:270
 msgid "已启用"
 msgstr "インストール済み"
 
-#: src/live2d-Shop.php:106
-#: src/live2d-Shop.php:133
+#: src/live2d-Shop.php:244
+#: src/live2d-Shop.php:271
 msgid "下载"
 msgstr "ダウンロード"
 
-#: src/live2d-Shop.php:113
+#: src/live2d-Shop.php:251
 msgid "没有可用的模型。"
 msgstr "利用できるモデルがありません。"
 
-#: src/live2d-Shop.php:130
+#: src/live2d-Shop.php:268
 msgid "正在下载..."
 msgstr "ダウンロード中…"
 
-#: src/live2d-Shop.php:131
+#: src/live2d-Shop.php:269
 msgid "正在解压..."
 msgstr "展開中…"
 
-#: src/live2d-Shop.php:134
+#: src/live2d-Shop.php:272
 msgid "解压失败,文件可能损坏。"
 msgstr "展開に失敗しました。ファイルが破損している可能性があります。"
 
-#: src/live2d-Shop.php:135
+#: src/live2d-Shop.php:273
 msgid "下载失败"
 msgstr "ダウンロードに失敗しました"
 
-#: src/live2d-Shop.php:136
+#: src/live2d-Shop.php:274
 msgid "下载请求失败,请检查网络或登录状态。"
 msgstr "ダウンロード要求に失敗しました。ネットワークまたはログイン状態を確認してください。"
 
@@ -307,80 +307,128 @@ msgstr "モデルディレクトリ"
 msgid "待机动画文件名"
 msgstr "アイドルアニメーションのファイル名"
 
-#: src/waifu-Settings-Base.php:94
+#: src/waifu-Settings-Base.php:97
+msgid "防盗链(Cubism 4+ 模型)"
+msgstr "ホットリンク防止（Cubism 4+ モデル）"
+
+#: src/waifu-Settings-Base.php:108
 msgid "Cubism Core for Web <br/> 引用地址"
 msgstr "Cubism Core for Web<br/>スクリプト URL"
 
-#: src/waifu-Settings-Base.php:129
+#: src/waifu-Settings-Base.php:143
 msgid "本地部署旧版模型"
 msgstr "ローカルの旧モデル"
 
-#: src/waifu-Settings-Base.php:132
+#: src/waifu-Settings-Base.php:146
 msgid "点击进入下载页面"
 msgstr "ダウンロードページを開く"
 
-#: src/waifu-Settings-Base.php:134
+#: src/waifu-Settings-Base.php:148
 msgid "模型文件由本插件托管,模型 API 自动指向本站,不会向外网发起请求。"
 msgstr "モデルファイルはこのプラグインで管理され、モデル API は自動的に自サイトを参照します。外部へのリクエストは行いません。"
 
-#: src/waifu-Settings-Base.php:138
+#: src/waifu-Settings-Base.php:152
 msgid "自行部署旧版模型"
 msgstr "自前ホストの旧モデル"
 
-#: src/waifu-Settings-Base.php:140
+#: src/waifu-Settings-Base.php:154
 msgid "对接你自己部署的旧版 V1/V2 模型 API(例如 fghrsh-style 的 /get/?id= 路由)。"
 msgstr "ご自身でホストする旧版 V1/V2 モデル API（例：fghrsh 形式の /get/?id= ルート）に接続します。"
 
-#: src/waifu-Settings-Base.php:145
-#: src/waifu-Settings-Base.php:153
+#: src/waifu-Settings-Base.php:159
+#: src/waifu-Settings-Base.php:167
 msgid "自定义新版模型路径"
 msgstr "カスタム新形式モデルパス"
 
-#: src/waifu-Settings-Base.php:147
+#: src/waifu-Settings-Base.php:161
 msgid "Cubism 4+ 模型(*.model3.json),可填模型直链或目录根并在下方\"模型目录\"中列出多个模型。"
 msgstr "Cubism 4+ モデル（*.model3.json）。直接 URL またはディレクトリのルートを指定し、下の「モデルディレクトリ」で複数モデルを列挙できます。"
 
-#: src/waifu-Settings-Base.php:152
+#: src/waifu-Settings-Base.php:166
 msgid "完成登录并付费后可用"
 msgstr "ログインおよび課金後に利用可能"
 
-#: src/waifu-Settings-Base.php:155
+#: src/waifu-Settings-Base.php:169
 msgid "Cubism 4+ 模型: 完成登录并付费后可用。"
 msgstr "Cubism 4+ モデル：ログインおよび課金後に利用可能です。"
 
-#: src/waifu-Settings-Base.php:168
+#: src/waifu-Settings-Base.php:182
 msgid "页面"
 msgstr "ページ"
 
-#: src/waifu-Settings-Base.php:169
+#: src/waifu-Settings-Base.php:183
 msgid "小工具(beta)"
 msgstr "ウィジェット（Beta）"
 
-#: src/waifu-Settings-Base.php:185
+#: src/waifu-Settings-Base.php:199
 msgid "上面「API 方式」选不同选项时, 此处填写要求不同。"
 msgstr "上の「API モード」の選択により、ここに入力すべき内容が変わります。"
 
-#: src/waifu-Settings-Base.php:197
+#: src/waifu-Settings-Base.php:211
 msgid "选择或填写默认加载的模型 ID(具体要求取决于上面「API 方式」)。"
 msgstr "デフォルトで読み込むモデル ID を選択／入力してください（要件は上の「API モード」に依存します）。"
 
-#: src/waifu-Settings-Base.php:207
+#: src/waifu-Settings-Base.php:221
 msgid "选择或填写默认皮肤 ID;新版模型不使用此项, 可留空。"
 msgstr "デフォルトのテクスチャ ID を選択／入力します。新形式モデルでは使用しないため、空欄でも構いません。"
 
-#: src/waifu-Settings-Base.php:213
+#: src/waifu-Settings-Base.php:227
 msgid "可切换的模型名称，程序会通过Model API来按顺序获取模型的信息，请保证模型目录的名称和 model3.json 一致"
 msgstr "切り替え可能なモデル名。プラグインは Model API を順に呼び出すため、ディレクトリ名と model3.json を一致させてください。"
 
-#: src/waifu-Settings-Base.php:221
+#: src/waifu-Settings-Base.php:235
 msgid "待机动画文件名, 文件是*.motion3.json"
 msgstr "アイドルアニメーションのファイル名。ファイルは *.motion3.json です。"
 
-#: src/waifu-Settings-Base.php:237
+#: src/waifu-Settings-Base.php:260
+msgid "不缓存 (默认)"
+msgstr "キャッシュしない（デフォルト）"
+
+#: src/waifu-Settings-Base.php:262
+msgid "不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选择这个。"
+msgstr "ホットリンク防止を無効にします。サードパーティのオブジェクトストレージを利用している場合、またはホットリンク防止が不要な場合に選択してください。"
+
+#: src/waifu-Settings-Base.php:266
+msgid "缓存到本地 (推荐)"
+msgstr "ローカルにキャッシュ（推奨）"
+
+#: src/waifu-Settings-Base.php:268
+msgid "访客只看到临时签名 URL,真实 *.model3.json / *.moc3 / *.png 不会暴露;需要下载模型到本地 model/ 目录。"
+msgstr "訪問者には一時的な署名付き URL のみが見え、実際の *.model3.json / *.moc3 / *.png は公開されません。モデルをプラグインのローカル model/ ディレクトリにダウンロードする必要があります。"
+
+#: src/waifu-Settings-Base.php:275
+msgid "模型本地缓存"
+msgstr "モデルのローカルキャッシュ"
+
+#: src/waifu-Settings-Base.php:277
+msgid "插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。"
+msgstr "現在の「モデル API」が指す model3.json とそのすべてのサブリソースを、プラグインの model/ ディレクトリ（V1 モデルと同じ場所）にダウンロードします。その後、訪問者はモデル読み込み時にオリジンサーバーに依存しなくなります。"
+
+#: src/waifu-Settings-Base.php:279
+msgid "两种缓存方式:【自动】访客访问到该模型时,后台异步下载,首次访问仍走源站签名 URL,完成后立即生效;【手动】点击下方「全部下载」或单行下载按钮即时入队。"
+msgstr "2 つのキャッシュ方法：【自動】訪問者がモデルにアクセスした際、バックグラウンドで非同期ダウンロードし、初回アクセスはオリジンの署名付き URL を経由し、完了後にローカルへ切り替わります。【手動】下の「すべてダウンロード」または行単位のダウンロードボタンをクリックして即座にキューへ追加します。"
+
+#: src/waifu-Settings-Base.php:283
+msgid "全部下载"
+msgstr "すべてダウンロード"
+
+#: src/waifu-Settings-Base.php:286
+msgid "清理孤儿"
+msgstr "孤立キャッシュを削除"
+
+#: src/waifu-Settings-Base.php:289
+msgid "全部清理"
+msgstr "すべて削除"
+
+#: src/waifu-Settings-Base.php:296
+msgid "正在读取状态…"
+msgstr "状態を読み込み中…"
+
+#: src/waifu-Settings-Base.php:316
 msgid "如未授权请勿修改此地址，擅自修改此地址引发的法律问题与插件作者无关。"
 msgstr "正規のライセンスがない限り、この URL を変更しないでください。無断変更による法的問題について、プラグイン作者は責任を負いません。"
 
-#: src/waifu-Settings-Base.php:238
+#: src/waifu-Settings-Base.php:317
 msgid "软件许可协议："
 msgstr "ソフトウェアライセンス："
 
