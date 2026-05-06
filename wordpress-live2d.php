@@ -86,6 +86,8 @@ include_once(dirname(__FILE__)  . '/src/live2d-Widget.php');
 include_once(dirname(__FILE__)  . '/src/live2d-SDK.php');
 // 加载本地 V1 模型 API(取代 https://api.live2dweb.com/model/v2 的清单/切换/换装服务)
 include_once(dirname(__FILE__)  . '/src/live2d-V1Api.php');
+// 加载 V2 模型(model3.json)防盗链 API(对齐 nizima.LIVE 与 wp-live2d-api 的 /Model/Session)
+include_once(dirname(__FILE__)  . '/src/live2d-V2Api.php');
 
 //添加样式（初始化）
 function live2D_style()
@@ -157,6 +159,11 @@ function live2D_style()
         'waifuTips' => get_option('live_2d_advanced_option_name'),
         'settings' => $live2dSettings,
         'localPath' => plugin_dir_url(__FILE__) . 'model',
+        // V2 模型(Cubism 4/5)防盗链 endpoint(对应 src/live2d-V2Api.php)。
+        // 前端 Wordpress/live2d-tips.ts 在 ApiUrlType.JsonFile 分支会先 POST 这里
+        // 拿 alias 化的 manifestUrl 替换 modelAPI;失败则降级到裸链。
+        // 用 rest_url 而不是写死 /wp-json,可以兼容 plain permalink + 多站点子目录。
+        'v2SessionUrl' => rest_url('live2d/v2/session'),
         'currentPage' => array('get_the_id' => get_the_id(), 'is_home' => is_front_page(), 'is_single' => is_single())
     ));
 }
@@ -234,6 +241,9 @@ add_action('rest_api_init', function () {
 
     // 本地 V1 模型清单 / 切换 / 换装(取代 api.live2dweb.com/model/v2)
     live2d_V1Api::register_routes();
+
+    // V2 模型(Cubism 4/5)防盗链 session/manifest/asset
+    live2d_V2Api::register_routes();
 });
 
 // 初始化加载
