@@ -192,7 +192,7 @@ class live2d_Shop
             <div class="wp-filter">
                 <h2><?php esc_html_e('列表中是您可以使用的模型。', 'live-2d'); ?></h2>
                 <p><?php echo wp_kses(
-                    __('下载方式与浏览器扩展一致:直接 GET <code>download.live2dweb.com/model/{name}.zip</code>,由后端 PHP 解压到 <code>model/{name}</code>。', 'live-2d'),
+                    __('点击「下载」后，插件会自动下载并安装到您的网站中。', 'live-2d'),
                     array('code' => array())
                 ); ?></p>
             </div>

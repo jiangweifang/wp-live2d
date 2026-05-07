@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Live 2D 2.1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-06 15:11+0000\n"
-"PO-Revision-Date: 2026-05-06 15:11+0000\n"
+"POT-Creation-Date: 2026-05-07 04:58+0000\n"
+"PO-Revision-Date: 2026-05-07 04:58+0000\n"
 "Language-Team: Traditional Chinese (Taiwan)\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: build-i18n.py\n"
 
-#: wordpress-live2d.php:214
+#: wordpress-live2d.php:216
 msgid "设置"
 msgstr "設定"
 
-#: wordpress-live2d.php:303
+#: wordpress-live2d.php:305
 #: src/live2d-Widget.php:38
 msgid "发送"
 msgstr "傳送"
@@ -120,8 +120,8 @@ msgid "列表中是您可以使用的模型。"
 msgstr "清單中是您可以使用的模型。"
 
 #: src/live2d-Shop.php:195
-msgid "下载方式与浏览器扩展一致:直接 GET <code>download.live2dweb.com/model/{name}.zip</code>,由后端 PHP 解压到 <code>model/{name}</code>。"
-msgstr "下載方式與瀏覽器擴充套件相同：直接以 GET 取得 <code>download.live2dweb.com/model/{name}.zip</code>，再由後端 PHP 解壓縮至 <code>model/{name}</code>。"
+msgid "点击「下载」后，插件会自动下载并安装到您的网站中。"
+msgstr "點擊「下載」後，外掛會自動下載並安裝到您的網站中。"
 
 #: src/live2d-Shop.php:211
 msgid "您需要登录并完成邮箱验证才可以使用此功能。"
@@ -252,32 +252,32 @@ msgid "节日事件"
 msgstr "節日事件"
 
 #: src/waifu-Advanced.php:195
-msgid "请在第一个输入框输入没有服装时的默认提示，第二个输入框输入每次切换时的提示消息"
-msgstr "請在第一個輸入框填入沒有服裝時的預設提示，第二個輸入框填入每次切換時的提示訊息。"
+msgid "第一个输入框：没有可换服装时显示的提示语；第二个输入框：每次切换服装时显示的提示语。"
+msgstr "第一個輸入框：沒有可換服裝時顯示的提示語；第二個輸入框：每次切換服裝時顯示的提示語。"
 
 #: src/waifu-Advanced.php:204
-msgid "时间按照t{开始小时}-{结束小时}的方式填写，例如：t5-7或t7-11（避免改错，目前此项无法更改）"
-msgstr "時間請依照 t{起始小時}-{結束小時} 的格式填寫，例如：t5-7 或 t7-11（為避免錯誤，目前此項無法修改）。"
+msgid "时间按 t{开始小时}-{结束小时} 的格式填写，例如 t5-7 或 t7-11（为避免填错，目前该项不可修改）。"
+msgstr "時間請依 t{開始小時}-{結束小時} 的格式填寫，例如 t5-7 或 t7-11（為避免填錯，目前該項無法修改）。"
 
 #: src/waifu-Advanced.php:211
-msgid "请务必不要修改{}中的内容，{title}网站标题、{keyword}关键词、{website}站点名称"
-msgstr "請勿修改 {} 內的內容；{title} 網站標題、{keyword} 關鍵字、{website} 站台名稱。"
+msgid "请不要修改 {} 里的内容：{title} 是网页标题、{keyword} 是关键词、{website} 是站点名称。"
+msgstr "請不要修改 {} 裡的內容：{title} 是網頁標題、{keyword} 是關鍵字、{website} 是站台名稱。"
 
 #: src/waifu-Advanced.php:221
-msgid "请务必不要修改{}中的内容，lwl12.com接口会有没有作者的情况语句中需要用“|”进行分割"
-msgstr "請勿修改 {} 內的內容，lwl12.com 介面有時不會回傳作者，句子需要使用「|」進行分隔。"
+msgid "请不要修改 {} 里的内容；lwl12.com 接口有时没有作者信息，多个句子之间需要用「|」分隔。"
+msgstr "請不要修改 {} 裡的內容；lwl12.com 介面有時沒有作者資訊，多個句子之間需要使用「|」分隔。"
 
 #: src/waifu-Advanced.php:226
-msgid "鼠标悬停位置的<a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery选择器</a>"
-msgstr "滑鼠懸停位置的 <a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery 選擇器</a>。"
+msgid "鼠标悬停的元素位置（按 <a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery 选择器</a> 格式填写）。"
+msgstr "滑鼠懸停的元素位置（請依 <a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery 選擇器</a> 格式填寫）。"
 
 #: src/waifu-Advanced.php:239
 msgid "点击看板娘会循环以上的每一行点击事件"
 msgstr "點擊看板娘會依序循環以上每一行的點擊事件。"
 
 #: src/waifu-Advanced.php:246
-msgid "在指定的日期说提示语，日期的规则为MM/dd，例如2月14日为 02/14，可填写一个时间区间，格式为11/05-11/12。"
-msgstr "在指定日期顯示提示語，日期格式為 MM/dd，例如 2 月 14 日寫作 02/14，亦可填寫時間區間，格式如 11/05-11/12。"
+msgid "在指定的日期说提示语。日期格式为 MM/dd，例如 2 月 14 日填为 02/14；也可以填一个时间区间，例如 11/05-11/12。"
+msgstr "在指定的日期顯示提示語。日期格式為 MM/dd，例如 2 月 14 日填寫為 02/14；也可以填寫時間區間，例如 11/05-11/12。"
 
 #: src/waifu-Settings-Base.php:23
 msgid "看板娘模式"
@@ -308,8 +308,8 @@ msgid "待机动画文件名"
 msgstr "待機動畫檔名"
 
 #: src/waifu-Settings-Base.php:97
-msgid "防盗链(Cubism 4+ 模型)"
-msgstr "防盜鏈（Cubism 4+ 模型）"
+msgid "模型防盗保护（新版模型）"
+msgstr "模型防盜保護（新版模型）"
 
 #: src/waifu-Settings-Base.php:108
 msgid "Cubism Core for Web <br/> 引用地址"
@@ -332,8 +332,8 @@ msgid "自行部署旧版模型"
 msgstr "自行部署舊版模型"
 
 #: src/waifu-Settings-Base.php:154
-msgid "对接你自己部署的旧版 V1/V2 模型 API(例如 fghrsh-style 的 /get/?id= 路由)。"
-msgstr "串接您自行部署的舊版 V1/V2 模型 API（例如 fghrsh 風格的 /get/?id= 路由）。"
+msgid "使用您自己服务器上的旧版模型接口。"
+msgstr "使用您自己伺服器上的舊版模型介面。"
 
 #: src/waifu-Settings-Base.php:159
 #: src/waifu-Settings-Base.php:167
@@ -341,16 +341,16 @@ msgid "自定义新版模型路径"
 msgstr "自訂新版模型路徑"
 
 #: src/waifu-Settings-Base.php:161
-msgid "Cubism 4+ 模型(*.model3.json),可填模型直链或目录根并在下方\"模型目录\"中列出多个模型。"
-msgstr "Cubism 4+ 模型（*.model3.json），可填寫模型直連網址或目錄根，並在下方「模型目錄」列出多個模型。"
+msgid "适用于新版模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。"
+msgstr "適用於新版模型，可填寫模型檔案的網址或所在目錄，並在下方「模型目錄」中新增多個模型。"
 
 #: src/waifu-Settings-Base.php:166
 msgid "完成登录并付费后可用"
 msgstr "完成登入並付費後可使用"
 
 #: src/waifu-Settings-Base.php:169
-msgid "Cubism 4+ 模型: 完成登录并付费后可用。"
-msgstr "Cubism 4+ 模型：完成登入並付費後可使用。"
+msgid "新版模型：登录并付费后可使用。"
+msgstr "新版模型：登入並付費後可使用。"
 
 #: src/waifu-Settings-Base.php:182
 msgid "页面"
@@ -373,40 +373,40 @@ msgid "选择或填写默认皮肤 ID;新版模型不使用此项, 可留空。"
 msgstr "選擇或填寫預設造型 ID；新版模型不使用此項，可留空。"
 
 #: src/waifu-Settings-Base.php:227
-msgid "可切换的模型名称，程序会通过Model API来按顺序获取模型的信息，请保证模型目录的名称和 model3.json 一致"
-msgstr "可切換的模型名稱，程式會透過 Model API 依序取得模型資訊，請確保模型目錄名稱與 model3.json 一致。"
+msgid "可以切换的模型名称，请填写每个模型所在的目录名（须与模型自带的配置文件名保持一致）。"
+msgstr "可切換的模型名稱，請填寫每個模型所在的目錄名（須與模型自帶的設定檔名稱保持一致）。"
 
 #: src/waifu-Settings-Base.php:235
-msgid "待机动画文件名, 文件是*.motion3.json"
-msgstr "待機動畫檔名，副檔名為 *.motion3.json。"
+msgid "待机时播放的动作名称（一行一个），不需要填写扩展名。"
+msgstr "待機時播放的動作名稱（一行一個），不需要填寫副檔名。"
 
 #: src/waifu-Settings-Base.php:260
 msgid "不缓存 (默认)"
 msgstr "不快取（預設）"
 
 #: src/waifu-Settings-Base.php:262
-msgid "不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选择这个。"
-msgstr "不啟用防盜鏈；如果您使用了第三方物件儲存工具，或者不需要防盜鏈，可選擇此項。"
+msgid "不启用防盗保护；如果您使用了云存储或不需要防盗，可选择此项。"
+msgstr "不啟用防盜保護；如果您使用了雲端儲存或不需要防盜，可選擇此項。"
 
 #: src/waifu-Settings-Base.php:266
 msgid "缓存到本地 (推荐)"
 msgstr "快取到本機（推薦）"
 
 #: src/waifu-Settings-Base.php:268
-msgid "访客只看到临时签名 URL,真实 *.model3.json / *.moc3 / *.png 不会暴露;需要下载模型到本地 model/ 目录。"
-msgstr "訪客只會看到臨時簽名 URL，真實 *.model3.json / *.moc3 / *.png 不會曝光；需將模型下載到本機 model/ 目錄。"
+msgid "访客看不到模型的真实地址；需要先把模型文件下载到您的网站上。"
+msgstr "訪客看不到模型的真實位址；需要先把模型檔案下載到您的網站上。"
 
 #: src/waifu-Settings-Base.php:275
 msgid "模型本地缓存"
 msgstr "模型本機快取"
 
 #: src/waifu-Settings-Base.php:277
-msgid "插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。"
-msgstr "外掛會把目前「模型 API」指向的 model3.json 及其全部子資源下載到本外掛的 model/ 目錄（與 V1 模型同位置）。之後訪客載入該模型不再依賴來源站。"
+msgid "插件会把当前模型及其用到的所有文件下载到您的网站上，下载完成后访客加载模型就不再访问外部地址。"
+msgstr "外掛會把目前的模型以及它用到的所有檔案下載到您的網站上，下載完成後訪客載入模型就不再存取外部位址。"
 
 #: src/waifu-Settings-Base.php:279
-msgid "两种缓存方式:【自动】访客访问到该模型时,后台异步下载,首次访问仍走源站签名 URL,完成后立即生效;【手动】点击下方「全部下载」或单行下载按钮即时入队。"
-msgstr "兩種快取方式：【自動】訪客存取該模型時，後台非同步下載；首次存取仍走來源站簽名 URL，完成後立即生效。【手動】點擊下方「全部下載」或單行下載按鈕即時加入佇列。"
+msgid "两种下载方式：【自动】当有访客打开模型时，插件会在后台开始下载，首次访问仍由原始地址提供，下载完成后立即生效；【手动】点击下方「全部下载」或单条下载按钮立即开始下载。"
+msgstr "兩種下載方式：【自動】當有訪客打開模型時，外掛會在背景開始下載，首次造訪仍由原始位址提供，下載完成後立即生效；【手動】點擊下方「全部下載」或單條下載按鈕立即開始下載。"
 
 #: src/waifu-Settings-Base.php:283
 msgid "全部下载"
@@ -425,8 +425,8 @@ msgid "正在读取状态…"
 msgstr "正在讀取狀態…"
 
 #: src/waifu-Settings-Base.php:316
-msgid "如未授权请勿修改此地址，擅自修改此地址引发的法律问题与插件作者无关。"
-msgstr "如未取得授權請勿修改此網址，擅自修改所引發的法律問題與外掛作者無關。"
+msgid "未获授权请勿修改此地址；擅自修改可能引发法律问题，相关责任与插件作者无关。"
+msgstr "未獲授權請勿修改此網址；擅自修改可能引發法律問題，相關責任與外掛作者無關。"
 
 #: src/waifu-Settings-Base.php:317
 msgid "软件许可协议："
@@ -485,12 +485,12 @@ msgid "看板娘位置"
 msgstr "看板娘位置"
 
 #: src/waifu-Settings-Style.php:125
-msgid "高级渲染:超采样倍率"
-msgstr "進階渲染：超取樣倍率（SSAA）"
+msgid "画面清晰度（高级）"
+msgstr "畫面清晰度（進階）"
 
 #: src/waifu-Settings-Style.php:133
-msgid "高级渲染:抗锯齿"
-msgstr "進階渲染：抗鋸齒（MSAA）"
+msgid "边缘平滑（高级）"
+msgstr "邊緣平滑（進階）"
 
 #: src/waifu-Settings-Style.php:147
 msgid "是"
@@ -560,24 +560,24 @@ msgid "设置看板娘的位置，可以是负数"
 msgstr "設定看板娘的位置，可以是負數。"
 
 #: src/waifu-Settings-Style.php:256
-msgid "1x（默认，不做超采样）"
-msgstr "1×（預設，不進行超取樣）"
+msgid "1×（默认）"
+msgstr "1×（預設）"
 
 #: src/waifu-Settings-Style.php:257
-msgid "1.5x（轻度超采样）"
-msgstr "1.5×（輕度超取樣）"
+msgid "1.5×（更清晰）"
+msgstr "1.5×（更清晰）"
 
 #: src/waifu-Settings-Style.php:258
-msgid "2x（高质量，显存约 4 倍）"
-msgstr "2×（高品質，顯示記憶體約 4 倍）"
+msgid "2×（高画质，更耗显存）"
+msgstr "2×（高畫質，更耗顯示記憶體）"
 
 #: src/waifu-Settings-Style.php:259
-msgid "3x（极致，显存约 9 倍）"
-msgstr "3×（極致，顯示記憶體約 9 倍）"
+msgid "3×（最清晰，非常耗显存）"
+msgstr "3×（最清晰，非常耗顯示記憶體）"
 
 #: src/waifu-Settings-Style.php:269
-msgid "叠加在浏览器 devicePixelRatio 之上的 SSAA 倍率，可消除模型边缘细线；倍率越高 GPU/显存压力越大。"
-msgstr "疊加在瀏覽器 devicePixelRatio 之上的 SSAA 倍率，可消除模型邊緣細線；倍率越高 GPU／顯示記憶體壓力越大。"
+msgid "提高模型画面的清晰度，让边缘看起来更顺滑。倍数越高画面越清晰，但对显卡的占用也越大。"
+msgstr "提升模型畫面的清晰度，讓邊緣看起來更平順。倍數越高畫面越清晰，但對顯示卡的負擔也越大。"
 
 #: src/waifu-Settings-Style.php:281
 msgid "开启（默认）"
@@ -589,8 +589,8 @@ msgid "关闭"
 msgstr "關閉"
 
 #: src/waifu-Settings-Style.php:284
-msgid "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。"
-msgstr "WebGL 多重取樣抗鋸齒（MSAA）。關閉後預設畫面緩衝邊緣可能出現鋸齒；切換後建議重新整理前台頁面以套用。"
+msgid "让模型的边缘看起来更平滑。关闭后边缘可能出现锯齿。修改后请刷新前台页面才会生效。"
+msgstr "讓模型的邊緣看起來更平滑。關閉後邊緣可能會出現鋸齒。修改後請重新整理前台頁面才會生效。"
 
 #: src/waifu-Settings-Tips.php:10
 msgid "提示框设置"

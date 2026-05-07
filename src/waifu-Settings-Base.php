@@ -94,7 +94,7 @@ class live2D_Settings_Base
             // 'local'/'remote' (旧 V1 PHP) 不受影响, 模型本来就托管在站内不需要 alias.
             add_settings_field(
                 'protectV2',
-                __('防盗链(Cubism 4+ 模型)', 'live-2d'),
+                __('模型防盗保护（新版模型）', 'live-2d'),
                 array($this, 'protectV2_callback'),
                 'live-2d-settings-base',
                 'live_2d_setting_base_section'
@@ -151,14 +151,14 @@ class live2D_Settings_Base
                 <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-remote" class="apiType" value="remote" <?php echo $current === 'remote' ? 'checked' : ''; ?>>
                 <?php esc_html_e('自行部署旧版模型', 'live-2d'); ?>
             </label><br>
-            <span class="description"><?php esc_html_e('对接你自己部署的旧版 V1/V2 模型 API(例如 fghrsh-style 的 /get/?id= 路由)。', 'live-2d'); ?></span><br>
+            <span class="description"><?php esc_html_e('使用您自己服务器上的旧版模型接口。', 'live-2d'); ?></span><br>
 
             <?php if ($hasPaid): ?>
                 <label for="apiType-custom">
                     <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-custom" class="apiType" value="custom" <?php echo $current === 'custom' ? 'checked' : ''; ?>>
                     <?php esc_html_e('自定义新版模型路径', 'live-2d'); ?>
                 </label><br>
-                <span class="description"><?php esc_html_e('Cubism 4+ 模型(*.model3.json),可填模型直链或目录根并在下方"模型目录"中列出多个模型。', 'live-2d'); ?></span>
+                <span class="description"><?php esc_html_e('适用于新版模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。', 'live-2d'); ?></span>
             <?php else: ?>
                 <?php // 未登录 / 未付费: radio 与 label 都置灰, 并配合 cursor:not-allowed 提示用户不可点击.
                       // disabled 属性已经阻止勾选, 这里加视觉反馈; 同时把 title 提示加到 label 上,
@@ -166,7 +166,7 @@ class live2D_Settings_Base
                 <label for="apiType-custom" style="opacity: 0.5; cursor: not-allowed;" title="<?php esc_attr_e('完成登录并付费后可用', 'live-2d'); ?>">
                     <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义新版模型路径', 'live-2d'); ?>
                 </label><br>
-                <span class="description" style="opacity: 0.7;"><?php esc_html_e('Cubism 4+ 模型: 完成登录并付费后可用。', 'live-2d'); ?></span>
+                <span class="description" style="opacity: 0.7;"><?php esc_html_e('新版模型：登录并付费后可使用。', 'live-2d'); ?></span>
             <?php endif; ?>
         </fieldset>
     <?php
@@ -224,7 +224,7 @@ class live2D_Settings_Base
     public function modelDir_callback()
     {
         live2D_Utils::loopMsg('modelDir','List',true,'live_2d_settings_option_name');
-        echo '<p>' . esc_html__('可切换的模型名称，程序会通过Model API来按顺序获取模型的信息，请保证模型目录的名称和 model3.json 一致','live-2d').'</p>';
+        echo '<p>' . esc_html__('可以切换的模型名称，请填写每个模型所在的目录名（须与模型自带的配置文件名保持一致）。','live-2d').'</p>';
     }
 
     // 待机动画文件名 — loopMsg 渲染的 <p class="idle_motion"> 会被
@@ -232,7 +232,7 @@ class live2D_Settings_Base
     public function idle_motion_callback()
     {
         live2D_Utils::loopMsg('idle_motion','List',true,'live_2d_settings_option_name');
-        echo '<p>' . esc_html__('待机动画文件名, 文件是*.motion3.json','live-2d') . '</p>';
+        echo '<p>' . esc_html__('待机时播放的动作名称（一行一个），不需要填写扩展名。','live-2d') . '</p>';
     }
 
     /**
@@ -259,13 +259,13 @@ class live2D_Settings_Base
                 <input type="radio" name="live_2d_settings_option_name[protectV2]" id="protectV2-direct" class="protectV2" value="direct" <?php checked($current, 'direct'); ?>>
                 <?php esc_html_e('不缓存 (默认)', 'live-2d'); ?>
             </label>
-            <span class="description" style="margin-left:8px;"><?php esc_html_e('不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选择这个。', 'live-2d'); ?></span><br>
+            <span class="description" style="margin-left:8px;"><?php esc_html_e('不启用防盗保护；如果您使用了云存储或不需要防盗，可选择此项。', 'live-2d'); ?></span><br>
 
             <label for="protectV2-local">
                 <input type="radio" name="live_2d_settings_option_name[protectV2]" id="protectV2-local" class="protectV2" value="local" <?php checked($current, 'local'); ?>>
                 <?php esc_html_e('缓存到本地 (推荐)', 'live-2d'); ?>
             </label>
-            <span class="description" style="margin-left:8px;"><?php esc_html_e('访客只看到临时签名 URL,真实 *.model3.json / *.moc3 / *.png 不会暴露;需要下载模型到本地 model/ 目录。', 'live-2d'); ?></span>
+            <span class="description" style="margin-left:8px;"><?php esc_html_e('访客看不到模型的真实地址；需要先把模型文件下载到您的网站上。', 'live-2d'); ?></span>
         </fieldset>
 
         <?php // 下载区域 —— 默认隐藏, live2d-admin.ts 会在 protectV2='local' 时显示。
@@ -274,9 +274,9 @@ class live2D_Settings_Base
         <div id="protectV2-models-section" style="display:none;margin-top:12px;padding:12px;border:1px solid #ddd;background:#fafafa;border-radius:4px;">
             <strong><?php esc_html_e('模型本地缓存', 'live-2d'); ?></strong>
             <p class="description" style="margin:6px 0;">
-                <?php esc_html_e('插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。', 'live-2d'); ?>
+                <?php esc_html_e('插件会把当前模型及其用到的所有文件下载到您的网站上，下载完成后访客加载模型就不再访问外部地址。', 'live-2d'); ?>
                 <br>
-                <?php esc_html_e('两种缓存方式:【自动】访客访问到该模型时,后台异步下载,首次访问仍走源站签名 URL,完成后立即生效;【手动】点击下方「全部下载」或单行下载按钮即时入队。', 'live-2d'); ?>
+                <?php esc_html_e('两种下载方式：【自动】当有访客打开模型时，插件会在后台开始下载，首次访问仍由原始地址提供，下载完成后立即生效；【手动】点击下方「全部下载」或单条下载按钮立即开始下载。', 'live-2d'); ?>
             </p>
             <div id="protectV2-cache-toolbar" style="margin:8px 0;padding:8px;background:#fff;border:1px solid #e5e5e5;border-radius:3px;">
                 <button type="button" class="button button-primary" id="live2d-cache-download-all">
@@ -313,7 +313,7 @@ class live2D_Settings_Base
             '<input class="regular-text" type="text" name="live_2d_settings_option_name[sdkUrl]" id="sdkUrl" value="%s">',
             isset($this->live_2d__options['sdkUrl']) ? esc_attr($this->live_2d__options['sdkUrl']) : esc_attr($defaultSdkUrl)
         );
-        echo '<p>' . esc_html__('如未授权请勿修改此地址，擅自修改此地址引发的法律问题与插件作者无关。', 'live-2d') . '</p>
+        echo '<p>' . esc_html__('未获授权请勿修改此地址；擅自修改可能引发法律问题，相关责任与插件作者无关。', 'live-2d') . '</p>
         <p>' . esc_html__('软件许可协议：', 'live-2d')
             . '<a href = "https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html" target="_blank">Live2D Proprietary Software License Agreement</a> 
         | <a href = "https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html" target="_blank">Live2D Open Software License Agreement</a> </p>';

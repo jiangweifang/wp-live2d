@@ -14,7 +14,8 @@
         <h2 class="project-tagline">ChatGPT 的使用</h2>
         <p class="header-nav">
             <a href="../index.html">← 返回首页</a>
-            <a href="custom-model.html">自定义模型</a>
+            <a href="v1-vs-v2.html">V1 / V2 是什么？</a>
+            <a href="custom-model.html">V2 自定义模型</a>
             <a href="touch-area.html">触摸区域</a>
             <a href="https://github.com/jiangweifang/wp-live2d/wiki/ChatGPT%E7%9A%84%E4%BD%BF%E7%94%A8" target="_blank" rel="noopener">原始 Wiki</a>
         </p>
@@ -26,20 +27,25 @@
 
         <h2>功能与默认配额</h2>
         <ul>
-            <li>本插件中提供了 ChatGPT 的功能，您可以通过点击机器人和 ChatGPT 进行交互。但是由于 ChatGPT 是付费的，所以我在默认代码中控制了 ChatGPT 的 Token 数量。</li>
+            <li>本插件中提供了 ChatGPT 的功能，您可以通过点击机器人和 ChatGPT 进行交互。由于 ChatGPT 是付费 API，作者免费提供的默认通道有配额限制，不希望被滥用，所以默认代码里把 <code>MaxTokens</code> 限制得比较小。</li>
+            <li>如果你需要更长的回答 / 更多上下文，请按下面「自定义为自己的 Open AI API」一节，把接口换成自己的 Azure OpenAI 或 Open AI 官方 API。</li>
         </ul>
 
-        <p>当前设置为：<code>"MaxTokens": 200</code></p>
+        <p>当前默认设置为：<code>"MaxTokens": 200</code>（最大不超过 4000）。</p>
 
-        <p>历史对话为 10 条往复的 Context（上下文），5 条包含自己说的：</p>
-        <p>例如：</p>
+        <p>历史对话保留<strong>最近 5 轮往复</strong>（5 次「我说 + AI 回」共 10 条作为上下文），早于此的对话会被丢弃以控制成本。例如：</p>
+        <pre><code>我：你好
+AI：你好，有什么可以帮你
+我：使命召唤是一个什么游戏？
+AI：使命召唤是一个 FPS 游戏。</code></pre>
+        <p>以上是 2 轮。</p>
+
+        <p>其他要点：</p>
         <ul>
-            <li><code>我：你好</code></li>
-            <li><code>AI：你好，有什么可以帮你</code></li>
-            <li><code>我：使命召唤是一个什么游戏？</code></li>
-            <li><code>AI：使命召唤是一个 FPS 游戏。</code></li>
+            <li>对话框里的内容支持 <strong>Markdown 渲染</strong>（链接、加粗、列表等）；点击 AI 输出的链接可以跳到你站点其他页面。</li>
+            <li>从 1.9.16 起，提示气泡会<strong>向上扩展</strong>而不是向下，方便显示长回复。</li>
+            <li>插件提供的免费通道目前服务器在上海，无法直连 OpenAI 官方接口；作者用的是个人 Azure OpenAI 通道。</li>
         </ul>
-        <p>以上对话是 2 条。</p>
 
         <h2>自定义为自己的 Open AI API</h2>
         <p>您可以通过<a href="https://www.live2dweb.com/Sites" target="_blank" rel="noopener">后台设置</a>将其修改为自己使用的 Open AI API。</p>

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Live 2D 2.1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-06 15:11+0000\n"
-"PO-Revision-Date: 2026-05-06 15:11+0000\n"
+"POT-Creation-Date: 2026-05-07 04:58+0000\n"
+"PO-Revision-Date: 2026-05-07 04:58+0000\n"
 "Language-Team: English (United States)\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: build-i18n.py\n"
 
-#: wordpress-live2d.php:214
+#: wordpress-live2d.php:216
 msgid "设置"
 msgstr "Settings"
 
-#: wordpress-live2d.php:303
+#: wordpress-live2d.php:305
 #: src/live2d-Widget.php:38
 msgid "发送"
 msgstr "Send"
@@ -120,8 +120,8 @@ msgid "列表中是您可以使用的模型。"
 msgstr "These are the models you can use."
 
 #: src/live2d-Shop.php:195
-msgid "下载方式与浏览器扩展一致:直接 GET <code>download.live2dweb.com/model/{name}.zip</code>,由后端 PHP 解压到 <code>model/{name}</code>。"
-msgstr "Downloads work the same as in the browser extension: GET <code>download.live2dweb.com/model/{name}.zip</code> directly, then PHP unpacks it into <code>model/{name}</code>."
+msgid "点击「下载」后，插件会自动下载并安装到您的网站中。"
+msgstr "After clicking \"Download\", the plugin downloads and installs the model into your site automatically."
 
 #: src/live2d-Shop.php:211
 msgid "您需要登录并完成邮箱验证才可以使用此功能。"
@@ -252,32 +252,32 @@ msgid "节日事件"
 msgstr "Holiday events"
 
 #: src/waifu-Advanced.php:195
-msgid "请在第一个输入框输入没有服装时的默认提示，第二个输入框输入每次切换时的提示消息"
-msgstr "Use the first field for the default message when no outfit is available, and the second field for the message shown on each switch."
+msgid "第一个输入框：没有可换服装时显示的提示语；第二个输入框：每次切换服装时显示的提示语。"
+msgstr "First field: the message shown when no other outfit is available. Second field: the message shown each time the outfit is switched."
 
 #: src/waifu-Advanced.php:204
-msgid "时间按照t{开始小时}-{结束小时}的方式填写，例如：t5-7或t7-11（避免改错，目前此项无法更改）"
-msgstr "Use the format t{startHour}-{endHour}, for example t5-7 or t7-11. (To avoid mistakes, this item is currently locked.)"
+msgid "时间按 t{开始小时}-{结束小时} 的格式填写，例如 t5-7 或 t7-11（为避免填错，目前该项不可修改）。"
+msgstr "Use the format t{startHour}-{endHour}, for example t5-7 or t7-11. (To avoid mistakes this item is currently locked.)"
 
 #: src/waifu-Advanced.php:211
-msgid "请务必不要修改{}中的内容，{title}网站标题、{keyword}关键词、{website}站点名称"
-msgstr "Do not modify the contents inside {}: {title} = page title, {keyword} = keyword, {website} = site name."
+msgid "请不要修改 {} 里的内容：{title} 是网页标题、{keyword} 是关键词、{website} 是站点名称。"
+msgstr "Do not change anything inside {}: {title} is the page title, {keyword} is the keyword, {website} is the site name."
 
 #: src/waifu-Advanced.php:221
-msgid "请务必不要修改{}中的内容，lwl12.com接口会有没有作者的情况语句中需要用“|”进行分割"
-msgstr "Do not modify the contents inside {}; the lwl12.com endpoint sometimes has no author, so separate sentences with \"|\"."
+msgid "请不要修改 {} 里的内容；lwl12.com 接口有时没有作者信息，多个句子之间需要用「|」分隔。"
+msgstr "Do not change anything inside {}. The lwl12.com API sometimes returns no author, so separate multiple sentences with \"|\"."
 
 #: src/waifu-Advanced.php:226
-msgid "鼠标悬停位置的<a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery选择器</a>"
-msgstr "<a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery selector</a> for the hover target."
+msgid "鼠标悬停的元素位置（按 <a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery 选择器</a> 格式填写）。"
+msgstr "The element the mouse hovers over. Use a <a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery selector</a>."
 
 #: src/waifu-Advanced.php:239
 msgid "点击看板娘会循环以上的每一行点击事件"
 msgstr "Clicking the waifu cycles through each click event listed above."
 
 #: src/waifu-Advanced.php:246
-msgid "在指定的日期说提示语，日期的规则为MM/dd，例如2月14日为 02/14，可填写一个时间区间，格式为11/05-11/12。"
-msgstr "Show a tip on the specified date. Use MM/dd (e.g. 02/14 for Feb 14). A range like 11/05-11/12 is also supported."
+msgid "在指定的日期说提示语。日期格式为 MM/dd，例如 2 月 14 日填为 02/14；也可以填一个时间区间，例如 11/05-11/12。"
+msgstr "Show a tip on a specific date. Use MM/dd, e.g. 02/14 for Feb 14. A range like 11/05-11/12 also works."
 
 #: src/waifu-Settings-Base.php:23
 msgid "看板娘模式"
@@ -308,8 +308,8 @@ msgid "待机动画文件名"
 msgstr "Idle animation filename"
 
 #: src/waifu-Settings-Base.php:97
-msgid "防盗链(Cubism 4+ 模型)"
-msgstr "Anti-Hotlink (Cubism 4+ Models)"
+msgid "模型防盗保护（新版模型）"
+msgstr "Model anti-hotlink protection (new-format models)"
 
 #: src/waifu-Settings-Base.php:108
 msgid "Cubism Core for Web <br/> 引用地址"
@@ -332,8 +332,8 @@ msgid "自行部署旧版模型"
 msgstr "Self-hosted legacy models"
 
 #: src/waifu-Settings-Base.php:154
-msgid "对接你自己部署的旧版 V1/V2 模型 API(例如 fghrsh-style 的 /get/?id= 路由)。"
-msgstr "Connect to your own legacy V1/V2 model API (for example, the fghrsh-style /get/?id= route)."
+msgid "使用您自己服务器上的旧版模型接口。"
+msgstr "Connect to a legacy model API hosted on your own server."
 
 #: src/waifu-Settings-Base.php:159
 #: src/waifu-Settings-Base.php:167
@@ -341,16 +341,16 @@ msgid "自定义新版模型路径"
 msgstr "Custom new-format model path"
 
 #: src/waifu-Settings-Base.php:161
-msgid "Cubism 4+ 模型(*.model3.json),可填模型直链或目录根并在下方\"模型目录\"中列出多个模型。"
-msgstr "Cubism 4+ models (*.model3.json). Provide a direct URL or a directory root and list multiple models in \"Model directory\" below."
+msgid "适用于新版模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。"
+msgstr "For new-format models. Provide the model file URL or its directory and list multiple models in \"Model directory\" below."
 
 #: src/waifu-Settings-Base.php:166
 msgid "完成登录并付费后可用"
 msgstr "Available after signing in and upgrading"
 
 #: src/waifu-Settings-Base.php:169
-msgid "Cubism 4+ 模型: 完成登录并付费后可用。"
-msgstr "Cubism 4+ models: available after signing in and upgrading."
+msgid "新版模型：登录并付费后可使用。"
+msgstr "New-format models: available after signing in and upgrading."
 
 #: src/waifu-Settings-Base.php:182
 msgid "页面"
@@ -373,40 +373,40 @@ msgid "选择或填写默认皮肤 ID;新版模型不使用此项, 可留空。"
 msgstr "Select or enter the default texture ID. New-format models do not use this and may be left empty."
 
 #: src/waifu-Settings-Base.php:227
-msgid "可切换的模型名称，程序会通过Model API来按顺序获取模型的信息，请保证模型目录的名称和 model3.json 一致"
-msgstr "Switchable model names. The plugin queries the Model API in order, so the directory name must match model3.json."
+msgid "可以切换的模型名称，请填写每个模型所在的目录名（须与模型自带的配置文件名保持一致）。"
+msgstr "Names of switchable models. Fill in each model's directory name; it must match the model's own config file name."
 
 #: src/waifu-Settings-Base.php:235
-msgid "待机动画文件名, 文件是*.motion3.json"
-msgstr "Idle animation filename; the file is *.motion3.json."
+msgid "待机时播放的动作名称（一行一个），不需要填写扩展名。"
+msgstr "Names of motions to play while idle (one per line). No file extension needed."
 
 #: src/waifu-Settings-Base.php:260
 msgid "不缓存 (默认)"
 msgstr "Do not cache (default)"
 
 #: src/waifu-Settings-Base.php:262
-msgid "不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选择这个。"
-msgstr "Anti-hotlink disabled. Choose this if you are using third-party object storage or simply do not need anti-hotlink protection."
+msgid "不启用防盗保护；如果您使用了云存储或不需要防盗，可选择此项。"
+msgstr "Anti-hotlink disabled. Choose this if you are using cloud storage or simply do not need protection."
 
 #: src/waifu-Settings-Base.php:266
 msgid "缓存到本地 (推荐)"
 msgstr "Cache to local (recommended)"
 
 #: src/waifu-Settings-Base.php:268
-msgid "访客只看到临时签名 URL,真实 *.model3.json / *.moc3 / *.png 不会暴露;需要下载模型到本地 model/ 目录。"
-msgstr "Visitors will only see temporary signed URLs; the real *.model3.json / *.moc3 / *.png are never exposed. Models must be downloaded into the plugin’s local model/ directory."
+msgid "访客看不到模型的真实地址；需要先把模型文件下载到您的网站上。"
+msgstr "Visitors cannot see the model's real URL. You will need to download the model files to your own site first."
 
 #: src/waifu-Settings-Base.php:275
 msgid "模型本地缓存"
 msgstr "Model Local Cache"
 
 #: src/waifu-Settings-Base.php:277
-msgid "插件会把当前「模型 API」指向的 model3.json 及其全部子资源下载到本插件的 model/ 目录(与 V1 模型同位置)。之后访客加载该模型不再依赖源站。"
-msgstr "The plugin will download the model3.json pointed to by the current \"Model API\" and all of its sub-resources into the plugin’s model/ directory (same location as V1 models). Visitors loading the model will then no longer depend on the origin server."
+msgid "插件会把当前模型及其用到的所有文件下载到您的网站上，下载完成后访客加载模型就不再访问外部地址。"
+msgstr "The plugin downloads the current model and all related files to your site. Once finished, visitors no longer load the model from any external URL."
 
 #: src/waifu-Settings-Base.php:279
-msgid "两种缓存方式:【自动】访客访问到该模型时,后台异步下载,首次访问仍走源站签名 URL,完成后立即生效;【手动】点击下方「全部下载」或单行下载按钮即时入队。"
-msgstr "Two caching modes: [Auto] when a visitor first accesses the model, the plugin downloads it asynchronously in the background; the first visit still goes through the origin via signed URLs, and takes effect on the next visit. [Manual] click \"Download All\" below or per-row download buttons to enqueue immediately."
+msgid "两种下载方式：【自动】当有访客打开模型时，插件会在后台开始下载，首次访问仍由原始地址提供，下载完成后立即生效；【手动】点击下方「全部下载」或单条下载按钮立即开始下载。"
+msgstr "Two download modes: [Auto] when a visitor first opens a model, the plugin starts downloading in the background; the first visit is served from the original URL, and the local copy takes effect after the download completes. [Manual] click \"Download All\" below or a per-row download button to start immediately."
 
 #: src/waifu-Settings-Base.php:283
 msgid "全部下载"
@@ -425,8 +425,8 @@ msgid "正在读取状态…"
 msgstr "Loading status…"
 
 #: src/waifu-Settings-Base.php:316
-msgid "如未授权请勿修改此地址，擅自修改此地址引发的法律问题与插件作者无关。"
-msgstr "Do not modify this URL without authorization. The plugin author is not responsible for legal issues caused by unauthorized changes."
+msgid "未获授权请勿修改此地址；擅自修改可能引发法律问题，相关责任与插件作者无关。"
+msgstr "Do not change this URL without authorization. Any legal consequences from unauthorized changes are not the plugin author's responsibility."
 
 #: src/waifu-Settings-Base.php:317
 msgid "软件许可协议："
@@ -485,12 +485,12 @@ msgid "看板娘位置"
 msgstr "Waifu position"
 
 #: src/waifu-Settings-Style.php:125
-msgid "高级渲染:超采样倍率"
-msgstr "Advanced rendering: super-sampling (SSAA)"
+msgid "画面清晰度（高级）"
+msgstr "Picture sharpness (advanced)"
 
 #: src/waifu-Settings-Style.php:133
-msgid "高级渲染:抗锯齿"
-msgstr "Advanced rendering: anti-aliasing (MSAA)"
+msgid "边缘平滑（高级）"
+msgstr "Edge smoothing (advanced)"
 
 #: src/waifu-Settings-Style.php:147
 msgid "是"
@@ -560,24 +560,24 @@ msgid "设置看板娘的位置，可以是负数"
 msgstr "Set the waifu's position; negative values are allowed."
 
 #: src/waifu-Settings-Style.php:256
-msgid "1x（默认，不做超采样）"
-msgstr "1× (default, no super-sampling)"
+msgid "1×（默认）"
+msgstr "1× (default)"
 
 #: src/waifu-Settings-Style.php:257
-msgid "1.5x（轻度超采样）"
-msgstr "1.5× (light super-sampling)"
+msgid "1.5×（更清晰）"
+msgstr "1.5× (sharper)"
 
 #: src/waifu-Settings-Style.php:258
-msgid "2x（高质量，显存约 4 倍）"
-msgstr "2× (high quality, ~4× VRAM)"
+msgid "2×（高画质，更耗显存）"
+msgstr "2× (higher quality, uses more VRAM)"
 
 #: src/waifu-Settings-Style.php:259
-msgid "3x（极致，显存约 9 倍）"
-msgstr "3× (maximum, ~9× VRAM)"
+msgid "3×（最清晰，非常耗显存）"
+msgstr "3× (sharpest, uses a lot of VRAM)"
 
 #: src/waifu-Settings-Style.php:269
-msgid "叠加在浏览器 devicePixelRatio 之上的 SSAA 倍率，可消除模型边缘细线；倍率越高 GPU/显存压力越大。"
-msgstr "SSAA factor multiplied on top of the browser's devicePixelRatio. Removes thin edge artifacts on models; higher values significantly increase GPU and VRAM cost."
+msgid "提高模型画面的清晰度，让边缘看起来更顺滑。倍数越高画面越清晰，但对显卡的占用也越大。"
+msgstr "Makes the model look sharper with smoother edges. Higher values look better but use more graphics resources."
 
 #: src/waifu-Settings-Style.php:281
 msgid "开启（默认）"
@@ -589,8 +589,8 @@ msgid "关闭"
 msgstr "Off"
 
 #: src/waifu-Settings-Style.php:284
-msgid "WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。"
-msgstr "WebGL multi-sample anti-aliasing (MSAA). Disabling it may show jagged edges on the default framebuffer; refresh the front-end page after toggling for the change to take effect."
+msgid "让模型的边缘看起来更平滑。关闭后边缘可能出现锯齿。修改后请刷新前台页面才会生效。"
+msgstr "Smooths the edges of the model. When turned off, edges may look jagged. Refresh the front-end page after changing this option for it to take effect."
 
 #: src/waifu-Settings-Tips.php:10
 msgid "提示框设置"

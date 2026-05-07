@@ -3,84 +3,131 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>如何使用 v3 或更高版本的自定义模型 · Live2D Web Canvas</title>
-    <meta name="description" content="Live2D Web Canvas 自定义模型上传与配置完整教程。" />
+    <title>使用 V2 自定义模型（Cubism 4+） · Live2D Web Canvas</title>
+    <meta name="description" content="Live2D Web Canvas 插件加载 V2（Cubism 4+ / 5）自定义 model3.json 模型的完整教程。" />
     <link rel="stylesheet" href="../assets/cayman.css" />
 </head>
 <body>
 
     <header class="page-header">
         <h1 class="project-name">Live2D Web Canvas</h1>
-        <h2 class="project-tagline">如何使用 v3 或更高版本的自定义模型</h2>
+        <h2 class="project-tagline">使用 V2 自定义模型（Cubism 4+）</h2>
         <p class="header-nav">
             <a href="../index.html">← 返回首页</a>
-            <a href="chatgpt.html">ChatGPT 的使用</a>
+            <a href="v1-vs-v2.html">V1 / V2 是什么？</a>
+            <a href="anti-hotlink.html">V2 防盗链</a>
+            <a href="chatgpt.html">ChatGPT</a>
             <a href="touch-area.html">触摸区域</a>
-            <a href="https://github.com/jiangweifang/wp-live2d/wiki/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ver-3%E6%88%96%E6%9B%B4%E9%AB%98%E7%89%88%E6%9C%AC%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89model" target="_blank" rel="noopener">原始 Wiki</a>
         </p>
     </header>
 
     <main class="main-content">
 
-        <ul>
-            <li>感谢您的使用。在这段时间里，看到很多用户问我如何使用 Live2D Cubism v3 或以上版本（现在已经是 4.x 快到 5）的朋友问我如何使用他们自己制作的模型。</li>
-            <li>本 Wiki 是给您演示如何使用这种模型。</li>
-        </ul>
-
-        <h2>1. 首先：请付费</h2>
-        <p>由于 Live2D 株式会社要求在使用其扩展时必须付费，本人（个人开发者）和 Live2D 株式会社签订了长期合约，按照其要求提供正版的插件。</p>
         <blockquote>
-            <p><a href="chatgpt.html">关于 ChatGPT，可以参考此 Wiki</a></p>
-            <p>付费后，请确保完整地登录了 WordPress 后台，以便 Token 的正常通讯。</p>
-            <p><img src="https://github.com/jiangweifang/wp-live2d/assets/38683169/660fe016-60f8-4044-8725-eda3e7c7266e" alt="登录 WordPress 后台" /></p>
+            <p><strong>本页只讲 V2（Cubism 4+ / 5）模型。</strong>如果你想用 22/33/Pio/Tia 这种老模型，那是 V1，请走插件后台「创意工坊 API 类型 = 本地 / 远程创意工坊」，<em>不需要付费</em>，也不需要本页的任何步骤。先去看 <a href="v1-vs-v2.html">V1 / V2 是什么</a>。</p>
         </blockquote>
 
-        <h2>2. 请正确地上传您自己制作的 Live2D 模型</h2>
-        <p>通过 B 站各位 UP 主的模型制作教学，您可以得知以下信息。</p>
-
-        <h3>2.1 文件清单（<code>*.model3.json</code>）</h3>
-        <p>您需要确保上传 Live2D 模型后可以正确地访问文件清单。</p>
-        <blockquote>
-            <ul>
-                <li>文件清单的路径不可以为中文；</li>
-                <li>如果您的站点处于 https 状态，您需要保证文件清单及其全部文件都保持在 https 状态下，否则会出现跨域异常。</li>
-            </ul>
-        </blockquote>
-
-        <p>您可以将做好的模型文件夹上传到您站点的目录，使用 Nginx 反向代理来给它指定一个二级域名，也可以上传到 WordPress 的路径中；但是由于 WordPress 的自我保护（URL Rewrite），您需要找到一个更准确的上传地址才可以直接访问到此模型及其清单文件。</p>
-
-        <p>如果您没有办法找到正确的存放位置，您可以保存到插件目录下的 <code>model</code> 文件夹中。如果没有这个文件夹，可以创建一个，它看起来像这样：</p>
-        <p><img src="https://github.com/jiangweifang/wp-live2d/assets/38683169/ad083ff3-e4f3-4d4a-b1b1-8ff19990e4a3" alt="模型文件夹示例" /></p>
-
-        <p>保存好之后，您就可以获得这个路径，例如：</p>
-        <pre><code>https://[您的域名]/wp-content/plugins/live-2d/model/[模型名称]/[模型名称].model3.json</code></pre>
-
-        <p><strong>【推荐方法】</strong> 您也可以将模型上传至阿里云 OSS 或者腾讯云 COS，以保证版权不被侵害。</p>
-
-        <p>当然，您可能有更好的办法，比如放到 GitHub 中，例如：</p>
-        <ul>
-            <li><code>https://raw.githubusercontent.com/Live2D/CubismWebSamples/develop/Samples/Resources/Mao/Mao.model3.json</code></li>
-            <li><code>https://cdn.jsdelivr.net/gh/live2d/CubismWebSamples@develop/Samples/Resources/Mao/Mao.model3.json</code></li>
-        </ul>
-        <p>但是即使您使用 jsdelivr，仍然会被指向原始地址，所以在大陆地区不建议这样使用。</p>
-
-        <h3>2.2 请将您得到的路径复制到后台 API 部分</h3>
-        <p><img src="https://github.com/jiangweifang/wp-live2d/assets/38683169/a0a5293a-4698-4b7b-97c1-d8c3d815bffd" alt="后台 API 设置" /></p>
-        <p>使用您自己的模型将会导致前台无法切换模型，请在后台设置关闭那两个按钮。</p>
-
-        <h3>2.3 模型皮肤（材质）</h3>
-        <p>您需要控制您的模型材质，不要过大，建议到 <code>2048</code> 即可，否则加载模型的时间会很长。</p>
-
-        <h2>3. 安全问题</h2>
+        <h2>1. 先付费</h2>
+        <p>V2 模型走的是 Live2D Cubism 4+ Web SDK 加载器。Live2D 株式会社要求第三方扩展性应用使用 Cubism 4+ 时签订商业合约，本插件作者已经签了长期合约并按其要求分发正版 Cubism Core，所以这条链路对站长收一次性授权费。</p>
         <ol>
-            <li>请自行保证自己模型的版权。您可以通过上传到阿里云 OSS 或者腾讯云 COS，通过防盗链和跨域保护来保证自己的模型不被盗用。</li>
-            <li>创意工坊目前不支持自行上传，因为我不能通过开源代码保护您的版权。</li>
+            <li>在 <a href="https://www.live2dweb.com/" target="_blank" rel="noopener">www.live2dweb.com</a> 完成账号注册与付费。</li>
+            <li>在 <strong>WordPress 后台保持登录状态</strong>（这一步是为了拿到与你账号绑定的 token，让插件能向 live2dweb.com 验证授权）。</li>
+        </ol>
+        <p>没付费 / 没登录的状态下，插件后台「创意工坊 API 类型」里 <strong>自定义</strong> 这一项会被禁用或提示需要登录。</p>
+
+        <h2>2. 准备好你的 V2 模型文件</h2>
+        <p>V2 模型是 Cubism 4+ 导出的，文件清单是 <code>*.model3.json</code>，主体是 <code>*.moc3</code>，再加上贴图、动作、表情等。</p>
+
+        <h3>2.1 文件清单要求</h3>
+        <ul>
+            <li>清单文件名一般是 <code>{模型名}.model3.json</code>。</li>
+            <li>路径里 <strong>不能有中文</strong>。</li>
+            <li>如果你的站点是 <code>https</code>，那么清单 <em>以及它引用到的所有文件</em>（<code>.moc3</code>、贴图、motion3.json、physics3.json、cdi3.json 等）都必须是 <code>https</code>，否则浏览器会因为混合内容 / 跨域报错。</li>
+            <li>跨域：把模型放到 OSS / COS / 自家 CDN 时，请正确开启 CORS（一般加上你的站点域名作为允许的 Origin 即可）。</li>
+        </ul>
+
+        <h3>2.2 把模型放在哪里？</h3>
+        <p>排序按"推荐程度从高到低"：</p>
+        <ol>
+            <li><strong>对象存储 + 防盗链（首选，自带版权保护）</strong>：阿里云 OSS、腾讯云 COS、又拍、七牛等。
+                <ul>
+                    <li>开启 Referer 白名单，只允许你的站点访问。</li>
+                    <li>套一层自家 CDN 时记得继承防盗链规则。</li>
+                </ul>
+            </li>
+            <li><strong>插件目录下的 <code>model</code> 文件夹</strong>（最简单，但需要你自己控制流量）：
+                <pre><code>wp-content/plugins/live-2d/model/{模型名}/{模型名}.model3.json</code></pre>
+                如果没有 <code>model</code> 文件夹，自己建一个。注意 WordPress 的 URL Rewrite 在某些主题 / 安全插件下可能会误拦截，访问不到时先确认这个 URL 浏览器能直接打开。
+            </li>
+            <li><strong>开启「缓存到本地」让插件接管</strong>：填 <code>modelAPI</code> 之后，在防盗链选项里选「缓存到本地」，插件会把对应文件全部下载到你站点的 <code>wp-content/plugins/live-2d/model/</code>，并对前端只暴露临时签名 URL，访客 F12 也看不到源站。<a href="anti-hotlink.html">详见防盗链页</a>。</li>
+            <li>放到 GitHub Pages / jsDelivr 这种公开静态托管：能跑，但<strong>大陆地区不推荐</strong>，jsdelivr 实际还是会回源 raw.githubusercontent.com，速度不稳定，也无法防盗。</li>
         </ol>
 
-        <p>— 如果有什么问题可以提交 <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">Issues</a> 或者加我 QQ，我会继续补充文档内容。</p>
+        <h2>3. 在后台填入 modelAPI</h2>
+        <p>WordPress 后台 → Live2D 设置 → 创意工坊 API 类型选「自定义」。下面有 <code>modelAPI</code> 输入框，<strong>有两种填写方式</strong>，由结尾字符决定走哪一种：</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:24%">写法</th>
+                    <th>结尾</th>
+                    <th>作用</th>
+                    <th>下方 modelDir 列表</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>① 直链单模型</td>
+                    <td>以 <code>.json</code> 结尾</td>
+                    <td>直接加载该 <code>model3.json</code>，不再做任何路径拼接。</td>
+                    <td>忽略</td>
+                </tr>
+                <tr>
+                    <td>② 目录根 + 多模型</td>
+                    <td>以 <code>/</code> 结尾</td>
+                    <td>把它当作根目录，配合下方 <code>modelDir</code> 列表，按 <code>{modelAPI}{名称}/{名称}.model3.json</code> 自动拼接成完整 URL。</td>
+                    <td>必须填，每行一个子目录名（必须与 <code>{名称}.model3.json</code> 完全一致）。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>示例</h3>
+        <p>① 直链：</p>
+        <pre><code>https://cdn.example.com/live2d/haru/haru.model3.json</code></pre>
+
+        <p>② 目录根 + 多模型：</p>
+        <pre><code>modelAPI:  https://cdn.example.com/live2d/
+
+modelDir:
+  - haru
+  - mao
+  - shizuku</code></pre>
+        <p>实际加载时插件会拼成：</p>
+        <pre><code>https://cdn.example.com/live2d/haru/haru.model3.json
+https://cdn.example.com/live2d/mao/mao.model3.json
+https://cdn.example.com/live2d/shizuku/shizuku.model3.json</code></pre>
+        <p>前台「眨眼按钮」会在这几个模型之间切换。</p>
+
+        <blockquote>
+            <p><strong>注意：</strong>使用自定义模型后，前台 Live2D 的"上一个 / 下一个"切换按钮在很多模型组合下没意义，建议在后台关闭那两个按钮。</p>
+        </blockquote>
+
+        <h2>4. 模型贴图（材质）大小</h2>
+        <p>请控制每张贴图不超过 <code>2048×2048</code>。Cubism 4+ 默认贴图就比较大，叠几张过大的 PNG 很容易把首屏加载时间拖到 5~10 秒以上。如果模型本身导出时贴图分辨率超标，可以在 Cubism Editor 里"嵌入纹理图集 → 重新分配尺寸"。</p>
+
+        <h2>5. 进阶：超采样（仅 V2）</h2>
+        <p>插件 2.1.3 起新增 <strong>超采样</strong>功能，可以让贴图在高分屏上更清晰。<strong>仅对 V2（model3.json）模型生效</strong>，V1 链路不会响应这个开关。</p>
+
+        <h2>6. 安全 / 版权要点</h2>
+        <ol>
+            <li>请自行保证自己模型的版权。最佳做法：上传到带防盗链的对象存储 + 开启 CORS 限定来源。</li>
+            <li>创意工坊目前不支持自行上传 —— 因为我们没办法替每个上传者保护版权。</li>
+            <li>不要把 OSS 的 <code>SecretKey</code> 写进 WordPress 设置项。如果一定要走私有读 + 签名链接，请走 wp-config.php 环境变量，<a href="anti-hotlink.html">见防盗链页底部说明</a>。</li>
+        </ol>
+
+        <p>有问题欢迎在 <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">GitHub Issues</a> 中反馈。</p>
 
         <footer class="site-footer">
-            内容同步自 <a href="https://github.com/jiangweifang/wp-live2d/wiki/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8ver-3%E6%88%96%E6%9B%B4%E9%AB%98%E7%89%88%E6%9C%AC%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89model" target="_blank" rel="noopener">项目 Wiki</a>。
             © Live2D Web Canvas
         </footer>
 
