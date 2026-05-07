@@ -94,7 +94,7 @@ class live2D_Settings_Base
             // 'local'/'remote' (旧 V1 PHP) 不受影响, 模型本来就托管在站内不需要 alias.
             add_settings_field(
                 'protectV2',
-                __('模型防盗保护（新版模型）', 'live-2d'),
+                __('模型防盗保护（Cubism 4+）', 'live-2d'),
                 array($this, 'protectV2_callback'),
                 'live-2d-settings-base',
                 'live_2d_setting_base_section'
@@ -156,17 +156,17 @@ class live2D_Settings_Base
             <?php if ($hasPaid): ?>
                 <label for="apiType-custom">
                     <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-custom" class="apiType" value="custom" <?php echo $current === 'custom' ? 'checked' : ''; ?>>
-                    <?php esc_html_e('自定义新版模型路径', 'live-2d'); ?>
+                    <?php esc_html_e('自定义模型路径（Cubism 4+）', 'live-2d'); ?>
                 </label><br>
-                <span class="description"><?php esc_html_e('适用于新版模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。', 'live-2d'); ?></span>
+                <span class="description"><?php esc_html_e('适用于 Cubism 4+ 模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。', 'live-2d'); ?></span>
             <?php else: ?>
                 <?php // 未登录 / 未付费: radio 与 label 都置灰, 并配合 cursor:not-allowed 提示用户不可点击.
                       // disabled 属性已经阻止勾选, 这里加视觉反馈; 同时把 title 提示加到 label 上,
                       // hover 时会显示完整原因, 避免用户以为是 bug. ?>
                 <label for="apiType-custom" style="opacity: 0.5; cursor: not-allowed;" title="<?php esc_attr_e('完成登录并付费后可用', 'live-2d'); ?>">
-                    <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义新版模型路径', 'live-2d'); ?>
+                    <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义模型路径（Cubism 4+）', 'live-2d'); ?>
                 </label><br>
-                <span class="description" style="opacity: 0.7;"><?php esc_html_e('新版模型：登录并付费后可使用。', 'live-2d'); ?></span>
+                <span class="description" style="opacity: 0.7;"><?php esc_html_e('Cubism 4+：登录并付费后可使用。', 'live-2d'); ?></span>
             <?php endif; ?>
         </fieldset>
     <?php
@@ -218,7 +218,7 @@ class live2D_Settings_Base
             '<input class="regular-text" type="text" name="live_2d_settings_option_name[modelTexturesId]" id="modelTexturesId" value="%s">',
             isset($this->live_2d__options['modelTexturesId']) ? esc_attr($this->live_2d__options['modelTexturesId']) : ''
         );
-        echo '<p class="description">' . esc_html__('选择或填写默认皮肤 ID;新版模型不使用此项, 可留空。', 'live-2d') . '</p>';
+        echo '<p class="description">' . esc_html__('选择或填写默认皮肤 ID；Cubism 4+ 模型不使用此项，可留空。', 'live-2d') . '</p>';
     }
 
     public function modelDir_callback()

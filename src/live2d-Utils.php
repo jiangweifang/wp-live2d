@@ -101,9 +101,9 @@ class live2D_Utils{
 				'<tr><td>' . esc_html__('V1（Cubism 2 / 3 系，如 22 娘、Pio、Tia、Shizuku 等）', 'live-2d') . '</td>' .
 				'<td><code>model.json</code></td><td><code>*.moc</code></td>' .
 				'<td>' . esc_html__('「本地部署旧版模型」或「自行部署旧版模型」', 'live-2d') . '</td></tr>' .
-				'<tr><td>' . esc_html__('V2（Cubism 4 / 5 系，官方仍在维护的最新格式）', 'live-2d') . '</td>' .
+				'<tr><td>' . esc_html__('Cubism 4+（V2，官方仍在维护的最新格式）', 'live-2d') . '</td>' .
 				'<td><code>*.model3.json</code></td><td><code>*.moc3</code></td>' .
-				'<td>' . esc_html__('「自定义新版模型路径」（需登录并购买授权）', 'live-2d') . '</td></tr>' .
+				'<td>' . esc_html__('「自定义模型路径（Cubism 4+）」（需登录并购买授权）', 'live-2d') . '</td></tr>' .
 				'</tbody></table>' .
 				'<p>' . esc_html__('简单判断：清单文件名以 .model3.json 结尾就是 V2，否则是 V1。', 'live-2d') . '</p>'
 			),
@@ -118,10 +118,10 @@ class live2D_Utils{
 				'<ul>' .
 				'<li><strong>' . esc_html__('本地部署旧版模型', 'live-2d') . '</strong>：' . esc_html__('使用插件随包内置的 V1 模型，由本站 REST 接口（/wp-json/live2d/v1/model/*）提供，不向外网发起请求。「模型 ID」「材质 ID」会自动变成下拉框。需要在「Live 2D 创意工坊」页面先把模型下载到本地。', 'live-2d') . '</li>' .
 				'<li><strong>' . esc_html__('自行部署旧版模型', 'live-2d') . '</strong>：' . esc_html__('对接您自己服务器或第三方提供的 V1 模型 API（即 fghrsh 风格接口），「模型 API」需要填写返回 model_list.json 的接口根地址。', 'live-2d') . '</li>' .
-				'<li><strong>' . esc_html__('自定义新版模型路径', 'live-2d') . '</strong>：' . esc_html__('用于 Cubism 4 / 5 模型（V2，*.model3.json）。需要登录账号并完成付费后才能选择。', 'live-2d') . '</li>' .
+				'<li><strong>' . esc_html__('自定义模型路径（Cubism 4+）', 'live-2d') . '</strong>：' . esc_html__('用于 Cubism 4+ 模型（V2，*.model3.json）。需要登录账号并完成付费后才能选择。', 'live-2d') . '</li>' .
 				'</ul>' .
 				'<h4>' . esc_html__('「模型 API」何时以 .json 结尾、何时以斜杠结尾', 'live-2d') . '</h4>' .
-				'<p>' . esc_html__('仅当「API 方式 = 自定义新版模型路径」时，「模型 API」支持以下两种写法，由结尾字符决定走哪种：', 'live-2d') . '</p>' .
+				'<p>' . esc_html__('仅当「API 方式 = 自定义模型路径（Cubism 4+）」时，「模型 API」支持以下两种写法，由结尾字符决定走哪种：', 'live-2d') . '</p>' .
 				'<table class="widefat striped"><thead><tr>' .
 				'<th>' . esc_html__('写法', 'live-2d') . '</th>' .
 				'<th>' . esc_html__('行为', 'live-2d') . '</th>' .
@@ -142,12 +142,12 @@ class live2D_Utils{
 		// ---- Tab 3: 模型防盗保护 -------------------------------------------------
 		$screen->add_help_tab( array(
 			'id'    => 'live_2d_protect_help_tab',
-			'title' => __('模型防盗保护（V2）', 'live-2d'),
+			'title' => __('模型防盗保护（Cubism 4+）', 'live-2d'),
 			'content' => self::wrapHelpContent(
-				'<p>' . esc_html__('「模型防盗保护（新版模型）」只对 V2 模型（自定义新版模型路径）生效，V1 模型（本地 / 自行部署旧版）走站内接口，本身不需要这层保护。', 'live-2d') . '</p>' .
+				'<p>' . esc_html__('「模型防盗保护（Cubism 4+）」只对 Cubism 4+ 模型（自定义模型路径）生效，旧版模型（本地 / 自行部署旧版）走站内接口，本身不需要这层保护。', 'live-2d') . '</p>' .
 				'<ul>' .
-				'<li><strong>' . esc_html__('不缓存（默认）', 'live-2d') . '</strong>：' . esc_html__('插件不动您填的「模型 API」，浏览器直接拉源站。适用于您已经把模型放在阿里云 OSS、腾讯云 COS、又拍、七牛、自家 CDN 等已经具备 Referer 防盗 / URL 鉴权能力的存储上。', 'live-2d') . '</li>' .
-				'<li><strong>' . esc_html__('缓存到本地（推荐）', 'live-2d') . '</strong>：' . esc_html__('插件会把模型涉及的全部文件下载到本站 wp-content/plugins/live-2d/model/ 下，并对前端只露出经过签名的临时 URL，访客 F12 也看不到源站地址。适用于源站没有防盗能力（GitHub Pages、jsDelivr、自建 nginx 等）。', 'live-2d') . '</li>' .
+				'<li><strong>' . esc_html__('不缓存 (默认)', 'live-2d') . '</strong>：' . esc_html__('插件不动您填的「模型 API」，浏览器直接拉源站。适用于您已经把模型放在阿里云 OSS、腾讯云 COS、又拍、七牛、自家 CDN 等已经具备 Referer 防盗 / URL 鉴权能力的存储上。', 'live-2d') . '</li>' .
+				'<li><strong>' . esc_html__('缓存到本地 (推荐)', 'live-2d') . '</strong>：' . esc_html__('插件会把模型涉及的全部文件下载到本站 wp-content/plugins/live-2d/model/ 下，并对前端只露出经过签名的临时 URL，访客 F12 也看不到源站地址。适用于源站没有防盗能力（GitHub Pages、jsDelivr、自建 nginx 等）。', 'live-2d') . '</li>' .
 				'</ul>' .
 				'<p>' . esc_html__('选择「缓存到本地」后，下方会出现下载面板：可以「全部下载」一键缓存全部已配置模型，也可以等访客首次访问时由插件后台自动懒下载。「清理孤儿」用于删除已经从设置里移除、但还残留在本地缓存里的旧模型文件。', 'live-2d') . '</p>'
 			),
@@ -235,7 +235,7 @@ class live2D_Utils{
 				'</ul>' .
 				'<p>' . esc_html__('下载完成后，请前往「Live 2D 设置 → 基础设置」，把「API 方式」切换到「本地部署旧版模型」，然后在「默认模型 ID」下拉中即可看到刚才下载的模型并选用。', 'live-2d') . '</p>' .
 				'<p>' . esc_html__('如果某个模型下载失败：先确认 Key 仍然有效（登录页会提示），并检查站点是否能访问 download.live2dweb.com；网络环境受限的站点也可以在源站手动下载 ZIP 后放进 wp-content/plugins/live-2d/model/ 目录。', 'live-2d') . '</p>' .
-				'<p>' . esc_html__('V2（Cubism 4 / 5）模型不会出现在本页面，需要在「Live 2D 设置 → 基础设置」选择「自定义新版模型路径」后自行填写 model3.json 地址，并参考「设置帮助 → API 方式与模型路径」一节。', 'live-2d') . '</p>'
+				'<p>' . esc_html__('Cubism 4+ 模型不会出现在本页面，需要在「Live 2D 设置 → 基础设置」选择「自定义模型路径（Cubism 4+）」后自行填写 model3.json 地址，并参考「设置帮助 → API 方式与模型路径」一节。', 'live-2d') . '</p>'
 			),
 		) );
 

@@ -36,7 +36,7 @@ class live2D_Settings
 				add_settings_error(
 					'live_2d_sdk_error',
 					'live2d_apitype_paywall',
-					__('"自定义新版模型路径" 需要登录并付费后才能使用, 已自动恢复为 "自行部署旧版模型".', 'live-2d')
+					__('"自定义模型路径（Cubism 4+）" 需要登录并付费后才能使用, 已自动恢复为 "自行部署旧版模型".', 'live-2d')
 				);
 			}
 		}
