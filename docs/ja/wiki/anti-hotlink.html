@@ -1,0 +1,81 @@
+---
+page_id: anti_hotlink
+nav_keys: [home, v1_vs_v2, custom_model, chrome_extension]
+---
+
+<p>WordPress 管理画面 → Live2D 設定 → 基本設定 →<strong>直リンク防止(Cubism 4+ モデル)</strong>は <strong>V2 モデル限定</strong>のスイッチで、内部設定キーは <code>protectV2</code> です。2 つの排他値があり、<em>V2 モデルをどこに置いているか</em>に合わせてどちらかを選んでください。両方を重ねがけしてはいけません。</p>
+
+<blockquote>
+    <p><strong>V1(journey-ad / Cubism 2~3)モデルはこのスイッチを通りません。</strong>V1 モデルはプラグインのローカル REST(<code>/wp-json/live2d/v1/model/*</code>)から配信されているため、別途直リンク防止を被せる必要はありません。本ページは V2 のみが対象です。</p>
+</blockquote>
+
+<h2>オプション一覧</h2>
+<table>
+    <thead>
+        <tr><th style="width:30%">オプション</th><th>誰が直リンクを防ぐ?</th><th>選ぶべき場面</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>パススルー(既定)</strong><br /><span class="text-muted">protectV2 = direct</span></td><td>あなた自身(オブジェクトストレージ / CDN コンソールで Referer 直リンク防止を設定)</td><td>すでに Aliyun OSS / Tencent COS / Qiniu / Upyun / 自社 CDN などに置いている場合</td></tr>
+        <tr><td><strong>ローカルキャッシュ(おすすめ)</strong><br /><span class="text-muted">protectV2 = local</span></td><td>プラグイン側(自動でファイルにエイリアスを付与し、一時署名 URL を発行)</td><td>GitHub Pages / jsDelivr / 自前 nginx など、直リンク防止機能が無いところに置いている場合</td></tr>
+    </tbody>
+</table>
+
+<h2>オプション A:パススルー(すでにオブジェクトストレージ / CDN を使っているサイト向け)</h2>
+<p>このモードではプラグインは <code>modelAPI</code> をそのままブラウザに渡します。直リンク防止はオブジェクトストレージや CDN 側に任せます。よくある手段を簡単な順に 3 つ:</p>
+
+<h3>1. パブリック読み + Referer ホワイトリスト(最も簡単)</h3>
+<ul>
+    <li><strong>Aliyun OSS</strong>:バケット → データ保護 → 直リンク防止 で、自サイトのドメインをホワイトリストに追加。</li>
+    <li><strong>Tencent COS</strong>:バケット → セキュリティ管理 → 直リンク防止設定 で同様の操作。</li>
+    <li><strong>仕組み</strong>:ブラウザがモデルを読み込む際に Referer を送るので、ホワイトリスト外のオリジンは 403 で弾かれます。</li>
+    <li><strong>限界</strong>:キャプチャに通じている人なら Referer を偽装して回避できます。日常用途には十分です。</li>
+</ul>
+
+<h3>2. 自社 CDN を被せて URL 署名を有効化</h3>
+<p>OSS の前段に Aliyun CDN / Tencent CDN / Cloudflare を挟み、「URL 署名」または「Token 検証」を有効化したうえで、署名付きアドレスを <code>modelAPI</code> に入力します。Referer のみより厳しいですが設定は少し手間です。</p>
+
+<h3>3. プライベート読み + 署名 URL(最も厳しい)</h3>
+<p>バケットを Private にし、毎回の取得に署名を要求します。<strong>このモードはプラグイン設定画面から直接構成できません</strong>。PHP に明るい人がテーマの <code>functions.php</code> 等で、署名 URL を動的に生成する仕組みを書く必要があります。本プラグインは特定クラウドベンダーの SDK を<em>同梱しません</em>。理由は下の FAQ をご覧ください。</p>
+
+<h2>オプション B:ローカルキャッシュ(おすすめ / 直リンク防止を設定できないソース向け)</h2>
+<p>有効化すると、プラグインが <code>modelAPI</code> から参照される全ファイルを WordPress 配下(<code>wp-content/plugins/live-2d/model/</code>)に取り込み、訪問者には暗号化された一時署名 URL のみを露出します:</p>
+<ul>
+    <li>訪問者が DevTools で見るのもこの一時 URL で、<strong>元のオリジンは漏れません</strong>。</li>
+    <li>各ファイルにはエイリアス(ハッシュ化されたパス)が付与され、第三者には推測できません。</li>
+    <li><strong>初回ダウンロード時のみソース側の帯域を消費</strong>し、以後は自サーバーから配信されます。少帯域(月 1TB 程度)のホスティングでも安心です。</li>
+    <li>ダウンロードはバックグラウンドの cron で実行されますが、V2 リソースへの初回フロントエンドアクセスでも遅延ダウンロードが起動します。</li>
+</ul>
+
+<h3>典型的なユースケース</h3>
+<ul>
+    <li>モデルが GitHub Pages / GitHub Raw / jsDelivr にある。</li>
+    <li>モデルが知人のサーバーにあり、Referer ホワイトリストの追加を依頼できない。</li>
+    <li>第三者の有償モデルを購入したが、公開 URL のみ提供されており、転載されたくない。</li>
+    <li>オブジェクトストレージの「従量課金」が暴走するのを避けたい。</li>
+</ul>
+
+<h3>設定手順</h3>
+<ol>
+    <li>まず <a href="{{ '/ja/wiki/custom-model.html' | relative_url }}">V2 カスタムモデルガイド</a> に従って <code>modelAPI</code> と <code>modelDir</code> を設定。</li>
+    <li>「直リンク防止(Cubism 4+ モデル)」を <strong>ローカルキャッシュ</strong> に切り替え、保存。</li>
+    <li>下に「モデルローカルキャッシュ状態」パネルが現れ、各 modelAPI / サブディレクトリのダウンロード進捗(jobId / ファイル数 / 合計バイト数)が表示されます。</li>
+    <li>初回フロントエンドアクセス、または「今すぐダウンロード」ボタン押下後、すべての job ステータスが OK になればフロントエンドはローカルコピーから配信されます。</li>
+</ol>
+
+<h2>FAQ:なぜプラグインは OSS の Private 読み出しを直接代行しないのか?</h2>
+<p>「OSS の AccessKey をプラグインに預けて、プラグイン側で署名・転送してくれればいいのでは?」とよく聞かれます。3 つの理由があります:</p>
+<ol>
+    <li><strong>AccessKey は DB に置けません。</strong>WordPress の設定値はプレーンテキストで保存されるため、データベースが漏洩(侵害、バックアップ流出、共有ホスティング事故…)した瞬間に OSS バケット全体が抜き取られます。モデルの直リンクなど比較になりません。</li>
+    <li><strong>クラウドごとに署名アルゴリズムが違います。</strong>Aliyun、Tencent、AWS、Cloudflare R2、MinIO それぞれ別物です。一つ実装すれば「次は ◯◯ クラウド対応を」と永遠にきりがありません。</li>
+    <li><strong>本当に必要な人はプラグインの助けが要りません。</strong>OSS の Private 読みを構築できる人なら、設定画面より自分で数行 PHP を書く方が早く、しかも安全(資格情報は環境変数経由で、DB を経由しない)です。</li>
+</ol>
+
+<h2>自分でコードを改造して OSS 署名 URL を扱いたい場合</h2>
+<p>現在プラグインは、この経路を差し替えるための<strong>専用フックを提供していません</strong>。どうしてもやる場合は、リポジトリを fork して <code>src/live2d-V2Api.php</code> の <code>get_asset()</code> / <code>stream_local()</code> を改修し、自社の Private OSS パスにマッチするとき OSS の事前署名 URL に 302 リダイレクトする実装を追加してください。</p>
+<p>需要が高まれば <code>live2d_v2_resolve_alias</code> といった正式フックの追加を検討するかもしれませんが、<strong>プラグイン本体に特定クラウドベンダーの SDK を取り込むことは今後もありません</strong>。</p>
+<p>本当に運用するなら必ず:</p>
+<ul>
+    <li>最小権限のサブアカウントを使ってください(「GetObject」のみ、特定バケット / プレフィックス限定)。</li>
+    <li><strong>SecretKey を WordPress の設定項目に直接書かないでください</strong>。環境変数や専用の Secret Manager を使ってください。</li>
+    <li>プラグインの V2 直リンク防止 REST ルートに Referer 検証を追加(wp-config.php で明示的に有効化、<code>live2d-V2Api.php</code> 内のコメントを参照)。</li>
+</ul>

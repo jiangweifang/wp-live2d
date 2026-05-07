@@ -1,0 +1,81 @@
+---
+page_id: anti_hotlink
+nav_keys: [home, v1_vs_v2, custom_model, chrome_extension]
+---
+
+<p>WordPress 後台 → Live2D 設定 → 基本設定 → <strong>防盜連（Cubism 4+ 模型）</strong> 是一個<strong>僅對 V2 模型生效</strong>的開關，對應設定鍵 <code>protectV2</code>。它有兩個互斥選項，請依您<em>把 V2 模型放在哪裡</em>來選，不要疊加。</p>
+
+<blockquote>
+    <p><strong>V1（journey-ad / Cubism 2~3）模型不走這個開關。</strong>V1 模型本身就由外掛的本機 REST 介面（<code>/wp-json/live2d/v1/model/*</code>）發出，不需要再加一層防盜連。本頁所有內容只針對 V2。</p>
+</blockquote>
+
+<h2>選項總覽</h2>
+<table>
+    <thead>
+        <tr><th style="width:30%">選項</th><th>誰來擋盜連？</th><th>什麼時候選</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>不快取（預設）</strong><br /><span class="text-muted">protectV2 = direct</span></td><td>您自己（到物件儲存 / CDN 控制台開 Referer 防盜連）</td><td>模型已放在阿里雲 OSS、騰訊雲 COS、七牛、又拍、自家 CDN 等地方</td></tr>
+        <tr><td><strong>快取至本機（建議）</strong><br /><span class="text-muted">protectV2 = local</span></td><td>外掛自行處理（自動為檔案產生別名 + 暫時性簽名 URL）</td><td>模型放在 GitHub Pages、jsDelivr、自架 nginx 等沒有防盜連能力的地方</td></tr>
+    </tbody>
+</table>
+
+<h2>選項 A：不快取（適合已使用物件儲存 / CDN 的站長）</h2>
+<p>此模式下外掛不動您的 <code>modelAPI</code>，原封不動交給瀏覽器去載入。防盜的事交給物件儲存或 CDN 自行擋。常見三種做法（由簡至繁）：</p>
+
+<h3>1. 公開讀取 + Referer 白名單（最簡單）</h3>
+<ul>
+    <li><strong>阿里雲 OSS</strong>：儲存桶 → 資料安全 → 防盜連，把您的網站網域加入白名單。</li>
+    <li><strong>騰訊雲 COS</strong>：儲存桶 → 安全管理 → 防盜連設定，操作類似。</li>
+    <li><strong>原理</strong>：瀏覽器載入模型時會帶 Referer，不在白名單的來源直接 403。</li>
+    <li><strong>限制</strong>：稍微懂封包擷取的人能偽造 Referer 繞過。日常用足夠。</li>
+</ul>
+
+<h3>2. 套一層自家 CDN，啟用 URL 鑑權</h3>
+<p>在 OSS 前面套阿里雲 CDN / 騰訊雲 CDN / Cloudflare，啟用「URL 鑑權」或「Token 校驗」，再把 <code>modelAPI</code> 填成帶簽名的位址。比純 Referer 嚴，但設定稍複雜。</p>
+
+<h3>3. Private 讀取 + 簽名連結（最嚴格）</h3>
+<p>儲存桶設成 Private，每次存取都要帶簽名才能下載。<strong>此模式無法在外掛設定頁直接設定</strong>，需懂 PHP 的人在佈景主題 <code>functions.php</code> 裡撰寫程式碼動態產生簽名 URL。本外掛<em>不內建</em>任何特定雲端廠商 SDK，原因見下方 FAQ。</p>
+
+<h2>選項 B：快取至本機（建議 / 適合無法設定防盜連的來源）</h2>
+<p>選此項後，外掛會把 <code>modelAPI</code> 指向的所有模型檔案下載到您 WordPress 站台（<code>wp-content/plugins/live-2d/model/</code>），對外只露出加密過的暫時性簽名 URL：</p>
+<ul>
+    <li>訪客 F12 看到的也是這個暫時 URL，<strong>不會洩漏原始來源位址</strong>。</li>
+    <li>每個檔案有別名（hash 化路徑），他人無法猜出。</li>
+    <li><strong>只在第一次下載時消耗來源端流量</strong>，之後訪客都從您自己的伺服器取得。對小頻寬伺服器（月 1TB 等級）非常友好。</li>
+    <li>下載由背景 cron 進行，第一次存取 V2 資源時也會觸發延遲下載。</li>
+</ul>
+
+<h3>典型使用情境</h3>
+<ul>
+    <li>模型放在 GitHub Pages / GitHub Raw / jsDelivr。</li>
+    <li>模型放在朋友的伺服器，無法請對方加 Referer 白名單。</li>
+    <li>購買第三方付費模型，對方只給公開 URL，您不希望被搭便車。</li>
+    <li>擔心物件儲存的「按流量計費」帳單失控。</li>
+</ul>
+
+<h3>設定流程</h3>
+<ol>
+    <li>先依 <a href="{{ '/zh-TW/wiki/custom-model.html' | relative_url }}">V2 自訂模型教學</a> 設定好 <code>modelAPI</code> 與 <code>modelDir</code>。</li>
+    <li>把「防盜連（Cubism 4+ 模型）」切到 <strong>快取至本機</strong>，儲存。</li>
+    <li>頁面下方會出現「模型本機快取狀態」面板，列出各 modelAPI / 子目錄的下載進度（jobId / 檔案數 / 總位元組）。</li>
+    <li>第一次存取前台或手動按「立即下載」之後，等到所有 job 狀態變成 OK，前台就改用本機副本。</li>
+</ol>
+
+<h2>FAQ：為什麼外掛不直接幫我接 OSS Private 讀取？</h2>
+<p>常有人問「為什麼不能讓外掛拿我的 OSS AccessKey 去簽名轉發？」三個原因：</p>
+<ol>
+    <li><strong>AccessKey 不能存進資料庫。</strong>WordPress 的設定值是明碼存放，萬一資料庫外洩（被駭、備份外流、共享主機出狀況），您的整個 OSS 儲存桶都沒了，比模型被盜嚴重得多。</li>
+    <li><strong>每家雲的簽名演算法都不一樣。</strong>阿里雲、騰訊雲、AWS、Cloudflare R2、MinIO 各搞一套。做完一家就有人提「加 XX 雲支援」，永遠做不完。</li>
+    <li><strong>真的要用的人不需要外掛幫忙。</strong>能搞定 OSS Private 讀取的站長，自己寫幾行 PHP 比按設定頁方便得多，也更安全（憑證可走環境變數，不進資料庫）。</li>
+</ol>
+
+<h2>想自行改程式接 OSS 簽名連結？</h2>
+<p>目前外掛<strong>沒有提供專用 hook</strong> 給您攔截這個流程。若一定要做，只能 fork 倉庫，去 <code>src/live2d-V2Api.php</code> 改 <code>get_asset()</code> / <code>stream_local()</code> 兩個函式，讓它在命中您 Private OSS 路徑時回 302 跳轉到 OSS 預簽名位址。</p>
+<p>若日後使用者多了，我們會考慮加入正式的 <code>live2d_v2_resolve_alias</code> hook，但<strong>外掛本體永遠不會內建任何特定雲端廠商的 SDK</strong>。</p>
+<p>若您真要動手，請務必：</p>
+<ul>
+    <li>使用最小權限的子帳號（只給「讀取物件」權限，限定到特定 Bucket / 目錄）。</li>
+    <li><strong>千萬不要把 SecretKey 直接寫進 WordPress 設定項</strong>，請使用環境變數或專用密鑰管理服務。</li>
+    <li>對外掛 V2 防盜連 REST 路徑加上 Referer 校驗（在 wp-config.php 中明確開啟，請參考 <code>live2d-V2Api.php</code> 內註解）。</li>
+</ul>

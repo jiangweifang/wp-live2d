@@ -1,0 +1,106 @@
+# Per-language UI strings shared across the whole docs site.
+# Add a new language by adding it to `langs`, then filling in the
+# per-language entries below.
+langs:
+  - { code: zh-CN, label: 简体中文 }
+  - { code: en,    label: English }
+  - { code: ja,    label: 日本語 }
+  - { code: zh-TW, label: 繁體中文 }
+
+# Default page-footer per language.  A page may override via its own
+# `footer` front-matter or via _data/pages.yml.
+footer:
+  zh-CN: © Live2D Web Canvas · 北京市天先生软件技术中心
+  en:    © Live2D Web Canvas · Beijing Mr. Tian Software Technology Center
+  ja:    © Live2D Web Canvas · 北京市天先生软件技术中心
+  zh-TW: © Live2D Web Canvas · 北京市天先生軟體技術中心
+
+# Re-usable header-nav entries.  Each key holds a canonical (zh-CN)
+# href and per-language labels.  The layout auto-prefixes `/<lang>`
+# for non zh-CN languages when the href starts with `/`.
+nav:
+  home:
+    href: /
+    labels:
+      zh-CN: '← 返回首页'
+      en:    '← Back to home'
+      ja:    '← トップへ'
+      zh-TW: '← 返回首頁'
+  guides:
+    href: '#guides'
+    labels:
+      zh-CN: '使用指南'
+      en:    'Guides'
+      ja:    'ガイド'
+      zh-TW: '使用指南'
+  notes:
+    href: '#notes'
+    labels:
+      zh-CN: '注意事项'
+      en:    'Notes'
+      ja:    '注意事項'
+      zh-TW: '注意事項'
+  links:
+    href: '#links'
+    labels:
+      zh-CN: '相关链接'
+      en:    'Links'
+      ja:    '関連リンク'
+      zh-TW: '相關連結'
+  v1_vs_v2:
+    href: /wiki/v1-vs-v2.html
+    labels:
+      zh-CN: 'V1 / V2 是什么？'
+      en:    'What is V1 / V2?'
+      ja:    'V1 / V2 とは?'
+      zh-TW: 'V1 / V2 是什麼？'
+  custom_model:
+    href: /wiki/custom-model.html
+    labels:
+      zh-CN: 'V2 自定义模型'
+      en:    'V2 custom model'
+      ja:    'V2 カスタムモデル'
+      zh-TW: 'V2 自訂模型'
+  anti_hotlink:
+    href: /wiki/anti-hotlink.html
+    labels:
+      zh-CN: 'V2 防盗链'
+      en:    'V2 hotlink protection'
+      ja:    'V2 直リンク防止'
+      zh-TW: 'V2 防盜連'
+  chrome_extension:
+    href: /wiki/chrome-extension.html
+    labels:
+      zh-CN: '浏览器扩展'
+      en:    'Browser extension'
+      ja:    'ブラウザ拡張'
+      zh-TW: '瀏覽器擴充功能'
+  chatgpt:
+    href: /wiki/chatgpt.html
+    labels:
+      zh-CN: 'ChatGPT'
+      en:    'ChatGPT'
+      ja:    'ChatGPT'
+      zh-TW: 'ChatGPT'
+  touch_area:
+    href: /wiki/touch-area.html
+    labels:
+      zh-CN: '触摸区域'
+      en:    'Hit areas'
+      ja:    '当たり判定'
+      zh-TW: '觸碰區域'
+  privacy:
+    href: /privacy/extension.html
+    labels:
+      zh-CN: '隐私政策'
+      en:    'Privacy Policy'
+      ja:    'プライバシーポリシー'
+      zh-TW: '隱私權政策'
+  github_repo:
+    href: 'https://github.com/jiangweifang/wp-live2d'
+    target: _blank
+    labels:
+      zh-CN: 'GitHub 仓库'
+      en:    'GitHub Repository'
+      ja:    'GitHub リポジトリ'
+      zh-TW: 'GitHub 倉庫'

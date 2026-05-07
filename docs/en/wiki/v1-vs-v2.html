@@ -1,0 +1,60 @@
+---
+page_id: v1_vs_v2
+nav_keys: [home, custom_model, anti_hotlink, chrome_extension]
+---
+
+<p>The plugin maintains two completely independent Live2D loaders. If this is your first contact with the project, take two minutes to read this page before picking which path to use.</p>
+
+<h2>One-line summary</h2>
+<ul>
+    <li><strong>V1 models</strong> = the <em>legacy</em> loader based on <a href="https://github.com/journey-ad/live2d_src" target="_blank" rel="noopener">journey-ad/live2d_src</a>, targeting Cubism <strong>2.x / 3.x</strong> models. Manifest file is usually <code>model.json</code>, the moc extension is <code>.moc</code>. Common models: 22-musume / 33-musume, Pio / Tia, Shizuku, Kantai-Collection Murakumo, Hyperdimension Neptunia, etc.</li>
+    <li><strong>V2 models</strong> = Cubism <strong>4 / 5</strong> series (including any future versions). Manifest file is <code>*.model3.json</code>, the moc extension is <code>.moc3</code>. This is the format that Live2D Inc. is currently maintaining.</li>
+</ul>
+
+<blockquote>
+    <p><strong>Naming note:</strong> older docs used to call Cubism 4+ models "v3 or higher". Starting with plugin 2.1 we standardized on the name <strong>V2</strong>. In this repository, "V2" does <em>not</em> mean Cubism 2 — it means the <em>second generation of the plugin's loader</em>. If you see "v3 model" or "V3 model" in old issues, please read it as V2.</p>
+</blockquote>
+
+<h2>How to tell whether your model is V1 or V2</h2>
+<p>Just check the manifest file:</p>
+<table>
+    <thead>
+        <tr><th style="width:18%">Model type</th><th>Manifest file name</th><th>"version" field in the manifest</th><th>Main moc file</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>V1 (legacy)</td><td><code>model.json</code></td><td>none / any</td><td><code>*.moc</code></td></tr>
+        <tr><td>V2 (current)</td><td><code>*.model3.json</code></td><td>starts at <code>"Version": 3</code> (this is the Cubism Web SDK number, not the model spec number)</td><td><code>*.moc3</code></td></tr>
+    </tbody>
+</table>
+<p>The frontend picks the V2 loader when the <em>model spec version is ≥ 3</em>, otherwise it falls through to V1.</p>
+
+<h2>The "Workshop API type" dropdown in the WordPress admin</h2>
+<p>WordPress admin → Settings → "Workshop API type" is a three-way dropdown:</p>
+<table>
+    <thead>
+        <tr><th style="width:18%">Value</th><th>Meaning</th><th style="width:14%">Paid?</th><th>Model type</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Local</strong> (<code>local</code>)</td><td>Use the V1 models bundled inside the plugin's <code>assets/v1/</code>, served via the REST route <code>/wp-json/live2d/v1/model/*</code>. Everything runs on your own site, no third-party endpoint involved.</td><td>Free</td><td>V1 (22/33/Pio/Tia/Shizuku/HyperdimensionNeptunia/KantaiCollection, …)</td></tr>
+        <tr><td><strong>Remote workshop</strong> (<code>remote</code>)</td><td>Pull the model catalogue from <code>www.live2dweb.com</code>, download it locally, then load it through the same V1 pipeline. Downloads land in <code>wp-content/plugins/live-2d/model/</code>.</td><td>Free</td><td>V1 (same models as "Local", just a different source)</td></tr>
+        <tr><td><strong>Custom</strong> (<code>custom</code>)</td><td>Plug in your own <code>modelAPI</code> URL to load V2 (Cubism 4+) models. You can either point at a single <code>*.model3.json</code> or at a directory root plus multiple <code>modelDir</code> sub-folders.</td><td><strong>Requires payment</strong></td><td>V2 (Cubism 4+ / 5)</td></tr>
+    </tbody>
+</table>
+
+<h3>Why is V2 paid?</h3>
+<p>Because Live2D Inc. requires third-party extensible applications to sign a commercial agreement before using the Cubism 4+ Core. The plugin author has signed a long-term contract and ships the official Cubism Core under that contract, so the V2 path bills site owners a one-off licensing fee — basically passing the upstream license cost on to the sites that actually use V2. V1 models do not depend on the Cubism Core, so they remain free forever.</p>
+
+<h2>Which one should I pick?</h2>
+<ul>
+    <li><strong>I just want a moving 2D character keeping me company on my blog →</strong> install the plugin, keep the defaults; you are already running the bundled V1 models (Local).</li>
+    <li><strong>I want one of the popular ready-made skins (22-musume, Pio, …) →</strong> still V1, use either "Local" or "Remote workshop".</li>
+    <li><strong>I have a MOC3 model I made or bought myself →</strong> use the V2 custom URL: pay first, then follow the <a href="{{ '/en/wiki/custom-model.html' | relative_url }}">V2 custom model guide</a>.</li>
+    <li><strong>I want maximum hotlink protection for my V2 model →</strong> on top of the custom URL also enable "<a href="{{ '/en/wiki/anti-hotlink.html' | relative_url }}">cache locally</a>"; see the hotlink page.</li>
+</ul>
+
+<h2>Common misunderstandings</h2>
+<ul>
+    <li><strong>"Is V1 deprecated?"</strong> No. Since 2.1.3 the V1 loader is in fact fully local (no more third-party sources such as fghrsh.net), so it is much more stable than before. It just will not gain <em>new features</em> like blend shapes or super-sampling that are Cubism 4+ exclusives.</li>
+    <li><strong>"Is V2 the same thing as Cubism 2?"</strong> No. V2 in this repository is the <em>second generation of the loader</em>, which targets Cubism Web SDK 4 / 5. Cubism 2 is the ancient version and lives under the V1 loader.</li>
+    <li><strong>"The old docs talk about v3 models…"</strong> The "v3" in the old docs is the same thing as today's V2. Treat any "v3 / V3" wording as V2.</li>
+</ul>

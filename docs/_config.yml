@@ -1,0 +1,28 @@
+title: Live2D Web Canvas
+description: WordPress 插件 / Live2D Web Canvas 浏览器扩展的文档与帮助。
+url: https://jiangweifang.github.io
+baseurl: ""
+
+# Pages keep their on-disk path, so docs/en/wiki/x.html serves as /en/wiki/x.html.
+# No extra plugins required — works on stock GitHub Pages.
+plugins: []
+
+exclude:
+  - README.md
+  - CLAUDE.md
+
+# Per-language defaults: any file under /<lang>/** is treated as that language.
+defaults:
+  - scope: { path: "" }
+    values:
+      layout: doc
+      lang: zh-CN
+  - scope: { path: "en" }
+    values:
+      lang: en
+  - scope: { path: "ja" }
+    values:
+      lang: ja
+  - scope: { path: "zh-TW" }
+    values:
+      lang: zh-TW

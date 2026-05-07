@@ -1,0 +1,93 @@
+---
+page_id: custom_model
+nav_keys: [home, v1_vs_v2, anti_hotlink, chatgpt, touch_area]
+---
+
+<blockquote>
+    <p><strong>このページは V2(Cubism 4+ / 5)モデル専用です。</strong>22 / 33 / Pio / Tia のような旧モデルを使いたい場合は V1 ですので、プラグイン管理画面で「クリエイティブワークショップ API タイプ = ローカル / リモートワークショップ」を選択してください。<em>課金は不要</em>で、このページのどの手順も該当しません。先に <a href="{{ '/ja/wiki/v1-vs-v2.html' | relative_url }}">V1 / V2 とは</a> をご覧ください。</p>
+</blockquote>
+
+<h2>1. まず課金する</h2>
+<p>V2 モデルは Live2D Cubism 4+ Web SDK ローダーを通ります。Live2D 株式会社は、サードパーティ製の拡張可能アプリケーションが Cubism 4+ を使用する際に商用契約を要求しているため、本プラグイン作者はすでに長期契約を締結し、その契約のもとで正規の Cubism Core を再配布しています。そこでこの経路ではサイトオーナーから一括のライセンス料を頂戴します。</p>
+<ol>
+    <li><a href="https://www.live2dweb.com/" target="_blank" rel="noopener">www.live2dweb.com</a> でアカウント登録と決済を完了します。</li>
+    <li><strong>WordPress 管理画面にログインしたままにしてください</strong>(アカウントに紐付いたトークンを取得し、プラグインから live2dweb.com にライセンス検証できるようにするためです)。</li>
+</ol>
+<p>未課金 / 未ログイン状態では、「クリエイティブワークショップ API タイプ」の <strong>カスタム</strong> 項目は無効化されるか、ログインを促されます。</p>
+
+<h2>2. V2 モデルファイルを用意する</h2>
+<p>V2 モデルは Cubism 4+ から書き出したもので、マニフェストは <code>*.model3.json</code>、本体は <code>*.moc3</code>、加えてテクスチャ・モーション・表情などです。</p>
+
+<h3>2.1 マニフェストの要件</h3>
+<ul>
+    <li>マニフェスト名は通常 <code>{model-name}.model3.json</code>。</li>
+    <li>パスに <strong>中国語の文字を含めないでください</strong>。</li>
+    <li>サイトが <code>https</code> なら、マニフェスト<em>とそこから参照される全てのファイル</em>(<code>.moc3</code>、テクスチャ、motion3.json、physics3.json、cdi3.json など)も <code>https</code> である必要があります。さもないとブラウザが Mixed Content / CORS で拒否します。</li>
+    <li>CORS:OSS / COS / 自社 CDN に置く場合は CORS を正しく設定してください(自サイトのドメインを Origin として許可するだけで十分なケースが多いです)。</li>
+</ul>
+
+<h3>2.2 モデルはどこに置く?</h3>
+<p>推奨度の高い順:</p>
+<ol>
+    <li><strong>オブジェクトストレージ + 直リンク防止(おすすめ・著作権保護込み)</strong>:Aliyun OSS、Tencent COS、Upyun、Qiniu など。
+        <ul>
+            <li>Referer ホワイトリストを有効化し、自サイトのみ許可。</li>
+            <li>前段に CDN を挟む場合は、CDN 側にも同等の直リンク防止ルールを継承させてください。</li>
+        </ul>
+    </li>
+    <li><strong>プラグイン配下の <code>model</code> ディレクトリ</strong>(最も簡単。ただし帯域は自分で管理が必要):
+        <pre><code>wp-content/plugins/live-2d/model/{model-name}/{model-name}.model3.json</code></pre>
+        <code>model</code> フォルダが無ければ自分で作成してください。テーマやセキュリティプラグインによっては WordPress の URL Rewrite が誤検知でブロックすることがあります。読み込めない場合は、まずブラウザでその URL を直接開けるか確認してください。
+    </li>
+    <li><strong>「ローカルキャッシュ」を有効にしてプラグインに任せる</strong>:<code>modelAPI</code> を入力した上で、直リンク防止オプションを「ローカルキャッシュ」に切り替えると、プラグインが対象ファイル一式を <code>wp-content/plugins/live-2d/model/</code> に取り込み、フロントには一時的な署名 URL のみを露出します。F12 でも元 URL は見えません。<a href="{{ '/ja/wiki/anti-hotlink.html' | relative_url }}">直リンク防止ページを参照</a>。</li>
+    <li>GitHub Pages / jsDelivr のような公開静的ホスティング:動作はしますが <strong>中国本土での運用は非推奨</strong>です。jsDelivr は最終的に raw.githubusercontent.com にフォールバックするため速度が安定せず、直リンク防止もできません。</li>
+</ol>
+
+<h2>3. 管理画面で modelAPI を入力する</h2>
+<p>WordPress 管理画面 → Live2D 設定 → クリエイティブワークショップ API タイプ:「カスタム」を選択。下に <code>modelAPI</code> 入力欄があります。<strong>2 通りの書き方</strong>があり、末尾文字でどちらかが決まります:</p>
+
+<table>
+    <thead>
+        <tr><th style="width:24%">書き方</th><th>末尾</th><th>動作</th><th>下の modelDir 一覧</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>① 単一モデル直リンク</td><td><code>.json</code> で終わる</td><td>その <code>model3.json</code> をそのままロード。パスの追加結合は行いません。</td><td>無視</td></tr>
+        <tr><td>② ディレクトリルート + 複数モデル</td><td><code>/</code> で終わる</td><td>ルートディレクトリとみなし、下の <code>modelDir</code> 一覧と組み合わせて <code>{modelAPI}{name}/{name}.model3.json</code> を自動生成します。</td><td>必須。1 行 1 サブディレクトリ名(<code>{name}.model3.json</code> と完全一致が必要)。</td></tr>
+    </tbody>
+</table>
+
+<h3>例</h3>
+<p>① 直リンク:</p>
+<pre><code>https://cdn.example.com/live2d/haru/haru.model3.json</code></pre>
+
+<p>② ディレクトリルート + 複数モデル:</p>
+<pre><code>modelAPI:  https://cdn.example.com/live2d/
+
+modelDir:
+  - haru
+  - mao
+  - shizuku</code></pre>
+<p>ロード時に以下の URL に展開されます:</p>
+<pre><code>https://cdn.example.com/live2d/haru/haru.model3.json
+https://cdn.example.com/live2d/mao/mao.model3.json
+https://cdn.example.com/live2d/shizuku/shizuku.model3.json</code></pre>
+<p>フロントエンドの「まばたきボタン」がこれらのモデル間を巡回します。</p>
+
+<blockquote>
+    <p><strong>注意:</strong>カスタムモデルを利用する場合、フロントエンドの「前のキャラ / 次のキャラ」ボタンは多くの組み合わせで意味を持ちません。管理画面で OFF にすることをおすすめします。</p>
+</blockquote>
+
+<h2>4. テクスチャ(マテリアル)サイズ</h2>
+<p>1 枚あたり <code>2048×2048</code> を超えないように。Cubism 4+ はそもそもテクスチャが大きいため、過大な PNG を何枚も重ねると初回描画が 5~10 秒以上かかってしまいます。書き出し時にサイズが大きすぎる場合は、Cubism Editor の「テクスチャアトラス埋め込み → サイズ再割り当て」で再パックできます。</p>
+
+<h2>5. 上級設定:スーパーサンプリング(V2 限定)</h2>
+<p>プラグイン 2.1.3 で <strong>スーパーサンプリング</strong>機能を追加しました。高 DPI ディスプレイでテクスチャがよりシャープになります。<strong>V2(model3.json)モデルにのみ有効</strong>で、V1 経路はこのスイッチに反応しません。</p>
+
+<h2>6. セキュリティ / 著作権の要点</h2>
+<ol>
+    <li>モデルの著作権は各自で保証してください。ベストプラクティス:Referer 直リンク防止つきオブジェクトストレージにアップロードし、CORS を自サイトのみに限定。</li>
+    <li>クリエイティブワークショップは現在、自由なアップロードに対応していません。投稿者ごとの著作権を守る術がまだ無いためです。</li>
+    <li>OSS の <code>SecretKey</code> を WordPress の設定項目に書き込まないでください。Private 読み出し + 署名 URL を運用する場合は、wp-config.php の環境変数経由にしてください。<a href="{{ '/ja/wiki/anti-hotlink.html' | relative_url }}">直リンク防止ページの末尾を参照</a>。</li>
+</ol>
+
+<p>ご質問は <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">GitHub Issues</a> までお寄せください。</p>

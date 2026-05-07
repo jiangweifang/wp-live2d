@@ -1,0 +1,97 @@
+---
+page_id: privacy
+nav_keys: [home, custom_model, chatgpt, github_repo]
+meta: 'Effective date: 2025-01-01 &nbsp;|&nbsp; Last updated: 2026-05-05<br />Publisher: Beijing Mr. Tian Software Technology Center'
+footer: '<a href="/en/">← Back to docs home</a><br />&copy; 2025–2026 Beijing Mr. Tian Software Technology Center · Live2D Web Canvas'
+---
+
+<h1>Live2D Web Canvas Browser Extension — Privacy Policy</h1>
+<p class="meta">
+    Applies to: Chrome / Edge browser extension <strong>Live2D Web Canvas</strong> (including the BETA build).<br />
+    Effective date: 2025-01-01 &nbsp;|&nbsp; Last updated: 2026-05-05<br />
+    Publisher: Beijing Mr. Tian Software Technology Center
+</p>
+
+<p>
+    This policy describes how the Chrome / Edge browser extension <strong>Live2D Web Canvas</strong>
+    (the "Extension") handles user data. It does <strong>not</strong> apply to other services on this website,
+    our WordPress plugin or any other client products.
+</p>
+
+<h2>1. Data we collect</h2>
+<p>Mapped to the Chrome Web Store data-usage categories, the Extension processes only the following two types of data, and only after the user has explicitly signed in:</p>
+<table>
+    <thead>
+        <tr><th style="width:26%">Category</th><th>What it is</th><th style="width:24%">When it is collected</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Authentication information</td><td>An access token (JWT containing <code>key</code> and <code>sign</code>) issued by our website, used to unlock paid features.</td><td>Only after the user clicks "Sign in" inside the Extension and completes the login flow on <code>www.live2dweb.com</code>.</td></tr>
+        <tr><td>Personally identifiable information</td><td>An internal account identifier bound to the user account. The Extension does <strong>not</strong> collect names, email addresses, phone numbers, ages, government IDs or postal addresses.</td><td>Same as above; obtained together with the access token after sign-in.</td></tr>
+    </tbody>
+</table>
+
+<h3>What we explicitly do NOT collect</h3>
+<ul>
+    <li>We do not read, store or upload the URLs, titles or browsing history of pages you visit.</li>
+    <li>We do not read or upload any text, images, form input, cookies or DOM nodes from the host page.</li>
+    <li>We do not collect mouse clicks, scroll position or keystrokes (the character only animates locally based on the live cursor position; nothing leaves your browser).</li>
+    <li>We do not collect geolocation, IP address or device fingerprints.</li>
+    <li>We do not collect health, medical, financial, credit or payment-card information.</li>
+    <li>We do not collect emails, instant messages or any form of personal communication.</li>
+</ul>
+
+<h2>2. Where data is stored</h2>
+<table>
+    <thead>
+        <tr><th style="width:34%">Location</th><th>Contents</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><code>chrome.storage.sync</code> (local + synced via Chrome account)</td><td>Extension preferences: enabled flag, selected model, selected texture, tip-bubble frequency, toolbar toggles.</td></tr>
+        <tr><td><code>chrome.storage.local</code> (local only)</td><td>The access token (JWT) obtained after sign-in. Never synced across devices.</td></tr>
+        <tr><td>Browser IndexedDB (local)</td><td>Live2D model files the user has explicitly downloaded from the model library, kept for offline use and faster loading.</td></tr>
+        <tr><td>Our backend at <code>https://api.live2dweb.com</code></td><td>The user account itself (created when the user originally signed up on our website, independent of the Extension); plus standard server access logs (timestamp, request path, response code) for requests carrying the token. Server logs do not contain page contents.</td></tr>
+    </tbody>
+</table>
+
+<h2>3. How the data is used (single purpose)</h2>
+<p>The Extension's single purpose is to render a Live2D character overlay in the bottom-right corner of webpages. The data above is used <strong>only</strong> to:</p>
+<ol>
+    <li>identify paid users so that paid features (e.g. the "Custom model URL" mode) can be unlocked;</li>
+    <li>download user-selected model files from our own domain <code>https://download.live2dweb.com</code>;</li>
+    <li>persist user preferences across tabs and devices.</li>
+</ol>
+
+<h2>4. Sharing and transfer</h2>
+<ul>
+    <li>We do <strong>not</strong> sell user data.</li>
+    <li>We do <strong>not</strong> transfer user data to any third party for purposes unrelated to the Extension's single purpose.</li>
+    <li>We do <strong>not</strong> use or transfer user data to determine creditworthiness or for lending purposes.</li>
+    <li>Apart from our own domains (<code>www.live2dweb.com</code>, <code>api.live2dweb.com</code>, <code>download.live2dweb.com</code>), the Extension does not contact any third-party server.</li>
+</ul>
+
+<h2>5. Your control over your data</h2>
+<ul>
+    <li><strong>Sign out:</strong> In the Extension options page (click the toolbar icon → Options → Login tab) click "Sign out" to clear the locally stored access token.</li>
+    <li><strong>Clear cached models:</strong> In the "V1 Model Library" tab you can delete each downloaded model individually, freeing IndexedDB storage.</li>
+    <li><strong>Wipe everything:</strong> Uninstalling the Extension via <code>chrome://extensions</code> removes all data the Extension keeps in <code>chrome.storage</code> and IndexedDB.</li>
+    <li><strong>Account deletion / server-side data removal:</strong> Send a deletion request to the contact email below. We will process it within a reasonable time.</li>
+</ul>
+
+<h2>6. Data security</h2>
+<ul>
+    <li>The access token is transmitted over HTTPS and protected by HMAC signing to prevent tampering.</li>
+    <li>The token is stored only in <code>chrome.storage.local</code> on your device and never appears in URLs or logs.</li>
+    <li>The Extension does <strong>not</strong> use any remotely hosted code: all JavaScript ships inside the extension package; assets fetched from <code>download.live2dweb.com</code> are model data only (binary / images / JSON) and are never executed as code.</li>
+</ul>
+
+<h2>7. Children's privacy</h2>
+<p>The Extension is not directed at children under 13 and does not knowingly collect any personal information from children.</p>
+
+<h2>8. Changes to this policy</h2>
+<p>For material changes we will update the "Last updated" date above and announce them in the Extension's update notes. Continued use of the Extension constitutes acceptance of the revised policy.</p>
+
+<h2>9. Contact</h2>
+<ul>
+    <li>Email: <a href="mailto:jwf@live.cn">jwf@live.cn</a></li>
+    <li>Legal name: Beijing Mr. Tian Software Technology Center</li>
+</ul>

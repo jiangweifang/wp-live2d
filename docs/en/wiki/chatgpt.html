@@ -1,0 +1,59 @@
+---
+page_id: chatgpt
+nav_keys: [home, v1_vs_v2, custom_model, touch_area]
+---
+
+<p>Thanks for using the plugin.</p>
+
+<h2>Feature and default quota</h2>
+<ul>
+    <li>The plugin includes a ChatGPT feature: clicking the character lets you chat with ChatGPT. Because the ChatGPT API is paid, the free channel the author provides has a quota and we do not want it abused, so by default <code>MaxTokens</code> is kept fairly small.</li>
+    <li>If you want longer answers / more context, follow the section "Plug in your own Open AI API" below to swap the endpoint to your own Azure OpenAI or official Open AI API.</li>
+</ul>
+
+<p>The current default is <code>"MaxTokens": 200</code> (cap is 4000).</p>
+
+<p>The conversation history keeps the <strong>most recent 5 turns</strong> ("you say + AI replies" — 10 messages total) as context; anything older is dropped to control cost. For example:</p>
+<pre><code>Me: hi
+AI: hello, how can I help?
+Me: what kind of game is Call of Duty?
+AI: Call of Duty is an FPS game.</code></pre>
+<p>That's 2 turns.</p>
+
+<p>Other notes:</p>
+<ul>
+    <li>Messages in the bubble support <strong>Markdown rendering</strong> (links, bold, lists, …); clicking links produced by the AI navigates to other pages on your site.</li>
+    <li>Since 1.9.16, the tip bubble <strong>expands upward</strong> instead of downward, which makes long replies easier to read.</li>
+    <li>The free channel's server is currently in Shanghai and cannot reach the official OpenAI API directly; the author uses a personal Azure OpenAI channel.</li>
+</ul>
+
+<h2>Plug in your own Open AI API</h2>
+<p>You can switch to your own Open AI API on the <a href="https://www.live2dweb.com/Sites" target="_blank" rel="noopener">backend settings page</a>.</p>
+
+<p>Both Azure OpenAI and the official Open AI API are supported, including <code>gpt-3.5-turbo</code>, <code>GPT-3.5-Turbo-0613</code> and <code>GPT-4</code>.</p>
+
+<p><img src="https://github.com/jiangweifang/wp-live2d/assets/38683169/7ce6ce71-8814-44ac-9f0f-432ded2a4f83" alt="ChatGPT settings in the backend" /></p>
+
+<h2>Azure OpenAI setup</h2>
+
+<h3>1. API Key and Endpoint</h3>
+<blockquote>
+    <p>The Key and Endpoint can be found under <em>Keys and Endpoint</em> in the Azure portal.</p>
+    <p>As shown below, either Key works; the Endpoint is the name of <em>this instance</em>, <strong>not</strong> the regional endpoint URL listed beneath it.</p>
+    <p><img src="https://github.com/jiangweifang/wp-live2d/assets/38683169/a914ea54-47d2-4f38-bd0d-993742bd8c59" alt="Azure Keys and Endpoint" /></p>
+</blockquote>
+
+<h3>2. Model Name (deployment name)</h3>
+<blockquote>
+    <p>Go to <a href="https://oai.azure.com/portal/" target="_blank" rel="noopener">https://oai.azure.com/portal/</a>.</p>
+    <p>After creating a model, the Deployment Name appears under <em>Deployments</em>.</p>
+    <p><img src="https://github.com/jiangweifang/wp-live2d/assets/38683169/33fb36d2-12f6-4852-b328-cf6bbe957184" alt="Azure Deployments" /></p>
+    <p>Put that name into the Model Name (deployment name) field.</p>
+    <p><img src="https://github.com/jiangweifang/wp-live2d/assets/38683169/4c6986d8-4592-4680-8732-4ea99984b4e5" alt="Filling in Model Name" /></p>
+</blockquote>
+
+<h3>3. Version</h3>
+<blockquote>
+    <p>See the <a href="https://learn.microsoft.com/azure/ai-services/openai/concepts/models#update--deploy-models-via-the-api" target="_blank" rel="noopener">Azure OpenAI model versions doc</a>.</p>
+    <p>At time of writing the latest version is <code>2023-05-01</code>; you can use that fixed value.</p>
+</blockquote>
