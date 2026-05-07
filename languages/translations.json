@@ -265,7 +265,8 @@
     "适用于 Cubism 4+ 模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。": "适用于 Cubism 4+ 模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。",
     "Cubism 4+：登录并付费后可使用。": "Cubism 4+：登录并付费后可使用。",
     "选择或填写默认皮肤 ID；Cubism 4+ 模型不使用此项，可留空。": "选择或填写默认皮肤 ID；Cubism 4+ 模型不使用此项，可留空。",
-    "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\".": "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\"."
+    "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\".": "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\".",
+    "https://example.com/Samples/Resources/  或  https://example.com/Samples/Resources/haru/haru.model3.json": "https://example.com/Samples/Resources/  或  https://example.com/Samples/Resources/haru/haru.model3.json"
   },
   "zh_TW": {
     "设置": "設定",
@@ -532,7 +533,8 @@
     "适用于 Cubism 4+ 模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。": "適用於 Cubism 4+ 模型，可填寫模型檔案的網址或所在目錄，並在下方「模型目錄」中新增多個模型。",
     "Cubism 4+：登录并付费后可使用。": "Cubism 4+：登入並付費後可使用。",
     "选择或填写默认皮肤 ID；Cubism 4+ 模型不使用此项，可留空。": "選擇或填寫預設材質 ID；Cubism 4+ 模型不使用此項，可留空。",
-    "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\".": "\"自訂模型路徑（Cubism 4+）\" 需要登入並付費後才能使用，已自動還原為 \"自行部署舊版模型\"。"
+    "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\".": "\"自訂模型路徑（Cubism 4+）\" 需要登入並付費後才能使用，已自動還原為 \"自行部署舊版模型\"。",
+    "https://example.com/Samples/Resources/  或  https://example.com/Samples/Resources/haru/haru.model3.json": "https://example.com/Samples/Resources/  或  https://example.com/Samples/Resources/haru/haru.model3.json"
   },
   "en_US": {
     "设置": "Settings",
@@ -799,7 +801,8 @@
     "适用于 Cubism 4+ 模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。": "For Cubism 4+ models. Provide either the model file URL or the directory it lives in, and add multiple models in the \"Model directory\" list below.",
     "Cubism 4+：登录并付费后可使用。": "Cubism 4+: available after signing in and purchasing a license.",
     "选择或填写默认皮肤 ID；Cubism 4+ 模型不使用此项，可留空。": "Select or enter the default texture ID. Cubism 4+ models do not use this field and may leave it empty.",
-    "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\".": "\"Custom model path (Cubism 4+)\" requires sign-in and payment. The setting was reverted to \"Self-hosted legacy models\" automatically."
+    "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\".": "\"Custom model path (Cubism 4+)\" requires sign-in and payment. The setting was reverted to \"Self-hosted legacy models\" automatically.",
+    "https://example.com/Samples/Resources/  或  https://example.com/Samples/Resources/haru/haru.model3.json": "https://example.com/Samples/Resources/  or  https://example.com/Samples/Resources/haru/haru.model3.json"
   },
   "ja": {
     "设置": "設定",
@@ -1066,6 +1069,7 @@
     "适用于 Cubism 4+ 模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。": "Cubism 4+ モデル向け。モデルファイルの URL またはそれが置かれるディレクトリを指定し、下の「モデルディレクトリ」で複数モデルを追加できます。",
     "Cubism 4+：登录并付费后可使用。": "Cubism 4+：ログインおよび課金後に利用可能です。",
     "选择或填写默认皮肤 ID；Cubism 4+ 模型不使用此项，可留空。": "デフォルトのテクスチャ ID を選択／入力してください。Cubism 4+ モデルでは使用しないため、空欄でも構いません。",
-    "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\".": "\"カスタムモデルパス（Cubism 4+）\" はログインおよび課金後にのみ利用可能です。\"自前ホストの旧モデル\" に自動で戻しました。"
+    "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\".": "\"カスタムモデルパス（Cubism 4+）\" はログインおよび課金後にのみ利用可能です。\"自前ホストの旧モデル\" に自動で戻しました。",
+    "https://example.com/Samples/Resources/  或  https://example.com/Samples/Resources/haru/haru.model3.json": "https://example.com/Samples/Resources/  または  https://example.com/Samples/Resources/haru/haru.model3.json"
   }
 }

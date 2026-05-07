@@ -191,8 +191,9 @@ class live2D_Settings_Base
         // 强制写回本地 REST URL(详见 src/waifu-Settings.php),前端 live2d-admin.ts
         // 会根据 apiType 动态设 readonly 与提示文案。
         printf(
-            '<input class="regular-text" type="url" name="live_2d_settings_option_name[modelAPI]" id="modelAPI" value="%s">',
-            isset($this->live_2d__options['modelAPI']) ? esc_attr($this->live_2d__options['modelAPI']) : ''
+            '<input class="regular-text" type="url" name="live_2d_settings_option_name[modelAPI]" id="modelAPI" value="%s" placeholder="%s">',
+            isset($this->live_2d__options['modelAPI']) ? esc_attr($this->live_2d__options['modelAPI']) : '',
+            esc_attr(__('https://example.com/Samples/Resources/  或  https://example.com/Samples/Resources/haru/haru.model3.json', 'live-2d'))
         );
         // 静态帮助文案仅作底层说明;与 apiType 联动的选择性提示由 JS 插入 / 隐藏。
         echo '<p class="description live2d-modelAPI-hint live2d-modelAPI-hint-default">'
