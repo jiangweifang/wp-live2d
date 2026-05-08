@@ -65,6 +65,19 @@ class live2d_V2Api
             'callback'            => array($self, 'get_manifest'),
         ));
 
+        // /hashes.json — alias -> sha256(hex) 映射,**仅本地文件 alias 才有 hash**。
+        // 与 manifest.json 同 token 命名空间,前端把它当"内容指纹清单"用,从而:
+        //   - IDB 主键改用 sha:{hash}(取代抖动的 token+alias URL),跨会话稳定命中;
+        //   - 命中本地缓存就不用走 stream_local readfile,把 PHP 干净跳过。
+        // 远端代理的 alias 在 mapping 里是 http(s) URL,**不收录到 hash 表**;
+        // 前端那条 alias 自然走老路径(URL key + LRU)。
+        // 失败约定与 manifest 一致 → 200 + "{}"(防探测)。
+        register_rest_route(self::REST_NS, '/m/(?P<token>[A-Za-z0-9_-]{20,32})/hashes\.json', array(
+            'methods'             => 'GET',
+            'permission_callback' => '__return_true',
+            'callback'            => array($self, 'get_hashes'),
+        ));
+
         register_rest_route(self::REST_NS, '/m/(?P<token>[A-Za-z0-9_-]{20,32})/(?P<alias>[A-Za-z0-9_-]{8,16})', array(
             'methods'             => 'GET',
             'permission_callback' => '__return_true',
@@ -187,10 +200,32 @@ class live2d_V2Api
         }
         unset($fr); // 释放引用,避免后续 json_encode 的副作用
 
+        // 对 mapping 中所有"本地文件"的 alias 算 SHA-256(hex),作为内容寻址键。
+        // 远端代理 URL(http(s):// 开头)不收录 — 服务端代理本就不一定每会话都是同一字节流
+        // (上游 ETag 不变也只是大概率,无法 SHA 兜底)。前端拿不到 hash 的 alias 自然走老的
+        // URL-keyed 缓存路径,不影响功能,只是没有跨会话命中收益。
+        // 这一步在首次 session 创建时同步算,首次代价 = 模型总字节 / 磁盘 I/O,
+        // 一般 5~30 MB 在 SSD 上 < 100ms,与 set_transient 后立即返响应不冲突。
+        $hashes = array();
+        foreach ($mapping as $alias => $real) {
+            // mapping 里既可能是本地绝对路径(stream_local_path 走的那种),
+            // 也可能是 wp-content 下的真实 URL(stream_local 解出后变绝对路径),
+            // 还可能是远端 http(s) URL(stream_remote 代理)。这里只对前两类算 hash。
+            if (!is_string($real) || $real === '') continue;
+            if (preg_match('#^https?://#i', $real)) continue;     // 远端不收录
+            // hash_file 比 file_get_contents+hash 省一份内存(流式分块读)。
+            // 失败(权限 / 不存在)直接跳过 — get_asset 仍会走 readfile,前端走 URL key 路径。
+            $h = @hash_file('sha256', $real);
+            if (is_string($h) && $h !== '') {
+                $hashes[$alias] = $h;
+            }
+        }
+
         // 3) 写 transient(WP 端等价于 Mongo TTL index)
         $payload = array(
             'mapping'   => $mapping,
             'manifest'  => wp_json_encode($manifest, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            'hashes'    => $hashes,
             'audience'  => self::request_audience($request),
             'expire_at' => $exp,
         );
@@ -223,6 +258,30 @@ class live2d_V2Api
                 . ' session=' . ($payload['audience'] ?? '') . ' req=' . $audience);
         }
         return self::respond_json_raw($payload['manifest']);
+    }
+
+    /**
+     * GET /m/{token}/hashes.json
+     * 返回当前 session 中所有"本地文件 alias"的 SHA-256(hex)。形如:
+     *   { "abc12345xyz": "9f86d081884c7d65...", ... }
+     * 远端代理 alias 不在表里;前端拿不到 hash 的 alias 走老 URL-keyed 缓存。
+     * 失败(token 不存在 / 过期)按"防探测"约定回 200 + "{}"。
+     */
+    public function get_hashes(WP_REST_Request $request)
+    {
+        $token   = (string) $request->get_param('token');
+        $payload = self::load_session($token);
+        if ($payload === null) {
+            return self::respond_json_raw('{}');
+        }
+        $hashes = isset($payload['hashes']) && is_array($payload['hashes']) ? $payload['hashes'] : array();
+        // 不需要 nocache_headers — 这是稳定的 alias→hash 映射,与 manifest 同会话内不变;
+        // 但仍给 Cache-Control: no-store 以防被中间代理误缓存到下个会话(token 不同会泄漏)。
+        nocache_headers();
+        header('Content-Type: application/json');
+        header('Cache-Control: no-store, private');
+        echo wp_json_encode($hashes, JSON_UNESCAPED_SLASHES);
+        exit;
     }
 
     /**
