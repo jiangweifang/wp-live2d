@@ -167,7 +167,7 @@ class live2D_Settings_Base
 
                 <label for="apiType-custom-local">
                     <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-custom-local" class="apiType" value="custom-local" <?php echo $current === 'custom-local' ? 'checked' : ''; ?>>
-                    <?php esc_html_e('自定义新版模型 · 托管到本站（Cubism 4+, 推荐）', 'live-2d'); ?>
+                    <?php esc_html_e('自定义新版模型 · 托管到本站（Cubism 4+, 防盗链）', 'live-2d'); ?>
                 </label><br>
                 <span class="description"><?php esc_html_e('插件把模型文件保存到您的网站上,并对外只露出临时签名 URL,访客 F12 看不到原始地址。可填写跨域 URL 点击「下载」,或直接「上传文件夹」。', 'live-2d'); ?></span>
             <?php else: ?>
@@ -176,7 +176,7 @@ class live2D_Settings_Base
                     <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义新版模型 · 直链加载（Cubism 4+）', 'live-2d'); ?>
                 </label><br>
                 <label for="apiType-custom-local" style="opacity: 0.5; cursor: not-allowed;" title="<?php esc_attr_e('完成登录并付费后可用', 'live-2d'); ?>">
-                    <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义新版模型 · 托管到本站（Cubism 4+, 推荐）', 'live-2d'); ?>
+                    <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义新版模型 · 托管到本站（Cubism 4+, 防盗链）', 'live-2d'); ?>
                 </label><br>
                 <span class="description" style="opacity: 0.7;"><?php esc_html_e('Cubism 4+：登录并付费后可使用。', 'live-2d'); ?></span>
             <?php endif; ?>
