@@ -749,15 +749,8 @@ class live2d_SDK
     //排查错误使用
     public function Save_Options($value)
     {
-        if (!empty($this->userInfo["sign"])) {
-            $param = [
-                'new_value' => json_encode($value)
-            ];
-            $result = $this->DoPost($param, "Options/UpdateOpt", $this->userInfo["sign"]);
-            error_log('Save_Options:设置保存完成' . print_r($result));
-        } else {
-            error_log('Save_Options:设置保存完成, 但是用户没有登陆。');
-        }
+        // 已废弃: 不再向后端 /Options/UpdateOpt 同步设置
+        unset($value);
     }
 
     /**
