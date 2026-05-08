@@ -3,6 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 include_once(dirname(__FILE__)  . '/live2d-SDK.php');
+include_once(dirname(__FILE__)  . '/live2d-V2Api.php');
 //下载模型ajax(V1 直链下载,对齐 Chromium 扩展 v1ModelCache.ts 的 downloadAndCacheV1Model)
 add_action("wp_ajax_download_v1_model", array(new live2d_SDK, 'DownloadV1Model'));
 //解压缩ajax
@@ -13,6 +14,197 @@ add_action("wp_ajax_clear_files", array(new live2d_SDK, 'ClearFiles'));
 add_action("wp_ajax_get_model_list", array(new live2d_SDK, 'GetModelMotions'));
 //设置页 modelTexturesId 下拉框拉取材质列表
 add_action("wp_ajax_get_texture_list", array(new live2d_SDK, 'GetTextureList'));
+
+// V3 模型本地缓存(apiType='custom-local')— 后台 AJAX 入口。
+// nonce 沿用 'live2d_shop_action'(与 live2d-SDK.php 内一致);capability=manage_options。
+// 入参 modelApi 直接来自 admin TS,服务端用 wp_unslash + 简单 URL 校验,不依赖白名单。
+//
+// 所有「下载」类入口统一走 v2_cache_enqueue + WP Cron 异步队列(详见 live2d-V2Api.php 末尾)。
+// 旧版同步 v2_download_model 已下线 — 单行下载 / 批量下载 / 失败重试 全部用 enqueue。
+// 2026-05 移除访客触发的「自动懒下载」分支,所有下载都是站长在后台手动点。
+add_action('wp_ajax_v2_local_status',           'live2d_v2_ajax_local_status');
+add_action('wp_ajax_v2_delete_model',           'live2d_v2_ajax_delete_model');
+add_action('wp_ajax_v2_cache_enqueue',          'live2d_v2_ajax_cache_enqueue');
+add_action('wp_ajax_v2_cache_status',           'live2d_v2_ajax_cache_status');
+add_action('wp_ajax_v2_cache_cleanup_all',      'live2d_v2_ajax_cache_cleanup_all');
+add_action('wp_ajax_v2_cache_cleanup_orphans',  'live2d_v2_ajax_cache_cleanup_orphans');
+add_action('wp_ajax_v2_upload_model_file',      'live2d_v2_ajax_upload_model_file');
+
+function live2d_v2_ajax_verify()
+{
+    if (!is_user_logged_in() || !current_user_can('manage_options')) {
+        wp_send_json_error(array('errorCode' => 403, 'errorMsg' => 'forbidden'), 403);
+    }
+    check_ajax_referer('live2d_shop_action', '_wpnonce');
+}
+
+function live2d_v2_ajax_local_status()
+{
+    live2d_v2_ajax_verify();
+    $modelApi = isset($_POST['modelApi']) ? wp_unslash($_POST['modelApi']) : '';
+    wp_send_json(live2d_V2Api::get_local_status($modelApi));
+}
+
+function live2d_v2_ajax_delete_model()
+{
+    live2d_v2_ajax_verify();
+    $modelApi = isset($_POST['modelApi']) ? wp_unslash($_POST['modelApi']) : '';
+    $r = live2d_V2Api::delete_model_local($modelApi);
+    // 顺手把该 slug 残留的 done/failed job 记录清掉
+    if (is_array($r) && (int) ($r['errorCode'] ?? 0) === 200) {
+        $jobId = live2d_V2Api::job_id($modelApi);
+        $j = live2d_V2Api::get_job($jobId);
+        if ($j && in_array(($j['status'] ?? ''), array('done', 'failed'), true)) {
+            live2d_V2Api::delete_job($jobId);
+        }
+    }
+    wp_send_json($r);
+}
+
+/**
+ * 入队下载任务。统一入口 — 单行下载、批量下载、失败重试都走它。
+ * 入参:
+ *   modelApis[]  显式指定的 modelApi 列表(JSON 数组字符串或 form-data 数组);
+ *                空则使用 collect_configured_targets() 全集(批量"全部下载"用法)。
+ * 返回:
+ *   { errorCode:200, jobs:[{slug,jobId,status,modelApi,...}, ...] }
+ */
+function live2d_v2_ajax_cache_enqueue()
+{
+    live2d_v2_ajax_verify();
+    $modelApis = array();
+    if (isset($_POST['modelApis'])) {
+        $raw = wp_unslash($_POST['modelApis']);
+        if (is_array($raw)) {
+            $modelApis = $raw;
+        } elseif (is_string($raw) && $raw !== '') {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) $modelApis = $decoded;
+        }
+    }
+    if (empty($modelApis)) {
+        $modelApis = live2d_V2Api::collect_configured_targets();
+    }
+    $jobs = array();
+    foreach ($modelApis as $url) {
+        $url = trim((string) $url);
+        if ($url === '') continue;
+        $r = live2d_V2Api::enqueue_job($url, 'manual');
+        if (is_wp_error($r)) {
+            $jobs[] = array(
+                'modelApi' => $url,
+                'status'   => 'invalid',
+                'error'    => $r->get_error_message(),
+            );
+            continue;
+        }
+        $jobs[] = $r;
+    }
+    wp_send_json(array('errorCode' => 200, 'jobs' => $jobs));
+}
+
+/**
+ * 查询全部 job 状态 + 全部已配置 modelApi 的本地状态(供 UI 渲染)。
+ * 返回:
+ *   {
+ *     errorCode:200,
+ *     queueRunning:bool,
+ *     totals:{ pending,downloading,done,failed },
+ *     jobs:[ ...全部 job ],
+ *     targets:[ {modelApi, slug, exists, fileCount, totalBytes} ]   // 当前应被缓存的列表
+ *   }
+ */
+function live2d_v2_ajax_cache_status()
+{
+    live2d_v2_ajax_verify();
+    $jobs = live2d_V2Api::list_all_jobs();
+    $totals = array('pending' => 0, 'downloading' => 0, 'done' => 0, 'failed' => 0);
+    foreach ($jobs as $j) {
+        $st = $j['status'] ?? '';
+        if (isset($totals[$st])) $totals[$st]++;
+    }
+    $queueRunning = ($totals['pending'] + $totals['downloading']) > 0;
+
+    $targets = array();
+    foreach (live2d_V2Api::collect_configured_targets() as $url) {
+        $targets[] = array_merge(
+            array('modelApi' => $url),
+            live2d_V2Api::get_local_status($url)
+        );
+    }
+    wp_send_json(array(
+        'errorCode'    => 200,
+        'queueRunning' => $queueRunning,
+        'totals'       => $totals,
+        'jobs'         => $jobs,
+        'targets'      => $targets,
+    ));
+}
+
+function live2d_v2_ajax_cache_cleanup_all()
+{
+    live2d_v2_ajax_verify();
+    wp_send_json(live2d_V2Api::cleanup_all_v2());
+}
+
+function live2d_v2_ajax_cache_cleanup_orphans()
+{
+    live2d_v2_ajax_verify();
+    $keep = live2d_V2Api::collect_configured_targets();
+    wp_send_json(live2d_V2Api::cleanup_orphans_v2($keep));
+}
+
+/**
+ * 接收前端拖拽 / 选择文件夹上传的单个文件。
+ * 入参 (multipart/form-data):
+ *   - modelApi : string — 用于派生 slug
+ *   - relPath  : string — 相对路径,如 'haru/haru.moc3'
+ *   - file     : binary — 实际文件字节
+ *   - _wpnonce : string — live2d_shop_action nonce
+ * 返回:
+ *   { errorCode, savedTo?, totalBytes?, errorMsg? }
+ */
+function live2d_v2_ajax_upload_model_file()
+{
+    live2d_v2_ajax_verify();
+    $modelApi = isset($_POST['modelApi']) ? wp_unslash($_POST['modelApi']) : '';
+    $relPath  = isset($_POST['relPath'])  ? wp_unslash($_POST['relPath'])  : '';
+    if (empty($_FILES['file']) || !isset($_FILES['file']['tmp_name'])) {
+        wp_send_json(array('errorCode' => 400, 'errorMsg' => '缺少 file 字段'));
+    }
+    $err = (int) ($_FILES['file']['error'] ?? UPLOAD_ERR_OK);
+    if ($err !== UPLOAD_ERR_OK) {
+        // PHP 上传错误码映射 — 把常见错给到前端用户能理解的中文
+        $msg = '上传失败';
+        switch ($err) {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                $msg = '文件超过服务器上传上限';
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $msg = '上传被中断,只收到部分数据';
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                $msg = '没有文件上传';
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+            case UPLOAD_ERR_CANT_WRITE:
+                $msg = '服务器临时目录不可写';
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $msg = '上传被 PHP 扩展拒绝';
+                break;
+        }
+        wp_send_json(array('errorCode' => 400, 'errorMsg' => $msg));
+    }
+    $r = live2d_V2Api::receive_uploaded_file(
+        $modelApi,
+        $relPath,
+        (string) $_FILES['file']['tmp_name'],
+        (int)    $_FILES['file']['size']
+    );
+    wp_send_json($r);
+}
 
 class live2d_Shop
 {
@@ -54,7 +246,7 @@ class live2d_Shop
             <div class="wp-filter">
                 <h2><?php esc_html_e('列表中是您可以使用的模型。', 'live-2d'); ?></h2>
                 <p><?php echo wp_kses(
-                    __('下载方式与浏览器扩展一致:直接 GET <code>download.live2dweb.com/model/{name}.zip</code>,由后端 PHP 解压到 <code>model/{name}</code>。', 'live-2d'),
+                    __('点击「下载」后，插件会自动下载并安装到您的网站中。', 'live-2d'),
                     array('code' => array())
                 ); ?></p>
             </div>

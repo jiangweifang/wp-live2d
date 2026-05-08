@@ -1,299 +1,96 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Live2D Web Canvas Extension Privacy Policy</title>
-    <meta name="description" content="Privacy policy for the Live2D Web Canvas Chrome / Edge browser extension." />
-    <link rel="stylesheet" href="../assets/cayman.css" />
-</head>
-<body>
+---
+page_id: privacy
+nav_keys: [home, custom_model, chatgpt, github_repo]
+meta: 'Effective date / 生效日期：2025-01-01 &nbsp;|&nbsp; Last updated / 最近更新：2026-05-05<br />Publisher / 发布主体：北京市天先生软件技术中心'
+footer: '<a href="/">← 返回文档首页</a><br />&copy; 2025–2026 北京市天先生软件技术中心 · Live2D Web Canvas'
+---
 
-    <header class="page-header">
-        <h1 class="project-name">Live2D Web Canvas</h1>
-        <h2 class="project-tagline">Browser Extension Privacy Policy / 浏览器扩展隐私政策</h2>
-        <p class="project-meta">
-            Effective date / 生效日期：2025-01-01 &nbsp;|&nbsp; Last updated / 最近更新：2026-05-05<br />
-            Publisher / 发布主体：北京市天先生软件技术中心
-        </p>
-        <p class="header-nav">
-            <a href="../index.html">← 返回首页 / Home</a>
-            <a href="../wiki/custom-model.html">自定义模型</a>
-            <a href="../wiki/chatgpt.html">ChatGPT</a>
-            <a href="https://github.com/jiangweifang/wp-live2d" target="_blank" rel="noopener">GitHub</a>
-        </p>
-        <p class="lang-switch">
-            <a href="#zh-cn">中文</a>
-            <a href="#en-us">English</a>
-        </p>
-    </header>
+<h1>Live2D Web Canvas 浏览器扩展隐私政策</h1>
+<p class="meta">
+    适用产品：Chrome / Edge 浏览器扩展 <strong>Live2D Web Canvas</strong>（含 BETA 测试版）<br />
+    生效日期：2025-01-01 &nbsp;|&nbsp; 最近更新：2026-05-05<br />
+    发布主体：北京市天先生软件技术中心
+</p>
 
-    <main class="main-content">
+<p>
+    本政策仅说明 Chrome / Edge 浏览器扩展 <strong>Live2D Web Canvas</strong>（以下称"本扩展"）
+    在用户使用过程中如何处理数据。<strong>本政策不适用于</strong>本网站的其他服务、WordPress 插件或其他客户端产品。
+</p>
 
-        <section id="zh-cn">
+<h2>1. 我们收集哪些数据</h2>
+<p>本扩展按 Chrome Web Store「数据使用」分类，仅处理以下两类数据，且仅在用户主动登录后才会发生：</p>
+<table>
+    <thead>
+        <tr><th style="width:22%">数据类型</th><th>具体内容</th><th style="width:22%">收集触发时机</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>身份验证信息</td><td>本网站签发的访问令牌（JWT，含 <code>key</code> 与 <code>sign</code>），用于解锁付费功能。</td><td>用户在扩展中点击"登录"，并在 <code>www.live2dweb.com</code> 登录页提交账号密码后，由扩展接收。</td></tr>
+        <tr><td>个人身份信息</td><td>与用户账号一一对应的内部标识（与登录时的账号关联）。本扩展<strong>不</strong>收集姓名、邮箱地址、电话、年龄、身份证件号、邮政地址等其他可识别个人的信息。</td><td>同上：仅在登录后随访问令牌一起取得。</td></tr>
+    </tbody>
+</table>
 
-        <h1>Live2D Web Canvas 浏览器扩展隐私政策</h1>
-        <p class="meta">
-            适用产品：Chrome / Edge 浏览器扩展 <strong>Live2D Web Canvas</strong>（含 BETA 测试版）<br />
-            生效日期：2025-01-01 &nbsp;|&nbsp; 最近更新：2026-05-05<br />
-            发布主体：北京市天先生软件技术中心
-        </p>
+<h3>我们<strong>不</strong>收集的数据（明确声明）</h3>
+<ul>
+    <li>不读取、不存储、不上传你访问的网页 URL、网页标题或浏览历史。</li>
+    <li>不读取、不上传所在网页的任何文字、图片、表单、输入内容、Cookie 或 DOM 节点。</li>
+    <li>不收集你的鼠标点击、滚动、击键操作（看板娘只在本地根据当前鼠标位置做朝向动画，数据不离开你的浏览器）。</li>
+    <li>不收集地理位置、IP 地址、设备指纹。</li>
+    <li>不收集健康、医疗、财务、信用、付款卡号等任何敏感信息。</li>
+    <li>不收集邮件、即时消息或任何形式的个人通讯。</li>
+</ul>
 
-        <p>
-            本政策仅说明 Chrome / Edge 浏览器扩展 <strong>Live2D Web Canvas</strong>（以下称"本扩展"）
-            在用户使用过程中如何处理数据。<strong>本政策不适用于</strong>本网站的其他服务、WordPress 插件或其他客户端产品。
-        </p>
+<h2>2. 数据保存在哪里</h2>
+<table>
+    <thead>
+        <tr><th style="width:30%">存储位置</th><th>存放内容</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><code>chrome.storage.sync</code><br /><span class="text-muted">本地，并随你的 Chrome 账号同步</span></td><td>扩展偏好设置：是否启用看板娘、所选模型、所选贴图、提示气泡频率、工具栏开关等。</td></tr>
+        <tr><td><code>chrome.storage.local</code><br /><span class="text-muted">仅本地</span></td><td>登录后获得的访问令牌（JWT）。该令牌不会跨设备同步。</td></tr>
+        <tr><td>浏览器 IndexedDB（本地）</td><td>用户主动从模型库下载的 Live2D 模型文件（.moc、PNG 贴图、动作 JSON 等），用于离线加载与加速展示。</td></tr>
+        <tr><td>本网站后端服务器<br /><code>https://api.live2dweb.com</code></td><td>用户账号本身的信息（在用户登录本网站时即已存在，与扩展无关）；以及扩展调用 API 时附带的访问令牌的常规访问日志（含访问时间、请求路径、响应码），不含网页内容。</td></tr>
+    </tbody>
+</table>
 
-        <h2>1. 我们收集哪些数据</h2>
-        <p>本扩展按 Chrome Web Store「数据使用」分类，仅处理以下两类数据，且仅在用户主动登录后才会发生：</p>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:22%">数据类型</th>
-                    <th>具体内容</th>
-                    <th style="width:22%">收集触发时机</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>身份验证信息<br /><span class="text-muted">Authentication information</span></td>
-                    <td>本网站签发的访问令牌（JWT，含 <code>key</code> 与 <code>sign</code>），用于解锁付费功能。</td>
-                    <td>用户在扩展中点击"登录"，并在 <code>www.live2dweb.com</code> 登录页提交账号密码后，由扩展接收。</td>
-                </tr>
-                <tr>
-                    <td>个人身份信息<br /><span class="text-muted">Personally identifiable information</span></td>
-                    <td>与用户账号一一对应的内部标识（与登录时的账号关联）。本扩展<strong>不</strong>收集姓名、邮箱地址、电话、年龄、身份证件号、邮政地址等其他可识别个人的信息。</td>
-                    <td>同上：仅在登录后随访问令牌一起取得。</td>
-                </tr>
-            </tbody>
-        </table>
+<h2>3. 数据用途（单一用途）</h2>
+<p>本扩展的单一用途是：在网页右下角叠加一个 Live2D 虚拟形象。上述被收集的数据<strong>仅</strong>用于：</p>
+<ol>
+    <li>识别已付费用户，使其能在扩展中使用"自定义模型 URL"等付费功能；</li>
+    <li>从本网站自有域名 <code>https://download.live2dweb.com</code> 下载用户选择的模型文件；</li>
+    <li>保存用户的展示偏好，使其在不同标签页和不同设备间保持一致体验。</li>
+</ol>
 
-        <h3>我们<strong>不</strong>收集的数据（明确声明）</h3>
-        <ul>
-            <li>不读取、不存储、不上传你访问的网页 URL、网页标题或浏览历史。</li>
-            <li>不读取、不上传所在网页的任何文字、图片、表单、输入内容、Cookie 或 DOM 节点。</li>
-            <li>不收集你的鼠标点击、滚动、击键操作（看板娘只在本地根据当前鼠标位置做朝向动画，数据不离开你的浏览器）。</li>
-            <li>不收集地理位置、IP 地址、设备指纹。</li>
-            <li>不收集健康、医疗、财务、信用、付款卡号等任何敏感信息。</li>
-            <li>不收集邮件、即时消息或任何形式的个人通讯。</li>
-        </ul>
+<h2>4. 数据共享与转让</h2>
+<ul>
+    <li>我们<strong>不会</strong>出售用户数据。</li>
+    <li>我们<strong>不会</strong>将用户数据转交给与本扩展单一用途无关的第三方。</li>
+    <li>我们<strong>不会</strong>将用户数据用于评估信用、放贷或任何与信贷相关的目的。</li>
+    <li>除访问本网站自有域名（<code>www.live2dweb.com</code>、<code>api.live2dweb.com</code>、<code>download.live2dweb.com</code>）外，本扩展不向任何第三方服务器发起请求。</li>
+</ul>
 
-        <h2>2. 数据保存在哪里</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:30%">存储位置</th>
-                    <th>存放内容</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><code>chrome.storage.sync</code><br /><span class="text-muted">本地，并随你的 Chrome 账号同步</span></td>
-                    <td>扩展偏好设置：是否启用看板娘、所选模型、所选贴图、提示气泡频率、工具栏开关等。</td>
-                </tr>
-                <tr>
-                    <td><code>chrome.storage.local</code><br /><span class="text-muted">仅本地</span></td>
-                    <td>登录后获得的访问令牌（JWT）。该令牌不会跨设备同步。</td>
-                </tr>
-                <tr>
-                    <td>浏览器 IndexedDB（本地）</td>
-                    <td>用户主动从模型库下载的 Live2D 模型文件（.moc、PNG 贴图、动作 JSON 等），用于离线加载与加速展示。</td>
-                </tr>
-                <tr>
-                    <td>本网站后端服务器<br /><code>https://api.live2dweb.com</code></td>
-                    <td>用户账号本身的信息（在用户登录本网站时即已存在，与扩展无关）；以及扩展调用 API 时附带的访问令牌的常规访问日志（含访问时间、请求路径、响应码），不含网页内容。</td>
-                </tr>
-            </tbody>
-        </table>
+<h2>5. 用户对自己数据的控制</h2>
+<ul>
+    <li><strong>登出：</strong>在扩展选项页（点击扩展图标 → 选项 → 登录标签页）点击"退出登录"，即可清除本地保存的访问令牌。</li>
+    <li><strong>清空模型缓存：</strong>在选项页"V1 模型库"标签页可逐项删除已下载的模型，从 IndexedDB 释放存储。</li>
+    <li><strong>清空所有偏好：</strong>在 <code>chrome://extensions</code> 中卸载本扩展，浏览器会一并清除 <code>chrome.storage</code> 与 IndexedDB 中本扩展的所有数据。</li>
+    <li><strong>注销账号 / 删除服务器侧个人资料：</strong>请通过下方"联系我们"邮箱发送注销请求，我们将在合理时间内处理。</li>
+</ul>
 
-        <h2>3. 数据用途（单一用途）</h2>
-        <p>
-            本扩展的单一用途是：在网页右下角叠加一个 Live2D 虚拟形象。
-            上述被收集的数据<strong>仅</strong>用于：
-        </p>
-        <ol>
-            <li>识别已付费用户，使其能在扩展中使用"自定义模型 URL"等付费功能；</li>
-            <li>从本网站自有域名 <code>https://download.live2dweb.com</code> 下载用户选择的模型文件；</li>
-            <li>保存用户的展示偏好，使其在不同标签页和不同设备间保持一致体验。</li>
-        </ol>
+<h2>6. 数据安全</h2>
+<ul>
+    <li>访问令牌通过 HTTPS 传输，并以 HMAC 签名校验防篡改。</li>
+    <li>令牌仅保存在用户本地浏览器的 <code>chrome.storage.local</code>，不会出现在 URL 或日志中。</li>
+    <li>本扩展<strong>不</strong>使用任何远程托管代码（Remote Hosted Code）：所有 JavaScript 均随扩展安装包分发，从 <code>download.live2dweb.com</code> 拉取的内容仅为模型数据资源（二进制 / 图片 / JSON），不会被作为代码执行。</li>
+</ul>
 
-        <h2>4. 数据共享与转让</h2>
-        <ul>
-            <li>我们<strong>不会</strong>出售用户数据。</li>
-            <li>我们<strong>不会</strong>将用户数据转交给与本扩展单一用途无关的第三方。</li>
-            <li>我们<strong>不会</strong>将用户数据用于评估信用、放贷或任何与信贷相关的目的。</li>
-            <li>除访问本网站自有域名（<code>www.live2dweb.com</code>、<code>api.live2dweb.com</code>、<code>download.live2dweb.com</code>）外，本扩展不向任何第三方服务器发起请求。</li>
-        </ul>
+<h2>7. 儿童隐私</h2>
+<p>本扩展不针对 13 岁以下儿童设计，亦不会有意识地收集儿童的个人信息。</p>
 
-        <h2>5. 用户对自己数据的控制</h2>
-        <ul>
-            <li><strong>登出：</strong>在扩展选项页（点击扩展图标 → 选项 → 登录标签页）点击"退出登录"，即可清除本地保存的访问令牌。</li>
-            <li><strong>清空模型缓存：</strong>在选项页"V1 模型库"标签页可逐项删除已下载的模型，从 IndexedDB 释放存储。</li>
-            <li><strong>清空所有偏好：</strong>在 <code>chrome://extensions</code> 中卸载本扩展，浏览器会一并清除 <code>chrome.storage</code> 与 IndexedDB 中本扩展的所有数据。</li>
-            <li><strong>注销账号 / 删除服务器侧个人资料：</strong>请通过下方"联系我们"邮箱发送注销请求，我们将在合理时间内处理。</li>
-        </ul>
+<h2>8. 政策变更</h2>
+<p>如本政策发生重大变更，我们会更新页面顶部的"最近更新"日期，并通过扩展更新说明告知用户。继续使用本扩展即视为接受变更后的政策。</p>
 
-        <h2>6. 数据安全</h2>
-        <ul>
-            <li>访问令牌通过 HTTPS 传输，并以 HMAC 签名校验防篡改。</li>
-            <li>令牌仅保存在用户本地浏览器的 <code>chrome.storage.local</code>，不会出现在 URL 或日志中。</li>
-            <li>本扩展<strong>不</strong>使用任何远程托管代码（Remote Hosted Code）：所有 JavaScript 均随扩展安装包分发，从 <code>download.live2dweb.com</code> 拉取的内容仅为模型数据资源（二进制 / 图片 / JSON），不会被作为代码执行。</li>
-        </ul>
-
-        <h2>7. 儿童隐私</h2>
-        <p>本扩展不针对 13 岁以下儿童设计，亦不会有意识地收集儿童的个人信息。</p>
-
-        <h2>8. 政策变更</h2>
-        <p>
-            如本政策发生重大变更，我们会更新页面顶部的"最近更新"日期，并通过扩展更新说明告知用户。
-            继续使用本扩展即视为接受变更后的政策。
-        </p>
-
-        <h2>9. 联系我们</h2>
-        <ul>
-            <li>邮箱：<a href="mailto:jwf@live.cn">jwf@live.cn</a></li>
-            <li>主体名称：北京市天先生软件技术中心</li>
-        </ul>
-
-        </section>
-
-        <hr class="lang-divider" />
-
-        <section id="en-us">
-
-        <h1>Live2D Web Canvas Browser Extension — Privacy Policy</h1>
-        <p class="meta">
-            Applies to: Chrome / Edge browser extension <strong>Live2D Web Canvas</strong> (including the BETA build).<br />
-            Effective date: 2025-01-01 &nbsp;|&nbsp; Last updated: 2026-05-05<br />
-            Publisher: Beijing Mr. Tian Software Technology Center
-        </p>
-
-        <p>
-            This policy describes how the Chrome / Edge browser extension <strong>Live2D Web Canvas</strong>
-            (the "Extension") handles user data. It does <strong>not</strong> apply to other services on this website,
-            our WordPress plugin or any other client products.
-        </p>
-
-        <h2>1. Data we collect</h2>
-        <p>Mapped to the Chrome Web Store data-usage categories, the Extension processes only the following two types of data, and only after the user has explicitly signed in:</p>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:26%">Category</th>
-                    <th>What it is</th>
-                    <th style="width:24%">When it is collected</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Authentication information</td>
-                    <td>An access token (JWT containing <code>key</code> and <code>sign</code>) issued by our website, used to unlock paid features.</td>
-                    <td>Only after the user clicks "Sign in" inside the Extension and completes the login flow on <code>www.live2dweb.com</code>.</td>
-                </tr>
-                <tr>
-                    <td>Personally identifiable information</td>
-                    <td>An internal account identifier bound to the user account. The Extension does <strong>not</strong> collect names, email addresses, phone numbers, ages, government IDs or postal addresses.</td>
-                    <td>Same as above; obtained together with the access token after sign-in.</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3>What we explicitly do NOT collect</h3>
-        <ul>
-            <li>We do not read, store or upload the URLs, titles or browsing history of pages you visit.</li>
-            <li>We do not read or upload any text, images, form input, cookies or DOM nodes from the host page.</li>
-            <li>We do not collect mouse clicks, scroll position or keystrokes (the character only animates locally based on the live cursor position; nothing leaves your browser).</li>
-            <li>We do not collect geolocation, IP address or device fingerprints.</li>
-            <li>We do not collect health, medical, financial, credit or payment-card information.</li>
-            <li>We do not collect emails, instant messages or any form of personal communication.</li>
-        </ul>
-
-        <h2>2. Where data is stored</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:34%">Location</th>
-                    <th>Contents</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><code>chrome.storage.sync</code> (local + synced via Chrome account)</td>
-                    <td>Extension preferences: enabled flag, selected model, selected texture, tip-bubble frequency, toolbar toggles.</td>
-                </tr>
-                <tr>
-                    <td><code>chrome.storage.local</code> (local only)</td>
-                    <td>The access token (JWT) obtained after sign-in. Never synced across devices.</td>
-                </tr>
-                <tr>
-                    <td>Browser IndexedDB (local)</td>
-                    <td>Live2D model files the user has explicitly downloaded from the model library, kept for offline use and faster loading.</td>
-                </tr>
-                <tr>
-                    <td>Our backend at <code>https://api.live2dweb.com</code></td>
-                    <td>The user account itself (created when the user originally signed up on our website, independent of the Extension); plus standard server access logs (timestamp, request path, response code) for requests carrying the token. Server logs do not contain page contents.</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h2>3. How the data is used (single purpose)</h2>
-        <p>
-            The Extension's single purpose is to render a Live2D character overlay in the bottom-right corner of webpages.
-            The data above is used <strong>only</strong> to:
-        </p>
-        <ol>
-            <li>identify paid users so that paid features (e.g. the "Custom model URL" mode) can be unlocked;</li>
-            <li>download user-selected model files from our own domain <code>https://download.live2dweb.com</code>;</li>
-            <li>persist user preferences across tabs and devices.</li>
-        </ol>
-
-        <h2>4. Sharing and transfer</h2>
-        <ul>
-            <li>We do <strong>not</strong> sell user data.</li>
-            <li>We do <strong>not</strong> transfer user data to any third party for purposes unrelated to the Extension's single purpose.</li>
-            <li>We do <strong>not</strong> use or transfer user data to determine creditworthiness or for lending purposes.</li>
-            <li>Apart from our own domains (<code>www.live2dweb.com</code>, <code>api.live2dweb.com</code>, <code>download.live2dweb.com</code>), the Extension does not contact any third-party server.</li>
-        </ul>
-
-        <h2>5. Your control over your data</h2>
-        <ul>
-            <li><strong>Sign out:</strong> In the Extension options page (click the toolbar icon → Options → Login tab) click "Sign out" to clear the locally stored access token.</li>
-            <li><strong>Clear cached models:</strong> In the "V1 Model Library" tab you can delete each downloaded model individually, freeing IndexedDB storage.</li>
-            <li><strong>Wipe everything:</strong> Uninstalling the Extension via <code>chrome://extensions</code> removes all data the Extension keeps in <code>chrome.storage</code> and IndexedDB.</li>
-            <li><strong>Account deletion / server-side data removal:</strong> Send a deletion request to the contact email below. We will process it within a reasonable time.</li>
-        </ul>
-
-        <h2>6. Data security</h2>
-        <ul>
-            <li>The access token is transmitted over HTTPS and protected by HMAC signing to prevent tampering.</li>
-            <li>The token is stored only in <code>chrome.storage.local</code> on your device and never appears in URLs or logs.</li>
-            <li>The Extension does <strong>not</strong> use any remotely hosted code: all JavaScript ships inside the extension package; assets fetched from <code>download.live2dweb.com</code> are model data only (binary / images / JSON) and are never executed as code.</li>
-        </ul>
-
-        <h2>7. Children's privacy</h2>
-        <p>The Extension is not directed at children under 13 and does not knowingly collect any personal information from children.</p>
-
-        <h2>8. Changes to this policy</h2>
-        <p>
-            For material changes we will update the "Last updated" date above and announce them in the Extension's update notes.
-            Continued use of the Extension constitutes acceptance of the revised policy.
-        </p>
-
-        <h2>9. Contact</h2>
-        <ul>
-            <li>Email: <a href="mailto:jwf@live.cn">jwf@live.cn</a></li>
-            <li>Legal name: Beijing Mr. Tian Software Technology Center</li>
-        </ul>
-
-        </section>
-
-        <footer class="site-footer">
-            <a href="../index.html">← 返回文档首页 / Back to docs home</a>
-            <br />
-            &copy; 2025–2026 北京市天先生软件技术中心 · Live2D Web Canvas
-        </footer>
-
-    </main>
-
-</body>
-</html>
+<h2>9. 联系我们</h2>
+<ul>
+    <li>邮箱：<a href="mailto:jwf@live.cn">jwf@live.cn</a></li>
+    <li>主体名称：北京市天先生软件技术中心</li>
+</ul>

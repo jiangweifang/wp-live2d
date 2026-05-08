@@ -49,22 +49,28 @@ if (!function_exists('live2d_v1api_local_url')) {
 
 if (!function_exists('live2d_normalize_api_type')) {
 	/**
-	 * 把 DB 中的 `apiType` 归一化成三态字符串:
-	 *   - 'local'  : 本地部署旧版模型(由插件 model/ 目录托管,走本地 REST)
-	 *   - 'remote' : 自行部署旧版模型(用户给的 fghrsh-style 旧 PHP API URL)
-	 *   - 'custom' : 自定义新版模型路径(.model3.json 直链或 V3 目录根)
+	 * 把 DB 中的 `apiType` 归一化成四态字符串:
+	 *   - 'local'         : 本地部署旧版模型(V1, 由插件 model/ 目录托管, 走本地 REST)
+	 *   - 'remote'        : 自行部署旧版模型(V1, 用户给的 fghrsh-style 旧 PHP API URL)
+	 *   - 'custom-remote' : 自定义新版模型(V2 / Cubism 4+) · 直链加载(跨域, 不走防盗链)
+	 *   - 'custom-local'  : 自定义新版模型(V2 / Cubism 4+) · 托管到本站(同源 + 防盗链 alias)
 	 *
-	 * 兼容历史值:
-	 *   - bool true  / 字符串 "1" / "true"  → 'local'  (原"创意工坊")
-	 *   - bool false / 字符串 "0" / "false" / null / 缺失 → 'remote' (原"自定API")
+	 * 兼容历史值(2.x 之前 DB 里的写法):
+	 *   - bool true  / "1" / "true"  → 'local'
+	 *   - bool false / "0" / "false" / null / 缺失 → 'remote'
+	 *   - 字符串 'custom' → 'custom-remote'
+	 *     注: 老 'custom' + protectV2='local' 这种组合的迁移在
+	 *         live_2d_settings_sanitize() 里另行处理(那里能同时看到两个字段);
+	 *         本函数只处理单字段的归一化, 不知道 protectV2 的值。
 	 */
 	function live2d_normalize_api_type($value)
 	{
 		if (is_string($value)) {
 			$v = strtolower(trim($value));
-			if (in_array($v, array('local', 'remote', 'custom'), true)) {
+			if (in_array($v, array('local', 'remote', 'custom-remote', 'custom-local'), true)) {
 				return $v;
 			}
+			if ($v === 'custom') return 'custom-remote';
 			if ($v === '1' || $v === 'true' || $v === 'on') return 'local';
 			if ($v === '0' || $v === 'false' || $v === 'off' || $v === '') return 'remote';
 		}

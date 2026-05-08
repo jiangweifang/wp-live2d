@@ -1,0 +1,521 @@
+# Multi-language body for /wiki/anti-hotlink.html (and /<lang>/wiki/anti-hotlink.html).
+# Edit here, the 4 stub HTML files just include this via _includes/wiki-body.html.
+'zh-CN': |
+  <p>WordPress 后台 → Live2D 设置 → 基础设置 → <strong>API 方式</strong> 决定模型从哪里加载,以及防盗链由谁挡。2026-05 之后老的 <code>protectV2</code> 二态开关已经合并进 <code>apiType</code>,现在是<strong>四选项 radio</strong>,每一种行为都不同。本页只讲两种「自定义新版模型」(V2 / Cubism 4+),旧版 V1 模型不走防盗链。</p>
+
+  <blockquote>
+      <p><strong>V1（journey-ad / Cubism 2~3）模型不走这一页。</strong>V1 模型本身就由插件本地 REST 接口（<code>/wp-json/live2d/v1/model/*</code>）发出,不需要再加一层防盗链。本页所有内容只针对 V2 模型。</p>
+  </blockquote>
+
+  <h2>四种 API 方式</h2>
+  <table>
+      <thead>
+          <tr>
+              <th style="width:20%">API 方式</th>
+              <th style="width:18%">模型放在哪</th>
+              <th style="width:22%">防盗链谁来挡</th>
+              <th>什么时候选</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <td><strong>本地部署旧版模型</strong></td>
+              <td>插件 model/ 目录(V1)</td>
+              <td>不需要</td>
+              <td>用 22/33/Pio/Tia 这种 V1 老模型</td>
+          </tr>
+          <tr>
+              <td><strong>自行部署旧版模型</strong></td>
+              <td>站长自己的远端 V1 PHP API</td>
+              <td>跨域,你自己处理(也可以不处理)</td>
+              <td>已经有 fghrsh 风格 V1 接口</td>
+          </tr>
+          <tr>
+              <td><strong>自定义新版模型 · 直链加载</strong><br /><span class="text-muted">原 protectV2 = direct</span></td>
+              <td>OSS / CDN / GitHub Pages 等跨域位置</td>
+              <td>你自己(在对象存储 / CDN 控制台开 Referer 白名单 / URL 鉴权)</td>
+              <td>模型已经放在阿里云 OSS、腾讯云 COS、自家 CDN 等地方</td>
+          </tr>
+          <tr>
+              <td><strong>自定义新版模型 · 托管到本站</strong><br /><span class="text-muted">原 protectV2 = local,推荐</span></td>
+              <td>插件 model/{slug}/ 目录(V2)</td>
+              <td>插件自己处理(自动 alias + 临时签名 URL)</td>
+              <td>模型放在 GitHub Pages / jsDelivr / 自己搭的 nginx 这种没有防盗能力的地方,或者纯本地</td>
+          </tr>
+      </tbody>
+  </table>
+
+  <h2>选项 A:自定义新版模型 · 直链加载(适合已经在用对象存储 / CDN 的站长)</h2>
+  <p>这种模式下插件不动你的 <code>modelAPI</code>,把它原封不动地交给浏览器去加载。防盗的事交给对象存储或 CDN 自己挡。常见三种做法(从简单到复杂):</p>
+
+  <h3>1. 公共读 + Referer 白名单(最简单)</h3>
+  <ul>
+      <li><strong>阿里云 OSS</strong>:Bucket → 数据安全 → 防盗链,把你的网站域名加进白名单。</li>
+      <li><strong>腾讯云 COS</strong>:存储桶 → 安全管理 → 防盗链设置,操作类似。</li>
+      <li><strong>原理</strong>:浏览器加载模型时会带 Referer,不在白名单的来源直接 403。</li>
+      <li><strong>局限</strong>:稍微懂抓包的人能伪造 Referer 绕过。日常用够了。</li>
+  </ul>
+
+  <h3>2. 套一层自家 CDN,开 URL 鉴权</h3>
+  <p>在 OSS 前面套阿里云 CDN / 腾讯云 CDN / Cloudflare,开启「URL 鉴权」或「Token 校验」,再把 <code>modelAPI</code> 填成带签名地址。这种比纯 Referer 严,但配置稍复杂。</p>
+
+  <h3>3. 私有读 + 签名链接(最严格)</h3>
+  <p>Bucket 设成私有,每次访问都带签名才能下载。<strong>这种模式不能直接在插件设置页里配置</strong>,需要懂 PHP 的人在主题 <code>functions.php</code> 里写代码动态生成签名 URL。本插件<em>不内置</em>任何具体云厂商 SDK,原因见下面 FAQ。</p>
+
+  <h2>选项 B:自定义新版模型 · 托管到本站(推荐 / 适合没法配防盗链的源)</h2>
+  <p>选这个之后,模型文件会被保存到你自己的 WordPress 站点(<code>wp-content/plugins/live-2d/model/{slug}/</code>),并对外只露出一个加密过的临时签名 URL:</p>
+  <ul>
+      <li>访客 F12 看到的也是这个临时 URL,<strong>不会暴露源站地址</strong>。</li>
+      <li>每个文件有别名(hash 化路径),别人猜不到。</li>
+      <li>2026-05 之后只支持<strong>站长手动触发下载或上传</strong>,不再有访客访问时的「自动懒下载」(老站长反馈那种模式不可见、不可控)。</li>
+      <li>有两种把模型保存到本站的方式,可以共存:</li>
+  </ul>
+
+  <h3>选了「托管到本站」之后表单怎么变</h3>
+  <p>选这一项后,<code>modelAPI</code> 输入框会自动隐藏,系统会把它强制写成本站的 <code>wp-content/plugins/live-2d/model/</code> 根地址。<strong>站长唯一需要填的就是「模型目录」(modelDir) 列表</strong>,每行写一个 slug(= 子目录名),插件会按 <code>{root}{slug}/{slug}.model3.json</code> 的固定模板自动展开成完整的 manifest URL。</p>
+  <p>例如你想加载 <code>haru</code> / <code>Pio</code> / <code>shizuku</code> 三个模型,模型目录就这样填:</p>
+  <pre><code>modelDir:
+    - haru
+    - Pio
+    - shizuku</code></pre>
+  <p>插件会自动展开为:</p>
+  <pre><code>https://your-site.com/wp-content/plugins/live-2d/model/haru/haru.model3.json
+  https://your-site.com/wp-content/plugins/live-2d/model/Pio/Pio.model3.json
+  https://your-site.com/wp-content/plugins/live-2d/model/shizuku/shizuku.model3.json</code></pre>
+  <p>实际访客拿到的 URL 都是 <code>/wp-json/live2d/v2/m/{token}/{alias}?e=&amp;s=</code> 这样的临时签名链路,源站再被改成 404 或防盗都不影响。</p>
+
+  <h3>方式 A:从 URL 下载(模型已经有公网 URL)</h3>
+  <ol>
+      <li>把「API 方式」切到 <strong>自定义新版模型 · 托管到本站</strong>,保存。</li>
+      <li>页面下方会出现「模型托管」面板,默认在「从 URL 下载」tab。</li>
+      <li>在「模型源 URL」输入框填模型的 <code>.model3.json</code> 完整公网 URL(比如 <code>https://example.com/haru/haru.model3.json</code>),点「下载到本站」。</li>
+      <li>插件会从 URL 派生出 slug(比如 <code>haru</code>),立刻把它<strong>追加到上方「模型目录」列表</strong>,同时把整套模型文件入队,后台 cron 拉取到 <code>model/haru/</code>。</li>
+      <li>所有 job 状态变成"已缓存"后,前台就走本地副本了。<strong>记得点页面底部「保存设置」,modelDir 才会写入数据库。</strong></li>
+  </ol>
+
+  <h3>方式 B:上传文件夹(模型只在本地)</h3>
+  <ol>
+      <li>把「API 方式」切到 <strong>自定义新版模型 · 托管到本站</strong>,保存。</li>
+      <li>切到「模型托管」面板的「上传文件夹」tab,把整个模型目录(包含 model3.json + moc3 + 贴图 + 动作)<strong>拖到虚线框</strong>,或点击「选择文件夹」按钮选目录。</li>
+      <li>插件按相对路径串行上传到 <code>model/{slug}/</code>(slug 自动取你拖入的根目录名),进度条实时反映已上传字节。</li>
+      <li>上传完成后 slug 会<strong>自动追加到上方「模型目录」列表</strong>。</li>
+      <li>顶部黄色横幅会显示<strong>当前服务器单文件上传上限</strong>(由 PHP <code>upload_max_filesize</code> 决定)。超过该上限的文件会被红色标记跳过,不会让 PHP 后台静默丢包。如果模型贴图普遍偏大,需要联系主机商或在 wp-config.php / .htaccess 调高 <code>upload_max_filesize</code> 与 <code>post_max_size</code>。</li>
+      <li><strong>上传完成后记得点页面底部「保存设置」,modelDir 才会写入数据库。</strong></li>
+  </ol>
+
+  <h3>典型适用场景</h3>
+  <ul>
+      <li>模型放在 GitHub Pages / GitHub Raw / jsDelivr。</li>
+      <li>模型放在你朋友的服务器,没法让对方加 Referer 白名单。</li>
+      <li>购买了第三方付费模型,对方只给一个公开 URL,你不希望被白嫖。</li>
+      <li>担心对象存储的"按流量计费"账单失控。</li>
+      <li>模型只在你本地(没有任何公网 URL),想直接拖进去就完事。</li>
+  </ul>
+
+  <h2>FAQ:为什么插件不直接帮我接 OSS 私有读?</h2>
+  <p>经常有人问「为啥不能让插件自己拿我的 OSS AccessKey 去签名转发?」三个原因:</p>
+  <ol>
+      <li><strong>AccessKey 不能存数据库。</strong>WordPress 的设置项是明文存的,万一数据库泄漏(被黑、备份外泄、共享主机出事),你的整个 OSS Bucket 就全没了,比模型被盗严重得多。</li>
+      <li><strong>每家云的签名算法都不一样。</strong>阿里云、腾讯云、AWS、Cloudflare R2、MinIO 各搞一套。做完一家就有人提"加 XX 云支持",没完没了。</li>
+      <li><strong>真要用的人不需要插件帮忙。</strong>能搞定 OSS 私有读的站长,自己写几行 PHP 比点设置页方便得多,也更安全(凭据可以走环境变量,不进数据库)。</li>
+  </ol>
+
+  <h2>想自己改代码接 OSS 签名链接?</h2>
+  <p>目前插件<strong>没有提供专门的钩子</strong>给你拦截这个流程。如果实在想改,只能 fork 仓库,去 <code>src/live2d-V2Api.php</code> 里改 <code>get_asset()</code> / <code>stream_local()</code> 这两个函数,让它在命中你的私有 OSS 路径时返回一个 302 跳转到 OSS 预签名地址。</p>
+  <p>如果以后用这个功能的人多了,我们会考虑加一个正式的 <code>live2d_v2_resolve_alias</code> 钩子,但<strong>插件本身永远不会内置任何具体云厂商的 SDK</strong>。</p>
+  <p>如果你真打算这么干,请务必:</p>
+  <ul>
+      <li>用最小权限的子账号(只给「读取对象」权限,限定到具体 Bucket / 目录)。</li>
+      <li><strong>千万不要把 SecretKey 直接写进 WordPress 设置项里</strong>,用环境变量或专门的密钥管理服务。</li>
+      <li>对插件的 V2 防盗链 REST 路径加上 Referer 校验(在 wp-config.php 中显式开启,参考 <code>live2d-V2Api.php</code> 注释)。</li>
+  </ul>
+
+'en': |
+  <p>WordPress admin → Live2D Settings → Basic Settings → <strong>API Type</strong> determines where the model is loaded from and who handles hotlink protection. Since 2026-05 the legacy <code>protectV2</code> two-state switch has been merged into <code>apiType</code>; it is now a <strong>four-option radio</strong> with distinct behaviour per option. This page only covers the two "custom V2 model" options (V2 / Cubism 4+); legacy V1 models do not need hotlink protection.</p>
+
+  <blockquote>
+      <p><strong>V1 models (journey-ad / Cubism 2~3) are out of scope here.</strong> V1 models are served by the plugin's built-in REST endpoint (<code>/wp-json/live2d/v1/model/*</code>), so no extra hotlink layer is needed. Everything below is V2-only.</p>
+  </blockquote>
+
+  <h2>Four API types at a glance</h2>
+  <table>
+      <thead>
+          <tr>
+              <th style="width:20%">API type</th>
+              <th style="width:18%">Where the model lives</th>
+              <th style="width:22%">Who blocks hotlinking</th>
+              <th>When to pick this</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <td><strong>Local legacy model</strong></td>
+              <td>Plugin's <code>model/</code> dir (V1)</td>
+              <td>N/A</td>
+              <td>Using V1 oldies like 22 / 33 / Pio / Tia</td>
+          </tr>
+          <tr>
+              <td><strong>Self-hosted legacy model</strong></td>
+              <td>Your own remote V1 PHP API</td>
+              <td>You handle CORS yourself (or skip it)</td>
+              <td>You already run an fghrsh-style V1 endpoint</td>
+          </tr>
+          <tr>
+              <td><strong>Custom V2 · direct load</strong><br /><span class="text-muted">old protectV2 = direct</span></td>
+              <td>OSS / CDN / GitHub Pages or any cross-origin host</td>
+              <td>You (set up Referer whitelist / signed URL on your bucket / CDN)</td>
+              <td>Models already live on Aliyun OSS, Tencent COS, your own CDN, etc.</td>
+          </tr>
+          <tr>
+              <td><strong>Custom V2 · cache locally</strong><br /><span class="text-muted">old protectV2 = local, recommended</span></td>
+              <td>Plugin's <code>model/{slug}/</code> dir (V2)</td>
+              <td>Plugin (auto alias + temporary signed URL)</td>
+              <td>Models live on GitHub Pages / jsDelivr / your own nginx with no hotlink defence — or only on your local disk</td>
+          </tr>
+      </tbody>
+  </table>
+
+  <h2>Option A: Custom V2 · direct load (when you already use OSS / CDN)</h2>
+  <p>In this mode the plugin does not touch your <code>modelAPI</code>; it hands the URL straight to the browser. Hotlink defence is delegated to your bucket / CDN. Three common approaches, easy to hard:</p>
+
+  <h3>1. Public read + Referer whitelist (easiest)</h3>
+  <ul>
+      <li><strong>Aliyun OSS</strong>: Bucket → Data Security → Hotlink protection, add your domain.</li>
+      <li><strong>Tencent COS</strong>: Bucket → Security → Referer settings, similar UI.</li>
+      <li><strong>How it works</strong>: the browser sends a Referer; sources outside the whitelist are blocked with 403.</li>
+      <li><strong>Limit</strong>: anyone who can sniff packets can spoof Referer and bypass it. Good enough for daily use.</li>
+  </ul>
+
+  <h3>2. Front your bucket with a CDN that supports URL signing</h3>
+  <p>Put Aliyun CDN / Tencent CDN / Cloudflare in front of your OSS bucket, enable "URL authentication" or "Token check", and put the signed URL into <code>modelAPI</code>. Stricter than Referer alone but more setup.</p>
+
+  <h3>3. Private read + signed link (strictest)</h3>
+  <p>Set the bucket to private; every request must carry a signature. <strong>This cannot be configured from the plugin settings page</strong> — someone comfortable with PHP needs to write a snippet in your theme's <code>functions.php</code> that mints signed URLs on demand. The plugin <em>does not bundle</em> any cloud SDK; reasons in the FAQ below.</p>
+
+  <h2>Option B: Custom V2 · cache locally (recommended / for sources without hotlink defence)</h2>
+  <p>Pick this and the model files get saved into your own WordPress site (<code>wp-content/plugins/live-2d/model/{slug}/</code>); the only URL ever exposed to the browser is an encrypted, time-limited signed URL:</p>
+  <ul>
+      <li>What visitors see in F12 is the temporary URL — <strong>the source URL never leaks</strong>.</li>
+      <li>Each file gets an alias (hash-style path) so it cannot be enumerated.</li>
+      <li>Since 2026-05 only <strong>admin-triggered manual download or upload</strong> is supported; the visitor-triggered "auto lazy download" was removed (admins reported it was invisible and uncontrollable).</li>
+      <li>Two ways to seed the cache; they coexist:</li>
+  </ul>
+
+  <h3>What the form looks like once you pick "cache locally"</h3>
+  <p>The <code>modelAPI</code> input is hidden automatically and the system writes it to your site's <code>wp-content/plugins/live-2d/model/</code> root for you. <strong>The only field you fill in by hand is the "Model directory" (modelDir) list</strong>: one slug (= sub-folder name) per row. The plugin will expand each row into the manifest URL using the fixed template <code>{root}{slug}/{slug}.model3.json</code>.</p>
+  <p>For example, to load <code>haru</code> / <code>Pio</code> / <code>shizuku</code>, fill in modelDir like:</p>
+  <pre><code>modelDir:
+    - haru
+    - Pio
+    - shizuku</code></pre>
+  <p>The plugin will expand these into:</p>
+  <pre><code>https://your-site.com/wp-content/plugins/live-2d/model/haru/haru.model3.json
+  https://your-site.com/wp-content/plugins/live-2d/model/Pio/Pio.model3.json
+  https://your-site.com/wp-content/plugins/live-2d/model/shizuku/shizuku.model3.json</code></pre>
+  <p>What visitors actually fetch is always the temporary signed link <code>/wp-json/live2d/v2/m/{token}/{alias}?e=&amp;s=</code>; even if the source 404s or starts blocking hotlinks later, your visitors are unaffected.</p>
+
+  <h3>Method A: Download from URL (when the model is already on a public URL)</h3>
+  <ol>
+      <li>Switch "API type" to <strong>Custom V2 · cache locally</strong> and save.</li>
+      <li>The "Model hosting" panel appears below, defaulting to the "Download from URL" tab.</li>
+      <li>Paste the model's full <code>.model3.json</code> URL (e.g. <code>https://example.com/haru/haru.model3.json</code>) into "Source URL", click "Download to local site".</li>
+      <li>The plugin derives a slug (e.g. <code>haru</code>), <strong>appends it to the "Model directory" list above</strong>, and queues every file for the cron worker to fetch into <code>model/haru/</code>.</li>
+      <li>Once every job shows "cached", visitors are served from the local copy. <strong>Click "Save settings" at the bottom of the page so modelDir is persisted.</strong></li>
+  </ol>
+
+  <h3>Method B: Upload a folder (model only exists locally)</h3>
+  <ol>
+      <li>Switch "API type" to <strong>Custom V2 · cache locally</strong> and save.</li>
+      <li>Switch to the "Upload folder" tab inside the "Model hosting" panel. <strong>Drop the whole model directory</strong> (model3.json + moc3 + textures + motions) onto the dashed box, or click "Pick a folder".</li>
+      <li>The plugin uploads files sequentially to <code>model/{slug}/</code> (slug = name of the dropped root folder); the progress bar reflects bytes uploaded.</li>
+      <li>When upload completes, the slug is <strong>auto-appended to the "Model directory" list above</strong>.</li>
+      <li>The yellow banner at the top shows the <strong>per-file upload limit your server actually allows</strong> (driven by PHP <code>upload_max_filesize</code>). Files larger than the limit are flagged red and skipped — no silent loss in the PHP backend. If your textures consistently exceed the limit, ask your host or raise <code>upload_max_filesize</code> / <code>post_max_size</code> in wp-config.php / .htaccess.</li>
+      <li><strong>Click "Save settings" after upload so modelDir is persisted.</strong></li>
+  </ol>
+
+  <h3>Typical use cases</h3>
+  <ul>
+      <li>Models hosted on GitHub Pages / GitHub Raw / jsDelivr.</li>
+      <li>Model lives on a friend's server you cannot ask to add a Referer whitelist.</li>
+      <li>Paid third-party model where the seller only gives you a public URL and you don't want freeloaders.</li>
+      <li>Worried about runaway "pay per traffic" bills on object storage.</li>
+      <li>Model only exists on your own machine (no public URL) — drop and forget.</li>
+  </ul>
+
+  <h2>FAQ: why doesn't the plugin sign OSS private-read URLs for me?</h2>
+  <p>Three reasons we get asked this often:</p>
+  <ol>
+      <li><strong>AccessKeys do not belong in the database.</strong> WordPress option values are plaintext; one DB leak (hack, leaked backup, misconfigured shared host) and your whole OSS bucket is gone — far worse than a leaked model.</li>
+      <li><strong>Every cloud signs URLs differently.</strong> Aliyun, Tencent, AWS, Cloudflare R2, MinIO… each has its own algorithm. Add one and there's always one more "please add XYZ cloud".</li>
+      <li><strong>Anyone who can do this doesn't need plugin help.</strong> If you can wire up OSS private reads, a few lines of PHP are easier and safer than a settings UI (credentials can live in env vars, not the DB).</li>
+  </ol>
+
+  <h2>Want to patch the code to sign OSS URLs yourself?</h2>
+  <p>There is <strong>no official hook</strong> for this today. If you must, fork the repo and edit <code>get_asset()</code> / <code>stream_local()</code> in <code>src/live2d-V2Api.php</code> so they 302 to a presigned OSS URL when matching your private path.</p>
+  <p>If demand grows we may add a proper <code>live2d_v2_resolve_alias</code> hook, but <strong>the plugin will never bundle any concrete cloud SDK</strong>.</p>
+  <p>If you really go this route, please:</p>
+  <ul>
+      <li>Use a sub-account with the minimum permission (read-object only, scoped to a single bucket / prefix).</li>
+      <li><strong>Never put the SecretKey directly into a WordPress option</strong>; use env vars or a dedicated secret manager.</li>
+      <li>Add Referer validation to the V2 hotlink REST routes (turn it on explicitly in wp-config.php; see comments in <code>live2d-V2Api.php</code>).</li>
+  </ul>
+
+'ja': |
+  <p>WordPress 管理画面 → Live2D 設定 → 基本設定 → <strong>API タイプ</strong>でモデルの読み込み元、そしてホットリンク防止を誰が担当するかが決まります。2026-05 以降、旧来の <code>protectV2</code> 二状態スイッチは <code>apiType</code> に統合され、現在は<strong>4 オプションのラジオボタン</strong>になっています。各オプションで挙動が異なります。本ページは「カスタム新版モデル」(V2 / Cubism 4+) の 2 つのオプションのみを扱います。旧版 V1 モデルにホットリンク防止は不要です。</p>
+
+  <blockquote>
+      <p><strong>V1（journey-ad / Cubism 2~3）モデルは本ページ対象外です。</strong>V1 モデルはプラグイン内蔵の REST エンドポイント（<code>/wp-json/live2d/v1/model/*</code>）から配信されるため、追加のホットリンク防止層は不要です。本ページの内容はすべて V2 モデル専用です。</p>
+  </blockquote>
+
+  <h2>4 種類の API タイプ</h2>
+  <table>
+      <thead>
+          <tr>
+              <th style="width:20%">API タイプ</th>
+              <th style="width:18%">モデルの所在</th>
+              <th style="width:22%">ホットリンク対策担当</th>
+              <th>選ぶタイミング</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <td><strong>ローカル旧版モデル</strong></td>
+              <td>プラグインの model/ ディレクトリ(V1)</td>
+              <td>不要</td>
+              <td>22/33/Pio/Tia など V1 旧モデルを使う場合</td>
+          </tr>
+          <tr>
+              <td><strong>自前デプロイ旧版モデル</strong></td>
+              <td>サイト管理者のリモート V1 PHP API</td>
+              <td>クロスオリジンは自前で対応(対応しなくてもよい)</td>
+              <td>fghrsh 風の V1 エンドポイントが既にある場合</td>
+          </tr>
+          <tr>
+              <td><strong>カスタム新版モデル · 直接読み込み</strong><br /><span class="text-muted">旧 protectV2 = direct</span></td>
+              <td>OSS / CDN / GitHub Pages 等のクロスオリジン位置</td>
+              <td>あなた(オブジェクトストレージ / CDN コンソールで Referer ホワイトリスト / URL 認証を設定)</td>
+              <td>モデルが既に Aliyun OSS、Tencent COS、自前 CDN 等に置かれている場合</td>
+          </tr>
+          <tr>
+              <td><strong>カスタム新版モデル · サイトにキャッシュ</strong><br /><span class="text-muted">旧 protectV2 = local、推奨</span></td>
+              <td>プラグインの model/{slug}/ ディレクトリ(V2)</td>
+              <td>プラグイン自身(自動 alias + 一時署名 URL)</td>
+              <td>モデルが GitHub Pages / jsDelivr / 自前 nginx などホットリンク防止能力のない場所、もしくは純ローカルにある場合</td>
+          </tr>
+      </tbody>
+  </table>
+
+  <h2>オプション A:カスタム新版モデル · 直接読み込み(オブジェクトストレージ / CDN を既に使っている方向け)</h2>
+  <p>このモードでは、プラグインは <code>modelAPI</code> に手を加えず、そのままブラウザに渡します。ホットリンク対策はオブジェクトストレージや CDN に任せます。よくある 3 つの方法(易から難へ):</p>
+
+  <h3>1. パブリックリード + Referer ホワイトリスト(最も簡単)</h3>
+  <ul>
+      <li><strong>Aliyun OSS</strong>:Bucket → データセキュリティ → ホットリンク防止で、サイトのドメインをホワイトリストに追加。</li>
+      <li><strong>Tencent COS</strong>:バケット → セキュリティ管理 → 防盜連設定、操作は同様。</li>
+      <li><strong>原理</strong>:ブラウザはモデル読込時に Referer を送るため、ホワイトリスト外からは 403 で拒否されます。</li>
+      <li><strong>限界</strong>:パケットキャプチャを少し触れる人なら Referer を偽装してバイパスできます。日常用途には十分です。</li>
+  </ul>
+
+  <h3>2. 自前 CDN を被せて URL 認証を有効化</h3>
+  <p>OSS の前段に Aliyun CDN / Tencent CDN / Cloudflare を被せ、「URL 認証」または「Token 検証」を有効化、その上で <code>modelAPI</code> に署名付きアドレスを設定します。Referer 単独より厳しいですが設定が少し複雑です。</p>
+
+  <h3>3. プライベートリード + 署名リンク(最も厳格)</h3>
+  <p>Bucket をプライベートに設定し、毎回署名付きでなければダウンロードできないようにします。<strong>このモードはプラグイン設定ページから直接設定できません</strong>。PHP に明るい方がテーマの <code>functions.php</code> でコードを書き、動的に署名 URL を生成する必要があります。本プラグインは具体的なクラウドベンダー SDK を<em>内蔵しません</em>。理由は下記 FAQ を参照。</p>
+
+  <h2>オプション B:カスタム新版モデル · サイトにキャッシュ(推奨 / ホットリンク対策が組めない配信元向け)</h2>
+  <p>これを選ぶと、モデルファイルがあなたの WordPress サイト(<code>wp-content/plugins/live-2d/model/{slug}/</code>)に保存され、外部に露出するのは暗号化された一時署名 URL のみになります:</p>
+  <ul>
+      <li>訪問者が F12 で見るのもこの一時 URL であり、<strong>配信元のアドレスは漏れません</strong>。</li>
+      <li>各ファイルにエイリアス(hash 化されたパス)が振られるため、第三者には推測不可能です。</li>
+      <li>2026-05 以降は<strong>サイト管理者による手動ダウンロード/アップロードのみ</strong>に対応。訪問者アクセス時の「自動レイジーダウンロード」は廃止しました(古いユーザーから「不可視で制御不能」と多くフィードバックがあったため)。</li>
+      <li>モデルをサイトに保存する方法は 2 通りあり、共存可能です:</li>
+  </ul>
+
+  <h3>「サイトにキャッシュ」を選んだ後のフォーム変化</h3>
+  <p>このオプションを選ぶと <code>modelAPI</code> 入力欄は自動的に隠れ、システムが自動で <code>wp-content/plugins/live-2d/model/</code> ルートを書き込みます。<strong>サイト管理者が手動で記入する必要があるのは「モデルディレクトリ」(modelDir) リストだけ</strong>で、各行に slug(= サブフォルダ名)を 1 つずつ書きます。プラグインは <code>{root}{slug}/{slug}.model3.json</code> という固定テンプレートで manifest URL に展開します。</p>
+  <p>例えば <code>haru</code> / <code>Pio</code> / <code>shizuku</code> の 3 モデルを読みたい場合、modelDir はこう書きます:</p>
+  <pre><code>modelDir:
+    - haru
+    - Pio
+    - shizuku</code></pre>
+  <p>プラグインが自動展開するのは:</p>
+  <pre><code>https://your-site.com/wp-content/plugins/live-2d/model/haru/haru.model3.json
+  https://your-site.com/wp-content/plugins/live-2d/model/Pio/Pio.model3.json
+  https://your-site.com/wp-content/plugins/live-2d/model/shizuku/shizuku.model3.json</code></pre>
+  <p>実際に訪問者が取得する URL は <code>/wp-json/live2d/v2/m/{token}/{alias}?e=&amp;s=</code> という一時署名リンクのみで、配信元が後で 404 になっても、ホットリンク防止が掛かっても訪問者は影響を受けません。</p>
+
+  <h3>方法 A:URL からダウンロード(モデルが既に公開 URL を持つ場合)</h3>
+  <ol>
+      <li>「API タイプ」を <strong>カスタム新版モデル · サイトにキャッシュ</strong> に切り替えて保存。</li>
+      <li>ページ下部に「モデルホスティング」パネルが現れ、デフォルトは「URL からダウンロード」タブ。</li>
+      <li>「ソース URL」入力欄にモデルの完全な <code>.model3.json</code> URL(例:<code>https://example.com/haru/haru.model3.json</code>)を入力し、「サイトにダウンロード」をクリック。</li>
+      <li>プラグインは URL から slug(例:<code>haru</code>)を派生し、即座に<strong>上方の「モデルディレクトリ」リストに追加</strong>、同時にモデルファイル一式を cron キューに投入して <code>model/haru/</code> へ取得します。</li>
+      <li>すべての job が「キャッシュ済み」になればフロントはローカルコピーから配信されます。<strong>ページ最下部の「設定を保存」を必ずクリックして modelDir を DB に書き込んでください。</strong></li>
+  </ol>
+
+  <h3>方法 B:フォルダをアップロード(モデルがローカルにしかない場合)</h3>
+  <ol>
+      <li>「API タイプ」を <strong>カスタム新版モデル · サイトにキャッシュ</strong> に切り替えて保存。</li>
+      <li>「モデルホスティング」パネルの「フォルダをアップロード」タブに切り替え、モデルディレクトリ全体(model3.json + moc3 + テクスチャ + モーション含む)を<strong>点線枠にドラッグ</strong>するか、「フォルダを選択」ボタンで選びます。</li>
+      <li>プラグインは相対パスのまま <code>model/{slug}/</code>(slug はドラッグしたルートフォルダ名)へ直列にアップロードし、進捗バーがアップロード済バイト数を反映します。</li>
+      <li>アップロード完了後、slug は<strong>上方の「モデルディレクトリ」リストへ自動的に追加</strong>されます。</li>
+      <li>上部の黄色バナーには<strong>サーバーの 1 ファイルあたりのアップロード上限</strong>(PHP <code>upload_max_filesize</code> 由来)が表示されます。上限超過のファイルは赤くマークされてスキップされ、PHP 側で黙ってドロップされることはありません。テクスチャが大きすぎる場合はホスティング業者に依頼するか、wp-config.php / .htaccess で <code>upload_max_filesize</code> と <code>post_max_size</code> を引き上げてください。</li>
+      <li><strong>アップロード完了後は必ずページ下部の「設定を保存」をクリックして modelDir を DB に書き込んでください。</strong></li>
+  </ol>
+
+  <h3>典型的な利用シーン</h3>
+  <ul>
+      <li>モデルが GitHub Pages / GitHub Raw / jsDelivr に置かれている。</li>
+      <li>モデルが知人のサーバー上にあり、Referer ホワイトリスト追加を依頼できない。</li>
+      <li>サードパーティの有償モデルを購入したが、公開 URL しか提供されず、ただ乗りされたくない。</li>
+      <li>オブジェクトストレージの「従量課金」請求が暴走するのが心配。</li>
+      <li>モデルがローカルにしかない(公開 URL なし)、ドロップして終わりにしたい。</li>
+  </ul>
+
+  <h2>FAQ:なぜプラグインで OSS プライベートリードを直接サポートしないのか?</h2>
+  <p>「OSS の AccessKey を渡して署名・転送させるようにしてほしい」という要望をよく頂きますが、3 つの理由で対応していません:</p>
+  <ol>
+      <li><strong>AccessKey は DB に置けません。</strong>WordPress の設定値は平文保存です。DB が漏洩(ハッキング、バックアップ流出、共用ホストの事故)した瞬間に OSS バケットが丸ごと持っていかれます。モデル盗用より遥かに深刻です。</li>
+      <li><strong>各クラウドの署名アルゴリズムが全部違います。</strong>Aliyun、Tencent、AWS、Cloudflare R2、MinIO それぞれ独自方式。1 社対応すれば「次は XX クラウドを」と際限がありません。</li>
+      <li><strong>本当に必要な人はプラグインの助けが要りません。</strong>OSS プライベートリードを設定できる人は、設定ページをポチポチするより数行 PHP を書く方が早く、安全(認証情報を環境変数に置けて DB に入らない)です。</li>
+  </ol>
+
+  <h2>自分でコードを書いて OSS 署名リンクと連携したい?</h2>
+  <p>現時点では<strong>専用フックは提供していません</strong>。どうしても改造したい場合はリポジトリを fork し、<code>src/live2d-V2Api.php</code> の <code>get_asset()</code> / <code>stream_local()</code> を編集して、プライベート OSS パスにヒットしたら OSS 事前署名アドレスへ 302 リダイレクトするように改造する必要があります。</p>
+  <p>需要が増えれば正式な <code>live2d_v2_resolve_alias</code> フックを追加する可能性もありますが、<strong>プラグイン本体には今後も具体的なクラウド SDK を内蔵しません</strong>。</p>
+  <p>本当に改造する場合は必ず:</p>
+  <ul>
+      <li>最小権限のサブアカウントを使う(「オブジェクト読込」権限のみ、特定の Bucket / プレフィックスに限定)。</li>
+      <li><strong>SecretKey を WordPress の設定値に直接書かないでください</strong>。環境変数か専用のシークレット管理サービスを使ってください。</li>
+      <li>プラグインの V2 ホットリンク REST パスに Referer 検証を追加(wp-config.php で明示的に有効化、<code>live2d-V2Api.php</code> のコメントを参照)。</li>
+  </ul>
+
+'zh-TW': |
+  <p>WordPress 後台 → Live2D 設定 → 基礎設定 → <strong>API 方式</strong> 決定模型從哪裡載入,以及防盜連由誰阻擋。2026-05 之後舊的 <code>protectV2</code> 二態開關已合併進 <code>apiType</code>,現在是<strong>四選項 radio</strong>,每一種行為都不同。本頁只談兩種「自訂新版模型」(V2 / Cubism 4+),舊版 V1 模型不走防盜連。</p>
+
+  <blockquote>
+      <p><strong>V1（journey-ad / Cubism 2~3）模型不適用本頁。</strong>V1 模型本身就由外掛本機 REST 介面（<code>/wp-json/live2d/v1/model/*</code>）發出,不需要再加一層防盜連。本頁所有內容只針對 V2 模型。</p>
+  </blockquote>
+
+  <h2>四種 API 方式</h2>
+  <table>
+      <thead>
+          <tr>
+              <th style="width:20%">API 方式</th>
+              <th style="width:18%">模型放在哪</th>
+              <th style="width:22%">防盜連由誰擋</th>
+              <th>什麼時候選</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <td><strong>本機部署舊版模型</strong></td>
+              <td>外掛 model/ 目錄(V1)</td>
+              <td>不需要</td>
+              <td>使用 22/33/Pio/Tia 這類 V1 老模型</td>
+          </tr>
+          <tr>
+              <td><strong>自行部署舊版模型</strong></td>
+              <td>站長自己的遠端 V1 PHP API</td>
+              <td>跨來源,您自己處理(也可以不處理)</td>
+              <td>已有 fghrsh 風格 V1 介面</td>
+          </tr>
+          <tr>
+              <td><strong>自訂新版模型 · 直連載入</strong><br /><span class="text-muted">舊 protectV2 = direct</span></td>
+              <td>OSS / CDN / GitHub Pages 等跨來源位置</td>
+              <td>您自己(在物件儲存 / CDN 控制台開 Referer 白名單 / URL 鑑權)</td>
+              <td>模型已放在阿里雲 OSS、騰訊雲 COS、自家 CDN 等</td>
+          </tr>
+          <tr>
+              <td><strong>自訂新版模型 · 託管至本站</strong><br /><span class="text-muted">舊 protectV2 = local,推薦</span></td>
+              <td>外掛 model/{slug}/ 目錄(V2)</td>
+              <td>外掛自行處理(自動 alias + 暫時簽名 URL)</td>
+              <td>模型放在 GitHub Pages / jsDelivr / 自架 nginx 這類無防盜能力的位置,或純本機</td>
+          </tr>
+      </tbody>
+  </table>
+
+  <h2>選項 A:自訂新版模型 · 直連載入(適合已使用物件儲存 / CDN 的站長)</h2>
+  <p>此模式下外掛不動您的 <code>modelAPI</code>,把它原封不動交給瀏覽器去載入。防盜的事交給物件儲存或 CDN 自行處理。常見三種做法(由簡到繁):</p>
+
+  <h3>1. 公開讀 + Referer 白名單(最簡單)</h3>
+  <ul>
+      <li><strong>阿里雲 OSS</strong>:Bucket → 資料安全 → 防盜連,將您的網站網域加入白名單。</li>
+      <li><strong>騰訊雲 COS</strong>:儲存桶 → 安全管理 → 防盜連設定,操作類似。</li>
+      <li><strong>原理</strong>:瀏覽器載入模型時會帶 Referer,不在白名單的來源直接 403。</li>
+      <li><strong>侷限</strong>:稍微懂抓包的人能偽造 Referer 繞過。日常用足夠了。</li>
+  </ul>
+
+  <h3>2. 套一層自家 CDN,開啟 URL 鑑權</h3>
+  <p>在 OSS 前面套阿里雲 CDN / 騰訊雲 CDN / Cloudflare,啟用「URL 鑑權」或「Token 校驗」,再把 <code>modelAPI</code> 填成帶簽名地址。比純 Referer 嚴格,但設定稍複雜。</p>
+
+  <h3>3. 私有讀 + 簽名連結(最嚴格)</h3>
+  <p>Bucket 設為私有,每次存取都要帶簽名才能下載。<strong>此模式無法直接在外掛設定頁設定</strong>,需要懂 PHP 的人在佈景主題 <code>functions.php</code> 寫程式碼動態產生簽名 URL。本外掛<em>不內建</em>任何具體雲廠商 SDK,原因見下方 FAQ。</p>
+
+  <h2>選項 B:自訂新版模型 · 託管至本站(推薦 / 適合無法設定防盜連的來源)</h2>
+  <p>選此項後,模型檔案會被儲存到您的 WordPress 站點(<code>wp-content/plugins/live-2d/model/{slug}/</code>),並對外只暴露一個加密過的暫時簽名 URL:</p>
+  <ul>
+      <li>訪客 F12 看到的也是這個暫時 URL,<strong>不會洩漏來源網址</strong>。</li>
+      <li>每個檔案有別名(hash 化路徑),別人猜不到。</li>
+      <li>2026-05 之後只支援<strong>站長手動觸發下載或上傳</strong>,不再有訪客存取時的「自動延遲下載」(老站長回饋那種模式不可見、不可控)。</li>
+      <li>有兩種把模型存到本站的方式,可以共存:</li>
+  </ul>
+
+  <h3>選了「託管至本站」之後表單會怎麼變</h3>
+  <p>選此項後,<code>modelAPI</code> 輸入框會自動隱藏,系統會把它強制寫成本站的 <code>wp-content/plugins/live-2d/model/</code> 根位址。<strong>站長唯一需要填的就是「模型目錄」(modelDir) 列表</strong>,每行寫一個 slug(= 子目錄名),外掛會按 <code>{root}{slug}/{slug}.model3.json</code> 的固定範本自動展開為完整的 manifest URL。</p>
+  <p>例如要載入 <code>haru</code> / <code>Pio</code> / <code>shizuku</code> 三個模型,模型目錄就這樣填:</p>
+  <pre><code>modelDir:
+    - haru
+    - Pio
+    - shizuku</code></pre>
+  <p>外掛會自動展開為:</p>
+  <pre><code>https://your-site.com/wp-content/plugins/live-2d/model/haru/haru.model3.json
+  https://your-site.com/wp-content/plugins/live-2d/model/Pio/Pio.model3.json
+  https://your-site.com/wp-content/plugins/live-2d/model/shizuku/shizuku.model3.json</code></pre>
+  <p>實際訪客拿到的 URL 都是 <code>/wp-json/live2d/v2/m/{token}/{alias}?e=&amp;s=</code> 這樣的暫時簽名連結,來源即使被改成 404 或防盜也不影響。</p>
+
+  <h3>方式 A:從 URL 下載(模型已經有公開 URL)</h3>
+  <ol>
+      <li>把「API 方式」切到 <strong>自訂新版模型 · 託管至本站</strong>,儲存。</li>
+      <li>頁面下方會出現「模型託管」面板,預設在「從 URL 下載」分頁。</li>
+      <li>在「模型來源 URL」輸入框填模型的 <code>.model3.json</code> 完整公開 URL(例如 <code>https://example.com/haru/haru.model3.json</code>),點「下載到本站」。</li>
+      <li>外掛會從 URL 派生出 slug(例如 <code>haru</code>),立刻把它<strong>追加到上方「模型目錄」列表</strong>,同時把整套模型檔案排入佇列,後台 cron 拉取到 <code>model/haru/</code>。</li>
+      <li>所有 job 狀態變成「已快取」後,前台就走本機副本了。<strong>記得點頁面底部「儲存設定」,modelDir 才會寫入資料庫。</strong></li>
+  </ol>
+
+  <h3>方式 B:上傳資料夾(模型只在本機)</h3>
+  <ol>
+      <li>把「API 方式」切到 <strong>自訂新版模型 · 託管至本站</strong>,儲存。</li>
+      <li>切到「模型託管」面板的「上傳資料夾」分頁,把整個模型目錄(包含 model3.json + moc3 + 貼圖 + 動作)<strong>拖到虛線框</strong>,或點選「選擇資料夾」按鈕選目錄。</li>
+      <li>外掛按相對路徑串列上傳到 <code>model/{slug}/</code>(slug 自動取您拖入的根目錄名),進度條即時反映已上傳位元組。</li>
+      <li>上傳完成後 slug 會<strong>自動追加到上方「模型目錄」列表</strong>。</li>
+      <li>頂部黃色橫幅會顯示<strong>當前伺服器單檔上傳上限</strong>(由 PHP <code>upload_max_filesize</code> 決定)。超過該上限的檔案會被紅色標記跳過,不會讓 PHP 後台靜默丟包。如果模型貼圖普遍偏大,需要聯繫主機商或在 wp-config.php / .htaccess 調高 <code>upload_max_filesize</code> 與 <code>post_max_size</code>。</li>
+      <li><strong>上傳完成後記得點頁面底部「儲存設定」,modelDir 才會寫入資料庫。</strong></li>
+  </ol>
+
+  <h3>典型適用場景</h3>
+  <ul>
+      <li>模型放在 GitHub Pages / GitHub Raw / jsDelivr。</li>
+      <li>模型放在朋友的伺服器,沒辦法請對方加 Referer 白名單。</li>
+      <li>購買了第三方付費模型,對方只給一個公開 URL,您不希望被白嫖。</li>
+      <li>擔心物件儲存的「按流量計費」帳單失控。</li>
+      <li>模型只在您本機(沒有任何公開 URL),想直接拖進去就完事。</li>
+  </ul>
+
+  <h2>FAQ:為什麼外掛不直接幫我接 OSS 私有讀?</h2>
+  <p>常有人問「為何不能讓外掛自己拿我的 OSS AccessKey 去簽名轉發?」三個原因:</p>
+  <ol>
+      <li><strong>AccessKey 不能存資料庫。</strong>WordPress 的設定項是明文儲存的,萬一資料庫外洩(被駭、備份外流、共用主機出事),您的整個 OSS Bucket 就全沒了,比模型被盜嚴重得多。</li>
+      <li><strong>每家雲端的簽名演算法都不一樣。</strong>阿里雲、騰訊雲、AWS、Cloudflare R2、MinIO 各搞一套。做完一家就有人提「加 XX 雲支援」,沒完沒了。</li>
+      <li><strong>真要用的人不需要外掛幫忙。</strong>能搞定 OSS 私有讀的站長,自己寫幾行 PHP 比點設定頁方便得多,也更安全(憑證可走環境變數,不進資料庫)。</li>
+  </ol>
+
+  <h2>想自己改程式碼接 OSS 簽名連結?</h2>
+  <p>目前外掛<strong>沒有提供專門的鉤子</strong>讓您攔截此流程。如果非改不可,只能 fork 倉庫,去 <code>src/live2d-V2Api.php</code> 改 <code>get_asset()</code> / <code>stream_local()</code> 這兩個函式,讓它在命中您的私有 OSS 路徑時回傳一個 302 跳轉到 OSS 預簽名地址。</p>
+  <p>如果以後使用此功能的人多了,我們會考慮加一個正式的 <code>live2d_v2_resolve_alias</code> 鉤子,但<strong>外掛本身永遠不會內建任何具體雲廠商的 SDK</strong>。</p>
+  <p>如果您真打算這麼做,請務必:</p>
+  <ul>
+      <li>使用最小權限的子帳號(只給「讀取物件」權限,限定到具體 Bucket / 目錄)。</li>
+      <li><strong>千萬不要把 SecretKey 直接寫進 WordPress 設定項</strong>,使用環境變數或專用的密鑰管理服務。</li>
+      <li>對外掛的 V2 防盜連 REST 路徑加上 Referer 校驗(在 wp-config.php 顯式啟用,參考 <code>live2d-V2Api.php</code> 註解)。</li>
+  </ul>

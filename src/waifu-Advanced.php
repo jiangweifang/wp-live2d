@@ -192,7 +192,7 @@ class live2D_Advanced {
 		printf(
 			'<input class="regular-text" style="width: 280px"  type="text" name="live_2d_advanced_option_name[load_rand_textures][0]" id="load_rand_textures_0" value="%s" placeholder = "没有服装时的提示">
 			 <input class="regular-text" style="width: 280px" type="text" name="live_2d_advanced_option_name[load_rand_textures][1]" id="load_rand_textures_1" value="%s" placeholder = "切换时的提示"><br />
-			 <p>'.esc_html__('请在第一个输入框输入没有服装时的默认提示，第二个输入框输入每次切换时的提示消息','live-2d').'</p>
+			 <p>'.esc_html__('第一个输入框：没有可换服装时显示的提示语；第二个输入框：每次切换服装时显示的提示语。','live-2d').'</p>
 			',
 			isset( $this->live_2d_advanced_options['load_rand_textures'][0] ) ? esc_attr( $this->live_2d_advanced_options['load_rand_textures'][0]) : '',
 			isset( $this->live_2d_advanced_options['load_rand_textures'][1] ) ? esc_attr( $this->live_2d_advanced_options['load_rand_textures'][1]) : ''
@@ -201,14 +201,14 @@ class live2D_Advanced {
 	//时间段欢迎语（支持多句随机）
 	public function hour_tips_callback() {
 		live2D_Utils::loopMsg('hour_tips','Array');
-		echo '<p>'.esc_html__('时间按照t{开始小时}-{结束小时}的方式填写，例如：t5-7或t7-11（避免改错，目前此项无法更改）','live-2d').'</p>';
+		echo '<p>'.esc_html__('时间按 t{开始小时}-{结束小时} 的格式填写，例如 t5-7 或 t7-11（为避免填错，目前该项不可修改）。','live-2d').'</p>';
 	}
 
 
 	// 请求来源欢迎语（不支持多句）
 	public function referrer_message_callback() {
 		live2D_Utils::loopMsg('referrer_message','Array');
-		echo '<p>'.esc_html__('请务必不要修改{}中的内容，{title}网站标题、{keyword}关键词、{website}站点名称','live-2d').'</p>';
+		echo '<p>'.esc_html__('请不要修改 {} 里的内容：{title} 是网页标题、{keyword} 是关键词、{website} 是站点名称。','live-2d').'</p>';
 	}
 	//请求来源自定义名称（根据 host，支持多句随机）
 	public function referrer_hostname_callback() {
@@ -218,12 +218,12 @@ class live2D_Advanced {
 	//一言 API 输出模板（不支持多句随机）
 	public function hitokoto_api_message_callback() {
 		live2D_Utils::loopMsg('hitokoto_api_message','Array');
-		echo '<p>'.esc_html__('请务必不要修改{}中的内容，lwl12.com接口会有没有作者的情况语句中需要用“|”进行分割','live-2d').'</p>';//lwl12.com会有没有作者的情况
+		echo '<p>'.esc_html__('请不要修改 {} 里的内容；lwl12.com 接口有时没有作者信息，多个句子之间需要用「|」分隔。','live-2d').'</p>';//lwl12.com会有没有作者的情况
 	}
 	//鼠标触发提示（根据 CSS 选择器，支持多句随机）
 	public function mouseover_msg_callback() {	
 		live2D_Utils::loopMsg('mouseover_msg','Selector');
-		echo '<p>'.__('鼠标悬停位置的<a href="https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp" target="_blank">jQuery选择器</a>','live-2d').'</p>';
+		echo '<p>'.__('鼠标悬停的元素位置（按 <a href="https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp" target="_blank">jQuery 选择器</a> 格式填写）。','live-2d').'</p>';
 	}
 	
 	public function click_selector_callback(){
@@ -243,7 +243,7 @@ class live2D_Advanced {
 	//节日提示（日期段，支持多句随机）
 	public function seasons_msg_callback() {
 		live2D_Utils::loopMsg('seasons_msg','Array',false);
-		echo '<p>'.esc_html__('在指定的日期说提示语，日期的规则为MM/dd，例如2月14日为 02/14，可填写一个时间区间，格式为11/05-11/12。','live-2d').'</p>';
+		echo '<p>'.esc_html__('在指定的日期说提示语。日期格式为 MM/dd，例如 2 月 14 日填为 02/14；也可以填一个时间区间，例如 11/05-11/12。','live-2d').'</p>';
 	}
 
 	public function live_2d_advanced_section_info() {

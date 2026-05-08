@@ -13,8 +13,8 @@ class live2D_Settings
 		}
 
 		if (isset($input['apiType'])) {
-			// apiType 三态字符串: 'local' | 'remote' | 'custom'
-			// 兼容老版本(bool/string"1") -> 用 live2d_normalize_api_type 归一化,
+			// apiType 四态字符串: 'local' | 'remote' | 'custom-remote' | 'custom-local'
+			// 详细枚举与历史兼容规则见 src/live2d-V1Api.php :: live2d_normalize_api_type。
 			// 未知值一律退到 'remote' 以最安全(用户继续看到 modelAPI 输入框)。
 			$sanitary_values['apiType'] = function_exists('live2d_normalize_api_type')
 				? live2d_normalize_api_type($input['apiType'])
@@ -23,10 +23,25 @@ class live2D_Settings
 			$sanitary_values['apiType'] = 'remote';
 		}
 
-		// 'custom' (自定义新版模型路径 / Cubism 4+) 是付费功能, 与 waifu-Settings-Base.php
-		// apiType_callback 的 UI 门槛保持一致: 未登录或未付费(userLevel<1) 用户即便绕过
-		// 前端的 disabled radio 直接 POST 'custom', 服务端也强制退回 'remote'.
-		if ($sanitary_values['apiType'] === 'custom') {
+		// 老数据迁移: 旧版 apiType='custom' + protectV2='local' 的组合 → 新 'custom-local'。
+		// 这一步必须在付费门控之前: 用户提交时若仍传旧字段,先合并语义再校验付费。
+		// live2d_normalize_api_type() 只看单字段,把 'custom' 默认归到 'custom-remote',
+		// 这里再根据 protectV2 把 (custom, local) 升级到 'custom-local'。
+		// 升级一次写回 DB 后, 后续 sanitize 不会再看到 'custom' / 'protectV2'。
+		$rawApiType = isset($input['apiType']) ? (is_string($input['apiType']) ? strtolower(trim($input['apiType'])) : '') : '';
+		$rawProtect = isset($input['protectV2']) ? $input['protectV2'] : null;
+		$isOldCustom = ($rawApiType === 'custom' || $sanitary_values['apiType'] === 'custom-remote');
+		$protectIsLocal = (is_bool($rawProtect) && $rawProtect)
+			|| (is_string($rawProtect) && strtolower(trim($rawProtect)) === 'local');
+		if ($isOldCustom && $protectIsLocal) {
+			$sanitary_values['apiType'] = 'custom-local';
+		}
+
+		// 'custom-remote' / 'custom-local' (自定义新版模型 / Cubism 4+) 是付费功能。
+		// 与 waifu-Settings-Base.php apiType_callback 的 UI 门槛保持一致:
+		// 未登录或未付费(userLevel<1) 用户即便绕过前端的 disabled radio 直接 POST,
+		// 服务端也强制退回 'remote'。
+		if (in_array($sanitary_values['apiType'], array('custom-remote', 'custom-local'), true)) {
 			$user_token = get_option('live_2d_settings_user_token');
 			$is_paid = is_array($user_token)
 				&& !empty($user_token['userLevel'])
@@ -36,7 +51,7 @@ class live2D_Settings
 				add_settings_error(
 					'live_2d_sdk_error',
 					'live2d_apitype_paywall',
-					__('"自定义新版模型路径" 需要登录并付费后才能使用, 已自动恢复为 "自行部署旧版模型".', 'live-2d')
+					__('"自定义模型路径（Cubism 4+）" 需要登录并付费后才能使用, 已自动恢复为 "自行部署旧版模型".', 'live-2d')
 				);
 			}
 		}
@@ -55,10 +70,22 @@ class live2D_Settings
 			$sanitary_values['modelAPI'] = live2d_v1api_local_url();
 		}
 
+		// apiType=custom-local(自定义新版 · 托管到本站): modelAPI 固定为本站 model/
+		// 根目录, 让 live2d-tips.ts 的 ApiUrlType.ModelDir 分支按 modelDir 数组中
+		// 每个 slug 自动展开为 {root}{slug}/{slug}.model3.json (与 live2d-V2Api.php
+		// collect_configured_targets 完全一致)。这样站长只需在「模型目录」字段里
+		// 填 slug (= 子目录名), 不再需要也看不到 modelAPI 输入框。
+		if ($sanitary_values['apiType'] === 'custom-local') {
+			$sanitary_values['modelAPI'] = plugin_dir_url(dirname(__FILE__)) . 'model/';
+		}
+
 		if (isset($input['modelDir'])) {
 			$sanitary_values['modelDir'] = $input['modelDir'];
 		} 
 
+		// protectV2 字段已退役 (2026-05): 行为合并进 apiType 的 'custom-local' 枚举。
+		// 这里不再回写 $sanitary_values['protectV2'], 让 update_option 自动把旧字段从 DB 中抹掉。
+		// 老值的迁移在上面 apiType 归一化分支里完成 (custom + protectV2='local' → custom-local)。
 
 		if (isset($input['tipsMessage'])) {
 			$sanitary_values['tipsMessage'] = sanitize_text_field($input['tipsMessage']);
@@ -323,6 +350,8 @@ class live2D_Settings
 			$defValue['modelPoint']['x'] = 0;
 			$defValue['modelPoint']['y'] = 0;
 			$defValue['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
+			// V3 模型保护策略 — 默认 'direct' (不缓存),升级老站不改变行为
+			$defValue['protectV2'] = 'direct';
 			$defValue['showToolMenu'] = true;
 			$defValue['isBotButton'] = true;
 			$defValue['canCloseLive2d'] = true;

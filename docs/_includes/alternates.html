@@ -1,0 +1,9 @@
+{%- comment -%}
+Emits <link rel="alternate" hreflang="..."> tags.
+Caller must pass `canonical` (zh-CN URL).
+{%- endcomment -%}
+{% for entry in site.data.i18n.langs -%}
+  {%- capture url -%}{% include loc-href.html path=include.canonical lang=entry.code %}{%- endcapture -%}
+    <link rel="alternate" hreflang="{{ entry.code }}" href="{{ url | absolute_url }}" />
+{% endfor -%}
+    <link rel="alternate" hreflang="x-default" href="{{ include.canonical | absolute_url }}" />

@@ -1,0 +1,168 @@
+# Per-page metadata.  Each page id holds a canonical (zh-CN) URL plus
+# title / tagline / description / footer translated for every language.
+#
+# A page file under /, /en, /ja, /zh-TW only needs to set:
+#     ---
+#     page_id: <id>
+#     nav_keys: [...]   # keys from _data/i18n.yml#nav
+#     ---
+# and the layout will pull the right strings out of this file.
+
+index:
+  canonical: /
+  titles:
+    zh-CN: Live2D Web Canvas · 文档中心
+    en:    Live2D Web Canvas · Documentation
+    ja:    Live2D Web Canvas · ドキュメント
+    zh-TW: Live2D Web Canvas · 文件中心
+  taglines:
+    zh-CN: 'WordPress 插件 &amp; 浏览器扩展 · 文档中心'
+    en:    'WordPress Plugin &amp; Browser Extension · Documentation Center'
+    ja:    'WordPress プラグイン &amp; ブラウザ拡張 · ドキュメントセンター'
+    zh-TW: 'WordPress 外掛 &amp; 瀏覽器擴充功能 · 文件中心'
+  descriptions:
+    zh-CN: WordPress Live2D 插件 / Live2D Web Canvas 浏览器扩展的文档与帮助。
+    en:    Documentation and help for the WordPress Live2D plugin and the Live2D Web Canvas browser extension.
+    ja:    WordPress Live2D プラグインおよび Live2D Web Canvas ブラウザ拡張機能のドキュメントとヘルプ。
+    zh-TW: WordPress Live2D 外掛 / Live2D Web Canvas 瀏覽器擴充功能的文件與說明。
+  metas:
+    zh-CN: 感谢您使用 Live2D Web Canvas！本站收录使用说明、注意事项与隐私政策。
+    en:    Thank you for using Live2D Web Canvas. This site collects usage guides, things to watch out for, and the privacy policy.
+    ja:    Live2D Web Canvas をご利用いただきありがとうございます。本サイトでは使い方、注意事項、プライバシーポリシーをまとめています。
+    zh-TW: 感謝您使用 Live2D Web Canvas！本站收錄使用說明、注意事項與隱私權政策。
+  footers:
+    zh-CN: '内容同步自 <a href="https://github.com/jiangweifang/wp-live2d/wiki" target="_blank" rel="noopener">项目 Wiki</a> · © Live2D Web Canvas · 北京市天先生软件技术中心'
+    en:    'Mirrored from the <a href="https://github.com/jiangweifang/wp-live2d/wiki" target="_blank" rel="noopener">project Wiki</a> · © Live2D Web Canvas · Beijing Mr. Tian Software Technology Center'
+    ja:    '内容は <a href="https://github.com/jiangweifang/wp-live2d/wiki" target="_blank" rel="noopener">プロジェクト Wiki</a> から同期されています · © Live2D Web Canvas · 北京市天先生软件技术中心'
+    zh-TW: '內容同步自 <a href="https://github.com/jiangweifang/wp-live2d/wiki" target="_blank" rel="noopener">專案 Wiki</a> · © Live2D Web Canvas · 北京市天先生軟體技術中心'
+
+v1_vs_v2:
+  canonical: /wiki/v1-vs-v2.html
+  titles:
+    zh-CN: V1 与 V2 模型 · Live2D Web Canvas
+    en:    V1 vs V2 models · Live2D Web Canvas
+    ja:    V1 と V2 モデル · Live2D Web Canvas
+    zh-TW: V1 與 V2 模型 · Live2D Web Canvas
+  taglines:
+    zh-CN: 先看这里：V1 与 V2 是什么？
+    en:    'Start here: what are V1 and V2?'
+    ja:    'まずはここから:V1 と V2 とは?'
+    zh-TW: 先看這裡：V1 與 V2 是什麼？
+  descriptions:
+    zh-CN: Live2D Web Canvas 插件 V1（journey-ad / Cubism 2~3）与 V2（Cubism 4+）模型的区别与使用建议。
+    en:    Differences and recommendations between V1 (journey-ad / Cubism 2~3) and V2 (Cubism 4+) models in Live2D Web Canvas.
+    ja:    Live2D Web Canvas プラグインにおける V1(journey-ad / Cubism 2~3)モデルと V2(Cubism 4+)モデルの違いと使い分け。
+    zh-TW: Live2D Web Canvas 外掛 V1（journey-ad / Cubism 2~3）與 V2（Cubism 4+）模型的差異與使用建議。
+  footers:
+    zh-CN: '如果还有疑问，欢迎在 <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">GitHub Issues</a> 提反馈。 © Live2D Web Canvas'
+    en:    'Questions? Please open a thread on <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">GitHub Issues</a>. © Live2D Web Canvas'
+    ja:    'ご質問は <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">GitHub Issues</a> までお寄せください。 © Live2D Web Canvas'
+    zh-TW: '還有疑問，歡迎到 <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">GitHub Issues</a> 回報。 © Live2D Web Canvas'
+
+custom_model:
+  canonical: /wiki/custom-model.html
+  titles:
+    zh-CN: 使用 V2 自定义模型（Cubism 4+） · Live2D Web Canvas
+    en:    Use a V2 custom model (Cubism 4+) · Live2D Web Canvas
+    ja:    V2 カスタムモデル(Cubism 4+)を使う · Live2D Web Canvas
+    zh-TW: 使用 V2 自訂模型（Cubism 4+） · Live2D Web Canvas
+  taglines:
+    zh-CN: 使用 V2 自定义模型（Cubism 4+）
+    en:    Use a V2 custom model (Cubism 4+)
+    ja:    V2 カスタムモデル(Cubism 4+)を使う
+    zh-TW: 使用 V2 自訂模型（Cubism 4+）
+  descriptions:
+    zh-CN: Live2D Web Canvas 插件加载 V2（Cubism 4+ / 5）自定义 model3.json 模型的完整教程。
+    en:    Complete guide to loading a V2 (Cubism 4+ / 5) custom model3.json model in Live2D Web Canvas.
+    ja:    Live2D Web Canvas で V2(Cubism 4+ / 5)カスタム model3.json モデルを読み込む完全ガイド。
+    zh-TW: Live2D Web Canvas 外掛載入 V2（Cubism 4+ / 5）自訂 model3.json 模型的完整教學。
+
+anti_hotlink:
+  canonical: /wiki/anti-hotlink.html
+  titles:
+    zh-CN: V2 模型防盗链 · Live2D Web Canvas
+    en:    V2 hotlink protection · Live2D Web Canvas
+    ja:    V2 モデルの直リンク防止 · Live2D Web Canvas
+    zh-TW: V2 模型防盜連 · Live2D Web Canvas
+  taglines:
+    zh-CN: 'V2 模型防盗链：不缓存 vs 缓存到本地'
+    en:    'V2 hotlink protection: passthrough vs. cache locally'
+    ja:    'V2 モデルの直リンク防止: パススルー vs ローカルキャッシュ'
+    zh-TW: 'V2 模型防盜連：不快取 vs 快取至本機'
+  descriptions:
+    zh-CN: Live2D Web Canvas 后台「防盗链 (Cubism 4+ 模型)」选项详细说明：不缓存 vs 缓存到本地。
+    en:    'Detailed reference for the "Hotlink protection (Cubism 4+ models)" option in Live2D Web Canvas: passthrough vs. cache locally.'
+    ja:    'Live2D Web Canvas 管理画面「直リンク防止(Cubism 4+ モデル)」オプションの詳細解説:パススルー vs ローカルキャッシュ。'
+    zh-TW: 'Live2D Web Canvas 後台「防盜連（Cubism 4+ 模型）」選項詳細說明：不快取 vs 快取至本機。'
+
+chrome_extension:
+  canonical: /wiki/chrome-extension.html
+  titles:
+    zh-CN: Live2D Web Canvas 浏览器扩展 · Live2D Web Canvas
+    en:    Live2D Web Canvas browser extension · Live2D Web Canvas
+    ja:    Live2D Web Canvas ブラウザ拡張 · Live2D Web Canvas
+    zh-TW: Live2D Web Canvas 瀏覽器擴充功能 · Live2D Web Canvas
+  taglines:
+    zh-CN: Live2D Web Canvas 浏览器扩展
+    en:    Live2D Web Canvas browser extension
+    ja:    Live2D Web Canvas ブラウザ拡張
+    zh-TW: Live2D Web Canvas 瀏覽器擴充功能
+  descriptions:
+    zh-CN: Chrome / Edge 浏览器扩展 Live2D Web Canvas 的安装、登录、模型选择与设置说明。
+    en:    Installation, login, model selection and settings reference for the Live2D Web Canvas Chrome / Edge browser extension.
+    ja:    Chrome / Edge ブラウザ拡張 Live2D Web Canvas のインストール、ログイン、モデル選択と設定の解説。
+    zh-TW: Chrome / Edge 瀏覽器擴充功能 Live2D Web Canvas 的安裝、登入、模型選擇與設定說明。
+
+chatgpt:
+  canonical: /wiki/chatgpt.html
+  titles:
+    zh-CN: ChatGPT 的使用 · Live2D Web Canvas
+    en:    Using ChatGPT · Live2D Web Canvas
+    ja:    ChatGPT の使い方 · Live2D Web Canvas
+    zh-TW: ChatGPT 的使用 · Live2D Web Canvas
+  taglines:
+    zh-CN: ChatGPT 的使用
+    en:    Using ChatGPT
+    ja:    ChatGPT の使い方
+    zh-TW: ChatGPT 的使用
+  descriptions:
+    zh-CN: Live2D Web Canvas 中 ChatGPT 功能的使用与 Open AI / Azure OpenAI 接口配置说明。
+    en:    Using the ChatGPT feature in Live2D Web Canvas, and configuring your own Open AI / Azure OpenAI endpoint.
+    ja:    Live2D Web Canvas の ChatGPT 機能の使い方と Open AI / Azure OpenAI エンドポイントの設定方法。
+    zh-TW: Live2D Web Canvas 中 ChatGPT 功能的使用與 Open AI / Azure OpenAI 端點設定說明。
+
+touch_area:
+  canonical: /wiki/touch-area.html
+  titles:
+    zh-CN: V2 模型的触摸区域 (HitArea) · Live2D Web Canvas
+    en:    V2 hit areas (HitArea) · Live2D Web Canvas
+    ja:    V2 モデルの当たり判定 (HitArea) · Live2D Web Canvas
+    zh-TW: V2 模型的觸碰區域 (HitArea) · Live2D Web Canvas
+  taglines:
+    zh-CN: V2 模型的触摸区域 (HitArea)
+    en:    V2 hit areas (HitArea)
+    ja:    V2 モデルの当たり判定 (HitArea)
+    zh-TW: V2 模型的觸碰區域 (HitArea)
+  descriptions:
+    zh-CN: Live2D Web Canvas 中 V2（Cubism 4+）模型 model3.json 的 HitAreas 字段说明，以及如何把触摸映射到 motion 分组。
+    en:    The HitAreas field of V2 (Cubism 4+) model3.json files in Live2D Web Canvas, and how taps map to motion groups.
+    ja:    Live2D Web Canvas における V2(Cubism 4+)モデル model3.json の HitAreas フィールド解説と、タップとモーショングループの対応関係。
+    zh-TW: Live2D Web Canvas 中 V2（Cubism 4+）模型 model3.json 的 HitAreas 欄位說明，以及如何把觸碰對應到 motion 群組。
+
+privacy:
+  canonical: /privacy/extension.html
+  titles:
+    zh-CN: 浏览器扩展隐私政策 · Live2D Web Canvas
+    en:    Browser Extension Privacy Policy · Live2D Web Canvas
+    ja:    ブラウザ拡張プライバシーポリシー · Live2D Web Canvas
+    zh-TW: 瀏覽器擴充功能隱私權政策 · Live2D Web Canvas
+  taglines:
+    zh-CN: 浏览器扩展隐私政策
+    en:    Browser Extension Privacy Policy
+    ja:    ブラウザ拡張プライバシーポリシー
+    zh-TW: 瀏覽器擴充功能隱私權政策
+  descriptions:
+    zh-CN: Live2D Web Canvas Chrome / Edge 浏览器扩展的隐私政策。
+    en:    Privacy policy for the Live2D Web Canvas Chrome / Edge browser extension.
+    ja:    Live2D Web Canvas Chrome / Edge ブラウザ拡張のプライバシーポリシー。
+    zh-TW: Live2D Web Canvas Chrome / Edge 瀏覽器擴充功能的隱私權政策。

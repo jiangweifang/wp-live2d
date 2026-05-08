@@ -122,7 +122,7 @@ class live2D_Settings_Style {
 
             add_settings_field(
                 'renderScale', // id
-                __('高级渲染:超采样倍率','live-2d'), // title
+                __('画面清晰度（高级）','live-2d'), // title
                 array( $this, 'renderScale_callback' ), // callback
                 'live-2d-settings-style', // page
                 'live_2d_setting_style_section' // section
@@ -130,7 +130,7 @@ class live2D_Settings_Style {
 
             add_settings_field(
                 'antialias', // id
-                __('高级渲染:抗锯齿','live-2d'), // title
+                __('边缘平滑（高级）','live-2d'), // title
                 array( $this, 'antialias_callback' ), // callback
                 'live-2d-settings-style', // page
                 'live_2d_setting_style_section' // section
@@ -253,10 +253,10 @@ class live2D_Settings_Style {
         // (1.5 是 string, 其余是 int), 与 (string)$current 做 === 比较时
         // 1/2/3 永远不会命中 selected, 让用户以为 renderScale 没保存。
         $options = array(
-            array( '1',   __('1x（默认，不做超采样）','live-2d') ),
-            array( '1.5', __('1.5x（轻度超采样）','live-2d') ),
-            array( '2',   __('2x（高质量，显存约 4 倍）','live-2d') ),
-            array( '3',   __('3x（极致，显存约 9 倍）','live-2d') ),
+            array( '1',   __('1×（默认）','live-2d') ),
+            array( '1.5', __('1.5×（更清晰）','live-2d') ),
+            array( '2',   __('2×（高画质，更耗显存）','live-2d') ),
+            array( '3',   __('3×（最清晰，非常耗显存）','live-2d') ),
         );
         ?>
         <select name="live_2d_settings_option_name[style][renderScale]" id="renderScale">
@@ -266,7 +266,7 @@ class live2D_Settings_Style {
             <option value="<?php echo esc_attr( $value ); ?>" <?php echo $selected; ?>><?php echo esc_html( $label ); ?></option>
         <?php endforeach; ?>
         </select>
-        <p class="description"><?php esc_html_e('叠加在浏览器 devicePixelRatio 之上的 SSAA 倍率，可消除模型边缘细线；倍率越高 GPU/显存压力越大。','live-2d'); ?></p>
+        <p class="description"><?php esc_html_e('提高模型画面的清晰度，让边缘看起来更顺滑。倍数越高画面越清晰，但对显卡的占用也越大。','live-2d'); ?></p>
         <?php
     }
 
@@ -281,7 +281,7 @@ class live2D_Settings_Style {
             <label for="antialias-1"><input type="radio" name="live_2d_settings_option_name[style][antialias]" id="antialias-1" value="1" <?php echo $current ? 'checked' : ''; ?>> <?php esc_html_e('开启（默认）','live-2d'); ?></label><br>
             <label for="antialias-0"><input type="radio" name="live_2d_settings_option_name[style][antialias]" id="antialias-0" value="0" <?php echo !$current ? 'checked' : ''; ?>> <?php esc_html_e('关闭','live-2d'); ?></label>
         </fieldset>
-        <p class="description"><?php esc_html_e('WebGL 多重采样抗锯齿（MSAA），关闭后默认帧缓冲边缘可能出现锯齿；切换该项后建议刷新前台页面以生效。','live-2d'); ?></p>
+        <p class="description"><?php esc_html_e('让模型的边缘看起来更平滑。关闭后边缘可能出现锯齿。修改后请刷新前台页面才会生效。','live-2d'); ?></p>
         <?php
     }
 }

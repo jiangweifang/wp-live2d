@@ -3,7 +3,7 @@
  * Plugin Name: Live 2D
  * Plugin URI: https://www.live2dweb.com/
  * Description: 看板娘插件
- * Version: 2.1.3
+ * Version: 2.2.0
  * Requires PHP: 7.4
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 //定义目录
 define('LIVE2D_ASSETS', plugin_dir_url(__FILE__) . 'assets/'); //资源目录
 define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)) . '/languages'); //基础目录
-define('LIVE2D_VERSION', '2.1.3'); //资源版本号, 用于缓存破坏
+define('LIVE2D_VERSION', '2.2.0'); //资源版本号, 用于缓存破坏
 
 /**
  * 把 wp_enqueue_script 注册的脚本标记为 ES module。
@@ -86,6 +86,8 @@ include_once(dirname(__FILE__)  . '/src/live2d-Widget.php');
 include_once(dirname(__FILE__)  . '/src/live2d-SDK.php');
 // 加载本地 V1 模型 API(取代 https://api.live2dweb.com/model/v2 的清单/切换/换装服务)
 include_once(dirname(__FILE__)  . '/src/live2d-V1Api.php');
+// 加载 V2 模型(model3.json)防盗链 API(对齐 nizima.LIVE 与 wp-live2d-api 的 /Model/Session)
+include_once(dirname(__FILE__)  . '/src/live2d-V2Api.php');
 
 //添加样式（初始化）
 function live2D_style()
@@ -107,20 +109,29 @@ function live2D_style()
     if ($isLocal && function_exists('live2d_v1api_local_url')) {
         $live2dSettings['modelAPI'] = live2d_v1api_local_url();
     }
-    // 把三态字符串 apiType 在传给 JS 前压成 bool,与 live2d-tips.ts 既有的
-    // truthy 判断 / `isWorkshop=${settings.apiType}` 拼接保持兼容。
+    // 把 apiType 四态字符串在传给 JS 前压成 bool 之前, 先保留原始字符串值.
+    // 下面 wp_localize 里 'v2SessionUrl' 需要用原字符串判断 'custom-local',
+    // 不能等压成 bool 后再判 (那会永远 false, 导致 V2 防盗链 endpoint 不注入,
+    // 前端 signOneModel/signAllModelDirs 短路 fallback 到裸 URL, 暴露源站地址).
+    $apiTypeRaw = (is_array($live2dSettings) && isset($live2dSettings['apiType']))
+        ? (string) $live2dSettings['apiType']
+        : '';
+    // 把四态字符串 apiType 在传给 JS 前压成 bool, 与 live2d-tips.ts 既有的
+    // truthy 判断 / `isWorkshop=${settings.apiType}` 拼接保持兼容.
     if (is_array($live2dSettings) && function_exists('live2d_api_type_is_local')) {
         $live2dSettings['apiType'] = live2d_api_type_is_local(isset($live2dSettings['apiType']) ? $live2dSettings['apiType'] : null);
     }
     // shaderDir 不再由 PHP 注入: SDK (live2d_sdk/src/v2/lappdefine.ts) 默认以
-    // import.meta.url 为基准解析到同级 ./Shaders/WebGL/, vite.config.wordpress.ts
-    // 会把 shader 文件拷贝到 assets/Shaders/WebGL/,跟随插件实际位置/站点 URL。
+    // import.meta.url 为基准解析到同级 ./shaders/WebGL/, vite.config.wordpress.ts
+    // 会把 shader 文件拷贝到 assets/shaders/WebGL/,跟随插件实际位置/站点 URL。
+    // 注意目录名必须全小写 shaders/(不是 Shaders/),
+    // 避免 Linux 部署下大小写敏感文件系统 404。
     //
     // 但旧版插件曾把 shaderDir(默认值 '../../Framework/Shaders/WebGL/') 写进
     // live_2d_settings_option_name; sanitize 已经不再回写, 但 get_option() 拿到的
     // 数组里仍可能残留这个老字段, 经 wp_localize_script -> live2d_settings.settings
     // -> LAppDelegate.initialize 的 `Oe.value = G.shaderDir || Oe.value` 一行,
-    // 会覆盖掉 import.meta.url 算出来的正确 assets/Shaders/WebGL/ 绝对 URL,
+    // 会覆盖掉 import.meta.url 算出来的正确 assets/shaders/WebGL/ 绝对 URL,
     // 让 fetch 退回到相对路径 '../../Framework/...' 命中 404。这里在传给 JS
     // 前显式剔掉, 避免老站点必须重新打开设置页 Save 一次才能恢复。
     if (is_array($live2dSettings)) {
@@ -157,6 +168,29 @@ function live2D_style()
         'waifuTips' => get_option('live_2d_advanced_option_name'),
         'settings' => $live2dSettings,
         'localPath' => plugin_dir_url(__FILE__) . 'model',
+        // V2 模型(Cubism 4/5)防盗链 endpoint(对应 src/live2d-V2Api.php)。
+        // 仅在 apiType='custom-local' 时注入完整 URL;其他三种 apiType
+        // (local / remote / custom-remote) 都不走防盗链 → 注入空串
+        // → 前端 Wordpress/live2d-tips.ts 的 signOneModel 早退到裸链。
+        // 注意: 此处必须用 $apiTypeRaw (上面在压 bool 之前保留的字符串),
+        // 不能用 $live2dSettings['apiType'] (那已经是 bool, 永远 != 'custom-local').
+        // 2026-05 之前用独立 protectV2 字段控制,现已合并进 apiType。
+        //
+        // 同时下发两件配套件 (V2 防爬虫):
+        //   v2WpNonce       - WP REST nonce, 前端 fetch 时放 X-WP-Nonce 头
+        //                     (rest_cookie_check_errors 双重校验, 拦裸调 API)
+        //   v2OneTimeTokens - 8 个一次性 token, 每签 1 模型用 1 个,
+        //                     服务端再补 1 个 nextToken 进池 → 池永不枯竭
+        //                     (拦"抓 nonce 后批量爬"的脚本: 没访问页面就拿不到初始池)
+        'v2SessionUrl'    => ($apiTypeRaw === 'custom-local')
+            ? rest_url('live2d/v2/session')
+            : '',
+        'v2WpNonce'       => ($apiTypeRaw === 'custom-local')
+            ? wp_create_nonce('wp_rest')
+            : '',
+        'v2OneTimeTokens' => ($apiTypeRaw === 'custom-local' && class_exists('live2d_V2Api'))
+            ? live2d_V2Api::mint_one_time_tokens(8)
+            : array(),
         'currentPage' => array('get_the_id' => get_the_id(), 'is_home' => is_front_page(), 'is_single' => is_single())
     ));
 }
@@ -234,7 +268,15 @@ add_action('rest_api_init', function () {
 
     // 本地 V1 模型清单 / 切换 / 换装(取代 api.live2dweb.com/model/v2)
     live2d_V1Api::register_routes();
+
+    // V2 模型(Cubism 4/5)防盗链 session/manifest/asset
+    live2d_V2Api::register_routes();
 });
+
+// V2 模型本地缓存 — Cron hook 注册(异步任务队列入口,详见 live2d-V2Api.php 末尾)
+// 必须挂在 init 之前生效,否则 wp_schedule_single_event 触发的 cron 进程跑到这里
+// 时 hook 还没绑定就会丢任务。
+live2d_V2Api::register_cron();
 
 // 初始化加载
 function live2D_Init()

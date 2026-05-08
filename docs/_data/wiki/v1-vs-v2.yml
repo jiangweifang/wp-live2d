@@ -1,0 +1,230 @@
+# Multi-language body for /wiki/v1-vs-v2.html (and /<lang>/wiki/v1-vs-v2.html).
+# Edit here, the 4 stub HTML files just include this via _includes/wiki-body.html.
+'zh-CN': |
+  
+  <p>本插件同时维护着两套完全独立的 Live2D 加载链路。第一次接触本插件的站长，建议先花 2 分钟把这页看完，再决定走哪条路。</p>
+  
+  <h2>一句话区分</h2>
+  <ul>
+      <li><strong>V1 模型</strong> = 基于 <a href="https://github.com/journey-ad/live2d_src" target="_blank" rel="noopener">journey-ad/live2d_src</a> 的 <em>老旧</em> 加载逻辑，对应的是 Cubism <strong>2.x / 3.x</strong> 系列模型，文件清单一般叫 <code>model.json</code>，模型文件后缀是 <code>.moc</code>。常见模型：22 娘 / 33 娘、Pio / Tia、Shizuku、舰これ Murakumo、超次元海王星等。</li>
+      <li><strong>V2 模型</strong> = Cubism <strong>4 / 5</strong> 系列（含未来更高版本），文件清单是 <code>*.model3.json</code>，模型文件后缀是 <code>.moc3</code>。这是 Live2D 官方目前在维护的格式。</li>
+  </ul>
+  
+  <blockquote>
+      <p><strong>术语提示：</strong>历史上的文档里曾经把 Cubism 4+ 模型叫"v3 或更高版本"，从插件 2.1 起统一改叫 <strong>V2</strong>。也就是说：本仓库里的 "V2" 不是指 Cubism 2，而是指 <em>本插件的第二代加载器</em>。如果你在 issues 里看到老的 "v3 模型"、"V3 模型" 字样，请理解为 V2。</p>
+  </blockquote>
+  
+  <h2>怎么判断手里的模型是 V1 还是 V2？</h2>
+  <p>看模型清单文件即可：</p>
+  <table>
+      <thead>
+          <tr><th style="width:18%">模型类型</th><th>清单文件名</th><th>清单里的 version 字段</th><th>主模型文件</th></tr>
+      </thead>
+      <tbody>
+          <tr><td>V1（旧）</td><td><code>model.json</code></td><td>无 / 任意</td><td><code>*.moc</code></td></tr>
+          <tr><td>V2（新）</td><td><code>*.model3.json</code></td><td><code>"Version": 3</code> 起步（实际是 Cubism Web SDK 版本号，不是模型规范号）</td><td><code>*.moc3</code></td></tr>
+      </tbody>
+  </table>
+  <p>判断逻辑在前端是按 <em>模型规范版本号 ≥ 3</em> 走 V2 链路，否则走 V1 链路。</p>
+  
+  <h2>WordPress 插件后台的"创意工坊 API 类型"</h2>
+  <p>插件后台 → 设置 → 「创意工坊 API 类型」是一个三态下拉，对应三种使用方式：</p>
+  <table>
+      <thead>
+          <tr><th style="width:18%">取值</th><th>含义</th><th style="width:14%">付费？</th><th>对应模型</th></tr>
+      </thead>
+      <tbody>
+          <tr><td><strong>本地</strong> (<code>local</code>)</td><td>使用插件 <code>assets/v1/</code> 内置的 V1 模型，REST 路径 <code>/wp-json/live2d/v1/model/*</code>，完全在你自己的站点提供，不依赖任何第三方接口。</td><td>免费</td><td>V1（22/33/Pio/Tia/Shizuku/HyperdimensionNeptunia/KantaiCollection 等）</td></tr>
+          <tr><td><strong>远程创意工坊</strong> (<code>remote</code>)</td><td>从 <code>www.live2dweb.com</code> 拉模型清单，下载到本地后再走 V1 加载链路。下载结果落到 <code>wp-content/plugins/live-2d/model/</code>。</td><td>免费</td><td>V1（与"本地"同源，只是来源不同）</td></tr>
+          <tr><td><strong>自定义</strong> (<code>custom</code>)</td><td>填一个你自己的 <code>modelAPI</code> URL，加载 V2（Cubism 4+）模型。可以指定一个直链 <code>*.model3.json</code>，也可以指定一个目录根 + 多个 <code>modelDir</code> 子目录。</td><td><strong>需要付费</strong></td><td>V2（Cubism 4+ / 5）</td></tr>
+      </tbody>
+  </table>
+  
+  <h3>为什么 V2 要付费？</h3>
+  <p>因为 Live2D 株式会社（Live2D Inc.）要求第三方扩展性应用使用 Cubism 4+ 核心时必须签约。本插件已经和 Live2D 株式会社签订了长期合约并按其要求分发正版 Cubism Core，所以 V2 链路对站长这边收取一次性授权费，相当于把上游许可成本分摊给真正使用 V2 的站点。V1 模型不依赖 Cubism Core，因此始终免费。</p>
+  
+  <h2>我应该选哪个？</h2>
+  <ul>
+      <li><strong>只想要会动的二次元小人陪着看博客 →</strong> 装上插件、保持默认设置即可，跑的就是内置 V1 模型（本地）。</li>
+      <li><strong>想用市面上各种现成的小人皮肤（22 娘、Pio 那一系列）→</strong> 也是 V1，可以直接用"本地"或"远程创意工坊"。</li>
+      <li><strong>有自己制作 / 购买的 MOC3 模型 →</strong> 走 V2 自定义 URL，先付费、再按 <a href="{{ '/wiki/custom-model.html' | relative_url }}">V2 自定义模型教程</a> 配置。</li>
+      <li><strong>想最大化保护 V2 模型不被盗链 →</strong> 在自定义 URL 之上额外开启「<a href="{{ '/wiki/anti-hotlink.html' | relative_url }}">缓存到本地</a>」，参考防盗链页。</li>
+  </ul>
+  
+  <h2>常见误解澄清</h2>
+  <ul>
+      <li><strong>"V1 是不是不能用了？"</strong> —— 没有。V1 链路从 2.1.3 起反而完全本地化（再不用 fghrsh.net 等第三方源），稳定性比以前好得多。它只是不会再加 <em>新功能</em>（比如融合变形、超采样这些 Cubism 4+ 才有的特性）。</li>
+      <li><strong>"V2 = Cubism 2 吗？"</strong> —— 不是。本插件里的 V2 指的是 <em>第二代加载器</em>，对应 Cubism Web SDK 4 / 5。Cubism 2 是远古版本，反而归在 V1 链路里。</li>
+      <li><strong>"我看老文档说 v3 模型……"</strong> —— 老文档里的 "v3" 就是现在的 V2。所有"v3 / V3"字样统一按 V2 理解。</li>
+  </ul>
+'en': |
+  
+  <p>The plugin maintains two completely independent Live2D loaders. If this is your first contact with the project, take two minutes to read this page before picking which path to use.</p>
+  
+  <h2>One-line summary</h2>
+  <ul>
+      <li><strong>V1 models</strong> = the <em>legacy</em> loader based on <a href="https://github.com/journey-ad/live2d_src" target="_blank" rel="noopener">journey-ad/live2d_src</a>, targeting Cubism <strong>2.x / 3.x</strong> models. Manifest file is usually <code>model.json</code>, the moc extension is <code>.moc</code>. Common models: 22-musume / 33-musume, Pio / Tia, Shizuku, Kantai-Collection Murakumo, Hyperdimension Neptunia, etc.</li>
+      <li><strong>V2 models</strong> = Cubism <strong>4 / 5</strong> series (including any future versions). Manifest file is <code>*.model3.json</code>, the moc extension is <code>.moc3</code>. This is the format that Live2D Inc. is currently maintaining.</li>
+  </ul>
+  
+  <blockquote>
+      <p><strong>Naming note:</strong> older docs used to call Cubism 4+ models "v3 or higher". Starting with plugin 2.1 we standardized on the name <strong>V2</strong>. In this repository, "V2" does <em>not</em> mean Cubism 2 — it means the <em>second generation of the plugin's loader</em>. If you see "v3 model" or "V3 model" in old issues, please read it as V2.</p>
+  </blockquote>
+  
+  <h2>How to tell whether your model is V1 or V2</h2>
+  <p>Just check the manifest file:</p>
+  <table>
+      <thead>
+          <tr><th style="width:18%">Model type</th><th>Manifest file name</th><th>"version" field in the manifest</th><th>Main moc file</th></tr>
+      </thead>
+      <tbody>
+          <tr><td>V1 (legacy)</td><td><code>model.json</code></td><td>none / any</td><td><code>*.moc</code></td></tr>
+          <tr><td>V2 (current)</td><td><code>*.model3.json</code></td><td>starts at <code>"Version": 3</code> (this is the Cubism Web SDK number, not the model spec number)</td><td><code>*.moc3</code></td></tr>
+      </tbody>
+  </table>
+  <p>The frontend picks the V2 loader when the <em>model spec version is ≥ 3</em>, otherwise it falls through to V1.</p>
+  
+  <h2>The "Workshop API type" dropdown in the WordPress admin</h2>
+  <p>WordPress admin → Settings → "Workshop API type" is a three-way dropdown:</p>
+  <table>
+      <thead>
+          <tr><th style="width:18%">Value</th><th>Meaning</th><th style="width:14%">Paid?</th><th>Model type</th></tr>
+      </thead>
+      <tbody>
+          <tr><td><strong>Local</strong> (<code>local</code>)</td><td>Use the V1 models bundled inside the plugin's <code>assets/v1/</code>, served via the REST route <code>/wp-json/live2d/v1/model/*</code>. Everything runs on your own site, no third-party endpoint involved.</td><td>Free</td><td>V1 (22/33/Pio/Tia/Shizuku/HyperdimensionNeptunia/KantaiCollection, …)</td></tr>
+          <tr><td><strong>Remote workshop</strong> (<code>remote</code>)</td><td>Pull the model catalogue from <code>www.live2dweb.com</code>, download it locally, then load it through the same V1 pipeline. Downloads land in <code>wp-content/plugins/live-2d/model/</code>.</td><td>Free</td><td>V1 (same models as "Local", just a different source)</td></tr>
+          <tr><td><strong>Custom</strong> (<code>custom</code>)</td><td>Plug in your own <code>modelAPI</code> URL to load V2 (Cubism 4+) models. You can either point at a single <code>*.model3.json</code> or at a directory root plus multiple <code>modelDir</code> sub-folders.</td><td><strong>Requires payment</strong></td><td>V2 (Cubism 4+ / 5)</td></tr>
+      </tbody>
+  </table>
+  
+  <h3>Why is V2 paid?</h3>
+  <p>Because Live2D Inc. requires third-party extensible applications to sign a commercial agreement before using the Cubism 4+ Core. The plugin author has signed a long-term contract and ships the official Cubism Core under that contract, so the V2 path bills site owners a one-off licensing fee — basically passing the upstream license cost on to the sites that actually use V2. V1 models do not depend on the Cubism Core, so they remain free forever.</p>
+  
+  <h2>Which one should I pick?</h2>
+  <ul>
+      <li><strong>I just want a moving 2D character keeping me company on my blog →</strong> install the plugin, keep the defaults; you are already running the bundled V1 models (Local).</li>
+      <li><strong>I want one of the popular ready-made skins (22-musume, Pio, …) →</strong> still V1, use either "Local" or "Remote workshop".</li>
+      <li><strong>I have a MOC3 model I made or bought myself →</strong> use the V2 custom URL: pay first, then follow the <a href="{{ '/en/wiki/custom-model.html' | relative_url }}">V2 custom model guide</a>.</li>
+      <li><strong>I want maximum hotlink protection for my V2 model →</strong> on top of the custom URL also enable "<a href="{{ '/en/wiki/anti-hotlink.html' | relative_url }}">cache locally</a>"; see the hotlink page.</li>
+  </ul>
+  
+  <h2>Common misunderstandings</h2>
+  <ul>
+      <li><strong>"Is V1 deprecated?"</strong> No. Since 2.1.3 the V1 loader is in fact fully local (no more third-party sources such as fghrsh.net), so it is much more stable than before. It just will not gain <em>new features</em> like blend shapes or super-sampling that are Cubism 4+ exclusives.</li>
+      <li><strong>"Is V2 the same thing as Cubism 2?"</strong> No. V2 in this repository is the <em>second generation of the loader</em>, which targets Cubism Web SDK 4 / 5. Cubism 2 is the ancient version and lives under the V1 loader.</li>
+      <li><strong>"The old docs talk about v3 models…"</strong> The "v3" in the old docs is the same thing as today's V2. Treat any "v3 / V3" wording as V2.</li>
+  </ul>
+'ja': |
+  
+  <p>本プラグインは 2 系統の完全に独立した Live2D ローダーを並行してメンテナンスしています。初めてこのプラグインを触る方は、まず 2 分ほどでこのページに目を通してから、どちらを使うか決めてください。</p>
+  
+  <h2>一行サマリ</h2>
+  <ul>
+      <li><strong>V1 モデル</strong> = <a href="https://github.com/journey-ad/live2d_src" target="_blank" rel="noopener">journey-ad/live2d_src</a> ベースの<em>旧来</em>ローダー。Cubism <strong>2.x / 3.x</strong> 系のモデルが対象で、マニフェストは通常 <code>model.json</code>、モデル本体の拡張子は <code>.moc</code> です。代表例:22 娘 / 33 娘、Pio / Tia、Shizuku、艦これ Murakumo、超次元ネプテューヌなど。</li>
+      <li><strong>V2 モデル</strong> = Cubism <strong>4 / 5</strong> 系(以降のバージョンも含む)。マニフェストは <code>*.model3.json</code>、モデル本体は <code>.moc3</code>。Live2D Inc. が現在メンテナンスしているフォーマットです。</li>
+  </ul>
+  
+  <blockquote>
+      <p><strong>用語の補足:</strong>古いドキュメントでは Cubism 4+ モデルを「v3 以上」と呼んでいましたが、プラグイン 2.1 以降は <strong>V2</strong> に統一しました。本リポジトリの "V2" は Cubism 2 のことではなく、<em>本プラグインの第 2 世代ローダー</em>を指します。古い issue で「v3 モデル」「V3 モデル」と書かれていたら、すべて V2 と読み替えてください。</p>
+  </blockquote>
+  
+  <h2>手元のモデルが V1 か V2 かを判別する方法</h2>
+  <p>マニフェストファイルを見るだけです:</p>
+  <table>
+      <thead>
+          <tr><th style="width:18%">モデル種別</th><th>マニフェスト名</th><th>マニフェスト内の version</th><th>本体ファイル</th></tr>
+      </thead>
+      <tbody>
+          <tr><td>V1(旧)</td><td><code>model.json</code></td><td>なし / 任意</td><td><code>*.moc</code></td></tr>
+          <tr><td>V2(現行)</td><td><code>*.model3.json</code></td><td><code>"Version": 3</code> 以上(これは Cubism Web SDK のバージョンであり、モデル仕様番号ではありません)</td><td><code>*.moc3</code></td></tr>
+      </tbody>
+  </table>
+  <p>フロントエンド側のロジックは、<em>モデル仕様バージョンが 3 以上なら V2</em>、それ以下なら V1 にフォールバックします。</p>
+  
+  <h2>WordPress 管理画面の「クリエイティブワークショップ API タイプ」</h2>
+  <p>管理画面 → 設定 →「クリエイティブワークショップ API タイプ」は 3 値のドロップダウンです:</p>
+  <table>
+      <thead>
+          <tr><th style="width:18%">値</th><th>意味</th><th style="width:14%">有償?</th><th>モデル種別</th></tr>
+      </thead>
+      <tbody>
+          <tr><td><strong>ローカル</strong>(<code>local</code>)</td><td>プラグイン同梱の <code>assets/v1/</code> 内 V1 モデルを、REST ルート <code>/wp-json/live2d/v1/model/*</code> 経由で配信します。完全に自サイト内で動作し、サードパーティ API は一切不要です。</td><td>無料</td><td>V1(22/33/Pio/Tia/Shizuku/HyperdimensionNeptunia/KantaiCollection など)</td></tr>
+          <tr><td><strong>リモートワークショップ</strong>(<code>remote</code>)</td><td><code>www.live2dweb.com</code> からモデルカタログを取得し、ローカルにダウンロードしてから V1 ローダーに通します。ダウンロード先は <code>wp-content/plugins/live-2d/model/</code>。</td><td>無料</td><td>V1(中身は「ローカル」と同じ、配信元だけが違います)</td></tr>
+          <tr><td><strong>カスタム</strong>(<code>custom</code>)</td><td>自分の <code>modelAPI</code> URL を入力して V2(Cubism 4+)モデルをロードします。単一の <code>*.model3.json</code> 直リンクも、ディレクトリルート + 複数の <code>modelDir</code> 指定も可能。</td><td><strong>有償</strong></td><td>V2(Cubism 4+ / 5)</td></tr>
+      </tbody>
+  </table>
+  
+  <h3>なぜ V2 は有償なのか?</h3>
+  <p>Live2D 株式会社が、サードパーティ製の拡張可能アプリケーションが Cubism 4+ Core を利用する際に商用契約を要求しているためです。本プラグインの作者はすでに長期契約を締結し、その契約のもとで正規の Cubism Core を再配布しています。そこで V2 経路ではサイトオーナーから一括のライセンス料を頂戴し、上流のライセンスコストを実際に V2 を使うサイトに振り分けています。V1 モデルは Cubism Core に依存しないため、永久に無料です。</p>
+  
+  <h2>どちらを選べばよいか</h2>
+  <ul>
+      <li><strong>ブログのおまけに動く 2D キャラを乗せたいだけ →</strong> 既定のままインストールすれば、すでに同梱された V1 モデル(ローカル)が動きます。</li>
+      <li><strong>市販の有名スキン(22 娘、Pio など)を使いたい →</strong> こちらも V1 です。「ローカル」または「リモートワークショップ」をそのまま使ってください。</li>
+      <li><strong>自作 / 購入した MOC3 モデルがある →</strong> V2 のカスタム URL を使います。先に課金を済ませ、<a href="{{ '/ja/wiki/custom-model.html' | relative_url }}">V2 カスタムモデルガイド</a>に従って設定してください。</li>
+      <li><strong>V2 モデルの直リンク防止を最優先したい →</strong> カスタム URL の上にさらに「<a href="{{ '/ja/wiki/anti-hotlink.html' | relative_url }}">ローカルキャッシュ</a>」を有効化してください。詳細は直リンク防止ページへ。</li>
+  </ul>
+  
+  <h2>よくある誤解</h2>
+  <ul>
+      <li><strong>「V1 はもう使えないのでは?」</strong> いいえ。2.1.3 以降は V1 ローダーが完全ローカル化(fghrsh.net 等のサードパーティに依存しなくなった)されたため、以前より格段に安定しています。ただ Cubism 4+ 専用の<em>新機能</em>(ブレンドシェイプやスーパーサンプリング等)は今後も追加されません。</li>
+      <li><strong>「V2 = Cubism 2 ですか?」</strong> 違います。本プラグインの V2 は<em>第 2 世代ローダー</em>を意味し、Cubism Web SDK 4 / 5 に対応します。Cubism 2 は太古のバージョンで、こちらは V1 ローダー側に属します。</li>
+      <li><strong>「古いドキュメントに v3 モデルと書いてあるが…」</strong> 古いドキュメントの "v3" は今の V2 のことです。"v3 / V3" の表記はすべて V2 と読み替えてください。</li>
+  </ul>
+'zh-TW': |
+  
+  <p>本外掛同時維護兩套各自獨立的 Live2D 載入鏈。第一次接觸本外掛的站長，建議先花 2 分鐘把這頁讀完，再決定要走哪一條路。</p>
+  
+  <h2>一句話分辨</h2>
+  <ul>
+      <li><strong>V1 模型</strong> = 以 <a href="https://github.com/journey-ad/live2d_src" target="_blank" rel="noopener">journey-ad/live2d_src</a> 為基礎的 <em>舊版</em> 載入邏輯，對應 Cubism <strong>2.x / 3.x</strong> 系列模型，清單檔通常叫 <code>model.json</code>，模型本體副檔名是 <code>.moc</code>。常見模型：22 娘 / 33 娘、Pio / Tia、Shizuku、艦これ Murakumo、超次元海王星等。</li>
+      <li><strong>V2 模型</strong> = Cubism <strong>4 / 5</strong> 系列（含未來更新版本），清單檔是 <code>*.model3.json</code>，模型本體副檔名是 <code>.moc3</code>。這是 Live2D 官方目前在維護的格式。</li>
+  </ul>
+  
+  <blockquote>
+      <p><strong>用詞提示：</strong>過去的文件曾把 Cubism 4+ 模型稱為「v3 或更高版本」，自外掛 2.1 起一律改稱 <strong>V2</strong>。也就是說：本倉庫中的 "V2" 不是指 Cubism 2，而是指 <em>本外掛的第二代載入器</em>。若您在 issue 中看到「v3 模型」「V3 模型」字樣，請以 V2 解讀。</p>
+  </blockquote>
+  
+  <h2>怎麼判斷手上的模型是 V1 還是 V2？</h2>
+  <p>看模型清單檔即可：</p>
+  <table>
+      <thead>
+          <tr><th style="width:18%">模型類型</th><th>清單檔名</th><th>清單裡的 version 欄位</th><th>主模型檔</th></tr>
+      </thead>
+      <tbody>
+          <tr><td>V1（舊）</td><td><code>model.json</code></td><td>無 / 任意</td><td><code>*.moc</code></td></tr>
+          <tr><td>V2（新）</td><td><code>*.model3.json</code></td><td><code>"Version": 3</code> 起跳（實際是 Cubism Web SDK 版號，並非模型規格號）</td><td><code>*.moc3</code></td></tr>
+      </tbody>
+  </table>
+  <p>前端的判斷邏輯是：<em>模型規格版本 ≥ 3 走 V2 路徑</em>，否則走 V1。</p>
+  
+  <h2>WordPress 後台的「創意工坊 API 類型」</h2>
+  <p>後台 → 設定 →「創意工坊 API 類型」是一個三選下拉，對應三種使用方式：</p>
+  <table>
+      <thead>
+          <tr><th style="width:18%">取值</th><th>意義</th><th style="width:14%">付費？</th><th>對應模型</th></tr>
+      </thead>
+      <tbody>
+          <tr><td><strong>本機</strong> (<code>local</code>)</td><td>使用外掛 <code>assets/v1/</code> 內建的 V1 模型，REST 路徑 <code>/wp-json/live2d/v1/model/*</code>，全在自己站台運作，不依賴任何第三方介面。</td><td>免費</td><td>V1（22/33/Pio/Tia/Shizuku/HyperdimensionNeptunia/KantaiCollection 等）</td></tr>
+          <tr><td><strong>遠端創意工坊</strong> (<code>remote</code>)</td><td>從 <code>www.live2dweb.com</code> 取得模型清單，下載到本機後再走 V1 載入鏈。下載結果放在 <code>wp-content/plugins/live-2d/model/</code>。</td><td>免費</td><td>V1（與「本機」同源，只是來源不同）</td></tr>
+          <tr><td><strong>自訂</strong> (<code>custom</code>)</td><td>填一個您自己的 <code>modelAPI</code> URL，載入 V2（Cubism 4+）模型。可以指定一個直連 <code>*.model3.json</code>，也可以指定一個目錄根 + 多個 <code>modelDir</code> 子目錄。</td><td><strong>需付費</strong></td><td>V2（Cubism 4+ / 5）</td></tr>
+      </tbody>
+  </table>
+  
+  <h3>為什麼 V2 要付費？</h3>
+  <p>因為 Live2D 株式會社（Live2D Inc.）要求第三方擴充型應用使用 Cubism 4+ 核心時必須簽約。本外掛已與 Live2D 株式會社簽訂長期合約，並依其要求散布正版 Cubism Core，所以 V2 路徑會向站長收取一次性授權費，相當於把上游授權成本分攤給真正使用 V2 的站台。V1 模型不依賴 Cubism Core，因此永遠免費。</p>
+  
+  <h2>我該選哪一個？</h2>
+  <ul>
+      <li><strong>只想要會動的二次元小人陪我看部落格 →</strong> 安裝外掛、保持預設即可，跑的就是內建的 V1 模型（本機）。</li>
+      <li><strong>想用市面上現成的小人皮膚（22 娘、Pio 那一系列）→</strong> 也是 V1，可以直接使用「本機」或「遠端創意工坊」。</li>
+      <li><strong>有自己製作 / 購買的 MOC3 模型 →</strong> 走 V2 自訂 URL，先付費，再依照 <a href="{{ '/zh-TW/wiki/custom-model.html' | relative_url }}">V2 自訂模型教學</a>設定。</li>
+      <li><strong>想最大化保護 V2 模型不被盜連 →</strong> 在自訂 URL 之外另外開啟「<a href="{{ '/zh-TW/wiki/anti-hotlink.html' | relative_url }}">快取至本機</a>」，請參考防盜連頁面。</li>
+  </ul>
+  
+  <h2>常見誤解</h2>
+  <ul>
+      <li><strong>「V1 是不是不能用了？」</strong> —— 沒有。V1 路徑自 2.1.3 起反而完全本機化（不再依賴 fghrsh.net 等第三方來源），穩定度比過去好得多。它只是不會再加入 <em>新功能</em>（例如混合變形、超採樣這些 Cubism 4+ 才有的特性）。</li>
+      <li><strong>「V2 = Cubism 2 嗎？」</strong> —— 不是。本外掛的 V2 指的是 <em>第二代載入器</em>，對應 Cubism Web SDK 4 / 5。Cubism 2 是遠古版本，反而歸在 V1 路徑下。</li>
+      <li><strong>「我看舊文件寫 v3 模型……」</strong> —— 舊文件中的 "v3" 就是現在的 V2。所有「v3 / V3」字樣請一律以 V2 解讀。</li>
+  </ul>

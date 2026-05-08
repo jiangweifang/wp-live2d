@@ -1,0 +1,62 @@
+{%- comment -%}
+Looks up page metadata from _data/pages.yml using `page.page_id`,
+then renders the standard "Cayman" doc shell with header, language
+switcher and footer.
+
+A page only needs:
+    ---
+    page_id: <id>
+    nav_keys: [...]
+    ---
+…and may override individual fields via front-matter (`title`, `tagline`,
+`description`, `meta`, `footer`, `canonical`).
+{%- endcomment -%}
+{%- assign meta        = site.data.pages[page.page_id] -%}
+{%- assign canonical   = page.canonical   | default: meta.canonical   | default: '/' -%}
+{%- assign title       = page.title       | default: meta.titles[page.lang]       | default: site.title -%}
+{%- assign tagline     = page.tagline     | default: meta.taglines[page.lang]     -%}
+{%- assign description = page.description | default: meta.descriptions[page.lang] -%}
+{%- assign hero_meta   = page.meta        | default: meta.metas[page.lang]        -%}
+{%- assign footer      = page.footer      | default: meta.footers[page.lang]      | default: site.data.i18n.footer[page.lang] -%}
+<!doctype html>
+<html lang="{{ page.lang | default: 'zh-CN' }}">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title }}</title>
+    {% if description %}<meta name="description" content="{{ description }}" />{% endif %}
+    {% include alternates.html canonical=canonical %}
+    <link rel="stylesheet" href="{{ '/assets/cayman.css' | relative_url }}" />
+</head>
+<body>
+
+    <header class="page-header">
+        <h1 class="project-name">Live2D Web Canvas</h1>
+        {% if tagline %}<h2 class="project-tagline">{{ tagline }}</h2>{% endif %}
+        {% if hero_meta %}<p class="project-meta">{{ hero_meta }}</p>{% endif %}
+
+        {% if page.nav_keys %}
+        <p class="header-nav">
+            {% for key in page.nav_keys -%}
+                {%- assign entry = site.data.i18n.nav[key] -%}
+                {%- if entry -%}
+                    {%- capture url -%}{% include loc-href.html path=entry.href lang=page.lang %}{%- endcapture -%}
+                    <a href="{{ url | relative_url }}"{% if entry.target %} target="{{ entry.target }}" rel="noopener"{% endif %}>{{ entry.labels[page.lang] }}</a>
+                {%- endif %}
+            {% endfor %}
+        </p>
+        {% endif %}
+
+        {% include lang-switch.html canonical=canonical lang=page.lang %}
+    </header>
+
+    <main class="main-content">
+        {{ content }}
+
+        <footer class="site-footer">
+            {{ footer }}
+        </footer>
+    </main>
+
+</body>
+</html>

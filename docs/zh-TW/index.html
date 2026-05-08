@@ -1,0 +1,64 @@
+---
+page_id: index
+nav_keys: [guides, notes, links, privacy, github_repo]
+---
+
+<h1 id="guides">使用指南</h1>
+<p>選擇您要查看的主題：</p>
+<div class="card-grid">
+    <a class="card" href="{{ '/zh-TW/wiki/v1-vs-v2.html' | relative_url }}">
+        <h3 class="card-title">先看這裡：V1 與 V2 是什麼？</h3>
+        <p class="card-desc">本外掛維護兩套各自獨立的 Live2D 載入鏈：V1 = 以 journey-ad 為基礎的舊版（Cubism 2 / 3），V2 = Cubism 4+（含 5）。如何分辨與各自的使用情境。</p>
+    </a>
+    <a class="card" href="{{ '/zh-TW/wiki/custom-model.html' | relative_url }}">
+        <h3 class="card-title">使用 V2 自訂模型（Cubism 4+）</h3>
+        <p class="card-desc">付費授權、模型放置位置、modelAPI 兩種寫法、modelDir 多模型切換、貼圖大小建議。</p>
+    </a>
+    <a class="card" href="{{ '/zh-TW/wiki/anti-hotlink.html' | relative_url }}">
+        <h3 class="card-title">V2 模型防盜連：不快取 vs 快取至本機</h3>
+        <p class="card-desc">兩個互斥選項該怎麼選？為什麼外掛不直接接 OSS Private 讀？給已經在用物件儲存 / CDN 的站長的進階說明。</p>
+    </a>
+    <a class="card" href="{{ '/zh-TW/wiki/chrome-extension.html' | relative_url }}">
+        <h3 class="card-title">Live2D Web Canvas 瀏覽器擴充功能</h3>
+        <p class="card-desc">Chrome / Edge 擴充功能的安裝、登入、內建 V1 模型庫、自訂 URL（付費）模式以及與 WordPress 外掛的關係。</p>
+    </a>
+    <a class="card" href="{{ '/zh-TW/wiki/chatgpt.html' | relative_url }}">
+        <h3 class="card-title">ChatGPT 的使用</h3>
+        <p class="card-desc">設定 Token 數量、自訂 Open AI / Azure OpenAI 端點；目前預設 <code>MaxTokens=200</code>，保留最近 5 輪上下文。</p>
+    </a>
+    <a class="card" href="{{ '/zh-TW/wiki/touch-area.html' | relative_url }}">
+        <h3 class="card-title">V2 模型的觸碰區域 (HitArea)</h3>
+        <p class="card-desc">model3.json 中 <code>HitAreas</code> 與 motion 群組的對應關係（簡要說明）。</p>
+    </a>
+    <a class="card" href="{{ '/zh-TW/privacy/extension.html' | relative_url }}">
+        <h3 class="card-title">瀏覽器擴充功能隱私權政策</h3>
+        <p class="card-desc">Chrome / Edge 擴充功能 Live2D Web Canvas 的隱私權政策。</p>
+    </a>
+    <a class="card" href="https://github.com/fghrsh/live2d_api" target="_blank" rel="noopener">
+        <h3 class="card-title">自行架設 V1 模型伺服器（外部）</h3>
+        <p class="card-desc">由 fghrsh 維護的舊版 Live2D API（V1）。自 2.1.3 起，本外掛已內建常用 V1 模型，<strong>一般不再需要</strong>第三方 API。</p>
+    </a>
+</div>
+
+<h1 id="notes">注意事項</h1>
+<ol>
+    <li>請自行保護模型版權。<strong>V1 模型</strong>（journey-ad / Cubism 2~3 系列）已流傳多年，本外掛僅做相容性載入；<strong>V2 模型</strong>（Cubism 4+，<code>*.model3.json</code>）建議放在阿里雲 OSS / 騰訊雲 COS 等具備防盜連 + 跨來源控制的物件儲存上，或在外掛設定中開啟「<a href="{{ '/zh-TW/wiki/anti-hotlink.html' | relative_url }}">快取至本機</a>」讓外掛代為防盜。</li>
+    <li>創意工坊目前不開放上傳，原因同上 —— 在 2.0 版本升級到可防盜用之前，無法保障各位上傳者的版權。</li>
+    <li>請控制您的模型貼圖大小，建議不超過 <code>2048</code>，否則載入時間會非常長。</li>
+    <li>moc3 的縮放比例可能比較小。請將模型縮放比例調整至適當大小（建議 <code>2.0</code> 左右）。程式碼中沒有寫死 2.0,因為它會以倍數複合（1.1 實際會變 2.2）。</li>
+    <li>請務必確認您的 WordPress REST API（<code>rest_route</code>）能正常存取。儲存設定出錯時，請先檢查站台是否將 REST API 加入白名單；Cloudflare 使用者尤其常見。自 2.1.3 起，本機 V1 模型服務、V2 防盜連都依賴 <code>/wp-json/live2d/v1/...</code>。</li>
+    <li>使用 CDN 加速的站長，請記得在更新外掛後刷新快取。</li>
+    <li><code>live2d.js</code>（以及 <code>waifu-tips.min.js</code> 等）<strong>不需要再次壓縮</strong>。若壓縮後出現錯誤，請先排除二次壓縮的問題。</li>
+    <li>內網使用者請以公開 IP 存取您的網站，並設定好網域（可使用花生殼免費網域）。在 localhost 上外掛無法儲存設定。</li>
+    <li>您可以在 <a href="https://nizima.com/" target="_blank" rel="noopener">nizima</a> 購買正版 MOC3 模型。</li>
+    <li>您可以在官方 <a href="https://www.live2d.jp/showcase/live2dwebcanvas/" target="_blank" rel="noopener">Live2D Showcase</a> 看到本外掛的介紹。</li>
+    <li>更新紀錄會在 <a href="https://weibo.com/nagatosaki" target="_blank" rel="noopener">微博</a> 或 <a href="https://space.bilibili.com/70444" target="_blank" rel="noopener">bilibili</a> 公布。</li>
+    <li>付費後若無回應，請及時聯絡作者 QQ：<code>85838607</code>，會盡快為您處理。</li>
+</ol>
+
+<h1 id="links">相關連結</h1>
+<ul>
+    <li>GitHub 倉庫：<a href="https://github.com/jiangweifang/wp-live2d" target="_blank" rel="noopener">jiangweifang/wp-live2d</a></li>
+    <li>Issues：<a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">提交問題</a></li>
+    <li>Wiki 原始頁面：<a href="https://github.com/jiangweifang/wp-live2d/wiki" target="_blank" rel="noopener">GitHub Wiki</a></li>
+</ul>
