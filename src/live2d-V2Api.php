@@ -42,6 +42,19 @@ class live2d_V2Api
     const ALIAS_BYTES = 8;           // 11 char base64url
     const TOKEN_BYTES = 16;          // 22 char base64url
 
+    // 一次性 nonce (one-time token, OTT) 参数
+    //   - 防爬虫脚本拿一个 WP nonce 就无限刷 /session 拉模型
+    //   - 初始池由 wordpress-live2d.php live2D_style() 在访问页面时 mint 一批,
+    //     随页面 HTML 注入到 wp_localize_script (同源,脚本必须先抠页面才能拿到)
+    //   - 每次 /session 调用:
+    //       1) consume 请求头 X-Live2D-OneTime 里的 token (transient delete)
+    //       2) 响应体里返一个新 nextToken (补回前端池)
+    //   - 正常访客拿初始 8 个 + 1:1 补回 → 池不会枯竭;
+    //     脚本拿不到页面初始 8 个 token 就只能 1:1 透支
+    const OTT_BYTES            = 12;     // 16 char base64url
+    const OTT_TTL              = 1800;   // 30 分钟, 访客阶段够用
+    const OTT_TRANSIENT_PREFIX = 'l2d_v2_ott_';
+
     /** REST 路由注册:挂在 rest_api_init 钩子 */
     public static function register_routes()
     {
@@ -49,7 +62,11 @@ class live2d_V2Api
 
         register_rest_route(self::REST_NS, '/session', array(
             'methods'             => 'POST',
-            'permission_callback' => '__return_true',
+            // permission_callback: 必须带合法 WP REST nonce (X-WP-Nonce 头, 同一页面
+            // wp_create_nonce('wp_rest') 发出). 这是 WP 标准 cookie+nonce 双重校验,
+            // 脚本必须先抠页面拿到 cookie 才有可能拿到合法 nonce, 挡住「裸调 API」类
+            // 爆力脚本。
+            'permission_callback' => array($self, 'check_session_nonce'),
             'callback'            => array($self, 'create_session'),
             'args'                => array(
                 'modelApi'     => array('required' => true,  'type' => 'string'),
@@ -90,20 +107,93 @@ class live2d_V2Api
     }
 
     /**
+     * permission_callback for POST /session: 校验 WP REST nonce.
+     * - 优先取 X-WP-Nonce 头 (WP 5.7+ JS API 默认源),fallback 到 ?_wpnonce= 查询串。
+     * - 不合格直接 401,不进 callback,不消费 OTT。
+     */
+    public function check_session_nonce(WP_REST_Request $request)
+    {
+        $nonce = $request->get_header('x_wp_nonce');
+        if (empty($nonce)) {
+            $nonce = (string) $request->get_param('_wpnonce');
+        }
+        if (empty($nonce) || !wp_verify_nonce($nonce, 'wp_rest')) {
+            return new WP_Error(
+                'rest_forbidden',
+                'Invalid or missing nonce.',
+                array('status' => 401)
+            );
+        }
+        return true;
+    }
+
+    /**
+     * Mint $count 个一次性 token 并写 transient (TTL = OTT_TTL).
+     * 调用点:
+     *   - wordpress-live2d.php live2D_style() 注入页面初始池 (8 个)
+     *   - create_session() 末尾发 1 个 nextToken 续杯
+     * 返回纯 token 字符串数组 (base64url, 16 char each).
+     */
+    public static function mint_one_time_tokens($count)
+    {
+        $count = max(1, (int) $count);
+        $out = array();
+        for ($i = 0; $i < $count; $i++) {
+            $tok = self::random_base64url(self::OTT_BYTES);
+            // value=1 占位; set_transient 本身不需要那字段, 是存在性才是信号。
+            set_transient(self::OTT_TRANSIENT_PREFIX . $tok, 1, self::OTT_TTL);
+            $out[] = $tok;
+        }
+        return $out;
+    }
+
+    /**
+     * 原子消费一个 OTT. 存在 → delete 后返 true; 否则 false.
+     * 注: WP transient 背后若是 Memcached/Redis 可严格原子;
+     * 原生 MySQL 表上同 token 并发 GET 最多双发一次 session, 无安全危机。
+     */
+    public static function consume_one_time_token($token)
+    {
+        $token = (string) $token;
+        if ($token === '' || !preg_match('#^[A-Za-z0-9_-]{12,32}$#', $token)) {
+            return false;
+        }
+        $key = self::OTT_TRANSIENT_PREFIX . $token;
+        if (false === get_transient($key)) {
+            return false;
+        }
+        delete_transient($key);
+        return true;
+    }
+
+    /**
      * POST /session
      * body: { modelApi: string, manifestJson?: string }
      */
     public function create_session(WP_REST_Request $request)
     {
+        // 一次性 token 消费: 不合格一律 401, 不反馈任何模型信息.
+        // 必须在 modelApi 验证之前, 防止脚本用无效 modelApi 探出"有效 token"。
+        $ott = (string) $request->get_header('x_live2d_onetime');
+        if ($ott === '' || !self::consume_one_time_token($ott)) {
+            return new WP_REST_Response(array(
+                'errorCode' => 'invalid_one_time',
+                'message'   => 'Missing or invalid one-time token.',
+            ), 401);
+        }
+        // 一上来就 mint 下一个; 后面所有返回路径(成败一致)都把 nextToken 填进响应,
+        // 让合法访客的 token 池 1:1 补回, 又不给脚本"装死复活"的机会。
+        $nextToken = self::mint_one_time_tokens(1)[0];
+
         $modelApi = trim((string) $request->get_param('modelApi'));
         if ($modelApi === '') {
-            return self::ok_empty();
+            return self::ok_empty_with_next($nextToken);
         }
         // 所有 http(s) 绝对 URL 都接受 — 同站 / GitHub raw / jsdelivr / OSS / COS 均可。
         // 同站 → stream_local readfile;跨域 → stream_remote 服务端代理。
         // wp_safe_remote_get 默认封碎内网 IP / file:// / 0.0.0.0,SSRF 防设已在。
         if (!preg_match('#^https?://#i', $modelApi)) {
-            return self::ok_with_error('invalid_url', 'modelApi 必须是 http(s) URL');
+            return self::ok_with_error_and_next($nextToken, 'invalid_url', 'modelApi 必须是 http(s) URL');
         }
 
         // 1) 拿 manifest 文本:优先用客户端预拉的,空就 PHP 拉
@@ -114,7 +204,7 @@ class live2d_V2Api
         if ($manifestText === '') {
             $resp = wp_remote_get($modelApi, array('timeout' => 8, 'sslverify' => true));
             if (is_wp_error($resp) || (int) wp_remote_retrieve_response_code($resp) !== 200) {
-                return self::ok_with_error('fetch_failed', '服务端无法拉取 modelApi');
+                return self::ok_with_error_and_next($nextToken, 'fetch_failed', '服务端无法拉取 modelApi');
             }
             $manifestText = (string) wp_remote_retrieve_body($resp);
         }
@@ -122,7 +212,7 @@ class live2d_V2Api
         // 2) 解析 + alias 化
         $manifest = json_decode($manifestText, true);
         if (!is_array($manifest) || !isset($manifest['FileReferences'])) {
-            return self::ok_with_error('invalid_manifest', 'modelApi 不是合法的 model3.json');
+            return self::ok_with_error_and_next($nextToken, 'invalid_manifest', 'modelApi 不是合法的 model3.json');
         }
 
         $token         = self::random_base64url(self::TOKEN_BYTES);
@@ -236,6 +326,7 @@ class live2d_V2Api
             'token'       => $token,
             'manifestUrl' => $manifestUrl,
             'expires'     => $exp,
+            'nextToken'   => $nextToken,
         ), 200);
     }
 
@@ -637,11 +728,27 @@ class live2d_V2Api
         return new WP_REST_Response(new stdClass(), 200);
     }
 
+    /** 空响应 + nextToken 补回 (modelApi 为空时用) */
+    private static function ok_empty_with_next($nextToken)
+    {
+        return new WP_REST_Response(array('nextToken' => $nextToken), 200);
+    }
+
     private static function ok_with_error($code, $message)
     {
         return new WP_REST_Response(array(
             'errorCode' => $code,
             'message'   => $message,
+        ), 200);
+    }
+
+    /** 带 nextToken 的错误响应 (合法访客错误路径用) */
+    private static function ok_with_error_and_next($nextToken, $code, $message)
+    {
+        return new WP_REST_Response(array(
+            'errorCode' => $code,
+            'message'   => $message,
+            'nextToken' => $nextToken,
         ), 200);
     }
 
@@ -1404,7 +1511,14 @@ class live2d_V2Api
         if (preg_match('#^/|^[A-Za-z]:|\\#', $relPath) || strpos($relPath, '..') !== false) {
             return array('errorCode' => 400, 'errorMsg' => '非法相对路径');
         }
-        // 逐段 sanitize_file_name (WP 本身的 防 NUL / 限别名 / Windows 保留名 均能测试)
+        // 逐段做字符白名单校验。
+        // 注意: 不能直接用 WordPress 的 sanitize_file_name() 做严格等值比较,因为它对 Cubism 4+
+        // 的双重扩展名 (如 Mao.model3.json / exp_01.exp3.json / motion3.json / physics3.json /
+        // cdi3.json / pose3.json / userdata3.json / display3.json / textures.json) 会把中间段
+        // 当成"未授权的伪扩展名"在末尾加下划线,变成 Mao.model3_.json,导致正常文件被误杀。
+        // 项目约束: 路径只能由 [A-Za-z0-9._-] 组成 (与 custom-model.html 文档"不能含中文"一致),
+        // 因此直接用正则白名单校验即可,WP 的别名 / Windows 保留名 / NUL 防御也由后续的
+        // 扩展名白名单 + is_uploaded_file + 落盘前的 realpath 边界检查兜底。
         $segments = explode('/', $relPath);
         $cleanSegs = array();
         foreach ($segments as $seg) {
@@ -1412,13 +1526,11 @@ class live2d_V2Api
             if ($seg === '' || $seg === '.' || $seg === '..') {
                 return array('errorCode' => 400, 'errorMsg' => '路径含空段或 .. : ' . $relPath);
             }
-            $san = sanitize_file_name($seg);
-            if ($san === '' || $san !== $seg) {
-                // sanitize_file_name 改名了 → 原始名含不安全字符 (如中文 / 控制符)
-                // 项目约束: 路径不能含中文 (与 custom-model.html 文档一致),直接报错
+            // 只允许 ASCII 字母数字、点、下划线、短横线; 不允许首尾为点 (避免 .htaccess 之类)
+            if (!preg_match('/^[A-Za-z0-9_\-][A-Za-z0-9._\-]*$/', $seg) || substr($seg, -1) === '.') {
                 return array('errorCode' => 400, 'errorMsg' => '文件名含不允许字符: ' . $seg);
             }
-            $cleanSegs[] = $san;
+            $cleanSegs[] = $seg;
         }
         $relPath = implode('/', $cleanSegs);
 

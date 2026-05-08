@@ -109,8 +109,15 @@ function live2D_style()
     if ($isLocal && function_exists('live2d_v1api_local_url')) {
         $live2dSettings['modelAPI'] = live2d_v1api_local_url();
     }
-    // 把三态字符串 apiType 在传给 JS 前压成 bool,与 live2d-tips.ts 既有的
-    // truthy 判断 / `isWorkshop=${settings.apiType}` 拼接保持兼容。
+    // 把 apiType 四态字符串在传给 JS 前压成 bool 之前, 先保留原始字符串值.
+    // 下面 wp_localize 里 'v2SessionUrl' 需要用原字符串判断 'custom-local',
+    // 不能等压成 bool 后再判 (那会永远 false, 导致 V2 防盗链 endpoint 不注入,
+    // 前端 signOneModel/signAllModelDirs 短路 fallback 到裸 URL, 暴露源站地址).
+    $apiTypeRaw = (is_array($live2dSettings) && isset($live2dSettings['apiType']))
+        ? (string) $live2dSettings['apiType']
+        : '';
+    // 把四态字符串 apiType 在传给 JS 前压成 bool, 与 live2d-tips.ts 既有的
+    // truthy 判断 / `isWorkshop=${settings.apiType}` 拼接保持兼容.
     if (is_array($live2dSettings) && function_exists('live2d_api_type_is_local')) {
         $live2dSettings['apiType'] = live2d_api_type_is_local(isset($live2dSettings['apiType']) ? $live2dSettings['apiType'] : null);
     }
@@ -165,10 +172,25 @@ function live2D_style()
         // 仅在 apiType='custom-local' 时注入完整 URL;其他三种 apiType
         // (local / remote / custom-remote) 都不走防盗链 → 注入空串
         // → 前端 Wordpress/live2d-tips.ts 的 signOneModel 早退到裸链。
+        // 注意: 此处必须用 $apiTypeRaw (上面在压 bool 之前保留的字符串),
+        // 不能用 $live2dSettings['apiType'] (那已经是 bool, 永远 != 'custom-local').
         // 2026-05 之前用独立 protectV2 字段控制,现已合并进 apiType。
-        'v2SessionUrl' => (is_array($live2dSettings) && isset($live2dSettings['apiType']) && $live2dSettings['apiType'] === 'custom-local')
+        //
+        // 同时下发两件配套件 (V2 防爬虫):
+        //   v2WpNonce       - WP REST nonce, 前端 fetch 时放 X-WP-Nonce 头
+        //                     (rest_cookie_check_errors 双重校验, 拦裸调 API)
+        //   v2OneTimeTokens - 8 个一次性 token, 每签 1 模型用 1 个,
+        //                     服务端再补 1 个 nextToken 进池 → 池永不枯竭
+        //                     (拦"抓 nonce 后批量爬"的脚本: 没访问页面就拿不到初始池)
+        'v2SessionUrl'    => ($apiTypeRaw === 'custom-local')
             ? rest_url('live2d/v2/session')
             : '',
+        'v2WpNonce'       => ($apiTypeRaw === 'custom-local')
+            ? wp_create_nonce('wp_rest')
+            : '',
+        'v2OneTimeTokens' => ($apiTypeRaw === 'custom-local' && class_exists('live2d_V2Api'))
+            ? live2d_V2Api::mint_one_time_tokens(8)
+            : array(),
         'currentPage' => array('get_the_id' => get_the_id(), 'is_home' => is_front_page(), 'is_single' => is_single())
     ));
 }
