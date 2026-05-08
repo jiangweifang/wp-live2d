@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Live 2D 2.1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-07 08:06+0000\n"
-"PO-Revision-Date: 2026-05-07 08:06+0000\n"
+"POT-Creation-Date: 2026-05-08 07:24+0000\n"
+"PO-Revision-Date: 2026-05-08 07:24+0000\n"
 "Language-Team: English (United States)\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: build-i18n.py\n"
 
-#: wordpress-live2d.php:216
+#: wordpress-live2d.php:239
 msgid "设置"
 msgstr "Settings"
 
-#: wordpress-live2d.php:305
+#: wordpress-live2d.php:328
 #: src/live2d-Widget.php:38
 msgid "发送"
 msgstr "Send"
@@ -60,7 +60,7 @@ msgid "此站点未绑定, 请<a href=\"https://www.live2dweb.com/Sites\" target
 msgstr "This site is not bound. Please <a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">click here</a> to bind it; make sure the URL matches your WordPress Site Address (URL)."
 
 #: src/live2d-Login.php:114
-#: src/live2d-Shop.php:218
+#: src/live2d-Shop.php:272
 msgid "您的邮箱未激活, 请<a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">点击此处</a>激活邮箱"
 msgstr "Your email is not activated. Please <a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">click here</a> to activate it."
 
@@ -84,87 +84,87 @@ msgstr "Live 2D Settings"
 msgid "Live 2D 创意工坊"
 msgstr "Live 2D Workshop"
 
-#: src/live2d-Main.php:101
+#: src/live2d-Main.php:104
 msgid "登陆"
 msgstr "Sign in"
 
-#: src/live2d-Main.php:102
+#: src/live2d-Main.php:105
 #: src/waifu-Settings-Base.php:15
 msgid "基础设置"
 msgstr "General"
 
-#: src/live2d-Main.php:103
+#: src/live2d-Main.php:106
 #: src/waifu-Settings-Toolbar.php:10
 msgid "工具栏设置"
 msgstr "Toolbar"
 
-#: src/live2d-Main.php:104
+#: src/live2d-Main.php:107
 msgid "提示消息选项"
 msgstr "Tip messages"
 
-#: src/live2d-Main.php:105
+#: src/live2d-Main.php:108
 msgid "样式设置"
 msgstr "Style"
 
-#: src/live2d-Main.php:106
+#: src/live2d-Main.php:109
 #: src/waifu-Advanced.php:18
 msgid "高级设置"
 msgstr "Advanced"
 
-#: src/live2d-Shop.php:165
+#: src/live2d-Shop.php:219
 msgid "您没有访问该页面的权限。"
 msgstr "You do not have permission to access this page."
 
-#: src/live2d-Shop.php:193
+#: src/live2d-Shop.php:247
 msgid "列表中是您可以使用的模型。"
 msgstr "These are the models you can use."
 
-#: src/live2d-Shop.php:195
+#: src/live2d-Shop.php:249
 msgid "点击「下载」后，插件会自动下载并安装到您的网站中。"
 msgstr "After clicking \"Download\", the plugin downloads and installs the model into your site automatically."
 
-#: src/live2d-Shop.php:211
+#: src/live2d-Shop.php:265
 msgid "您需要登录并完成邮箱验证才可以使用此功能。"
 msgstr "You need to sign in and verify your email to use this feature."
 
-#: src/live2d-Shop.php:242
-#: src/live2d-Shop.php:270
+#: src/live2d-Shop.php:296
+#: src/live2d-Shop.php:324
 msgid "已启用"
 msgstr "Installed"
 
-#: src/live2d-Shop.php:244
-#: src/live2d-Shop.php:271
+#: src/live2d-Shop.php:298
+#: src/live2d-Shop.php:325
 msgid "下载"
 msgstr "Download"
 
-#: src/live2d-Shop.php:251
+#: src/live2d-Shop.php:305
 msgid "没有可用的模型。"
 msgstr "No models available."
 
-#: src/live2d-Shop.php:268
+#: src/live2d-Shop.php:322
 msgid "正在下载..."
 msgstr "Downloading…"
 
-#: src/live2d-Shop.php:269
+#: src/live2d-Shop.php:323
 msgid "正在解压..."
 msgstr "Extracting…"
 
-#: src/live2d-Shop.php:272
+#: src/live2d-Shop.php:326
 msgid "解压失败,文件可能损坏。"
 msgstr "Extraction failed; the file may be corrupted."
 
-#: src/live2d-Shop.php:273
+#: src/live2d-Shop.php:327
 msgid "下载失败"
 msgstr "Download failed"
 
-#: src/live2d-Shop.php:274
+#: src/live2d-Shop.php:328
 msgid "下载请求失败,请检查网络或登录状态。"
 msgstr "The download request failed. Check your network or sign-in status."
 
 #: src/live2d-Utils.php:32
 #: src/live2d-Utils.php:57
 #: src/live2d-Utils.php:69
-#: src/live2d-Utils.php:164
+#: src/live2d-Utils.php:168
 msgid "点击此处增加一条"
 msgstr "Click here to add an entry"
 
@@ -205,8 +205,8 @@ msgid "Cubism 4+（V2，官方仍在维护的最新格式）"
 msgstr "Cubism 4+ (V2 — the format Live2D Inc. is actively maintaining)"
 
 #: src/live2d-Utils.php:106
-msgid "「自定义模型路径（Cubism 4+）」（需登录并购买授权）"
-msgstr "\"Custom model path (Cubism 4+)\" (requires sign-in and a paid license)"
+msgid "「自定义新版模型 · 直链加载」或「自定义新版模型 · 托管到本站」(均需登录并购买授权)"
+msgstr "\"Custom Cubism 4+ model · Direct link\" or \"Custom Cubism 4+ model · Host on this site\" (both require sign-in and a purchased license)"
 
 #: src/live2d-Utils.php:108
 msgid "简单判断：清单文件名以 .model3.json 结尾就是 V2，否则是 V1。"
@@ -217,280 +217,295 @@ msgid "API 方式与模型路径"
 msgstr "API mode and model path"
 
 #: src/live2d-Utils.php:117
-msgid "「API 方式」是 V1 / V2 链路的总开关，三个选项作用不同："
-msgstr "\"API mode\" is the master switch between the V1 and V2 loaders. The three options behave differently:"
+msgid "「API 方式」是 V1 / V2 链路的总开关, 2026-05 重构后由原三选项 + protectV2 二态合并为「四选项 radio」, 每个选项作用不同:"
+msgstr "\"API mode\" is the master switch for the V1 / V2 pipeline. After the 2026-05 refactor, the original 3 options + protectV2 toggle were merged into a single 4-option radio. Each option behaves differently:"
 
 #: src/live2d-Utils.php:119
-#: src/waifu-Settings-Base.php:143
+#: src/waifu-Settings-Base.php:148
 msgid "本地部署旧版模型"
 msgstr "Local legacy models"
 
 #: src/live2d-Utils.php:119
-msgid "使用插件随包内置的 V1 模型，由本站 REST 接口（/wp-json/live2d/v1/model/*）提供，不向外网发起请求。「模型 ID」「材质 ID」会自动变成下拉框。需要在「Live 2D 创意工坊」页面先把模型下载到本地。"
-msgstr "Use the V1 models bundled with the plugin. They are served by your own site over /wp-json/live2d/v1/model/*, with no outbound requests. \"Model ID\" and \"Texture ID\" turn into dropdowns. Download the model first from the \"Live 2D Workshop\" page."
+msgid "使用插件随包内置的 V1 模型, 由本站 REST 接口 (/wp-json/live2d/v1/model/*) 提供, 不向外网发起请求。「模型 ID」「材质 ID」会自动变成下拉框。需要在「Live 2D 创意工坊」页面先把模型下载到本地。"
+msgstr "Uses the V1 models bundled with the plugin, served via this site's REST API (/wp-json/live2d/v1/model/*). No outbound network calls. \"Model ID\" and \"Texture ID\" automatically become dropdowns. The model must first be downloaded from the \"Live 2D Workshop\" page."
 
 #: src/live2d-Utils.php:120
-#: src/waifu-Settings-Base.php:152
+#: src/waifu-Settings-Base.php:157
 msgid "自行部署旧版模型"
 msgstr "Self-hosted legacy models"
 
 #: src/live2d-Utils.php:120
-msgid "对接您自己服务器或第三方提供的 V1 模型 API（即 fghrsh 风格接口），「模型 API」需要填写返回 model_list.json 的接口根地址。"
-msgstr "Connect to a V1 model API hosted on your own server or a third party (the fghrsh-style API). \"Model API\" must point to the root URL that returns model_list.json."
+msgid "对接您自己服务器或第三方提供的 V1 模型 API (即 fghrsh 风格接口), 「模型 API」需要填写返回 model_list.json 的接口根地址。"
+msgstr "Talks to a V1 model API hosted by you or a third party (i.e. the fghrsh-style API). The \"Model API\" field must be set to the root URL that returns model_list.json."
 
 #: src/live2d-Utils.php:121
-#: src/waifu-Settings-Base.php:159
-#: src/waifu-Settings-Base.php:167
-msgid "自定义模型路径（Cubism 4+）"
-msgstr "Custom model path (Cubism 4+)"
+msgid "自定义新版模型 · 直链加载 (Cubism 4+)"
+msgstr "Custom Cubism 4+ model · Direct link"
 
 #: src/live2d-Utils.php:121
-msgid "用于 Cubism 4+ 模型（V2，*.model3.json）。需要登录账号并完成付费后才能选择。"
-msgstr "For Cubism 4+ models (V2, *.model3.json). Available only after signing in and purchasing a license."
+msgid "用于 Cubism 4+ 模型 (V2, *.model3.json), 「模型 API」填跨域 URL, 浏览器直接拉源站。需登录账号并完成付费后才能选择, 防盗链由对象存储 / CDN 站长自己处理。"
+msgstr "For Cubism 4+ models (V2, *.model3.json). \"Model API\" takes a cross-origin URL and the browser fetches the origin directly. Available only after sign-in and payment; hotlink protection is handled by you on the object storage / CDN side."
 
-#: src/live2d-Utils.php:123
+#: src/live2d-Utils.php:122
+msgid "自定义新版模型 · 托管到本站 (Cubism 4+, 推荐)"
+msgstr "Custom Cubism 4+ model · Host on this site (recommended)"
+
+#: src/live2d-Utils.php:122
+msgid "同上, 但插件会把模型下载 / 托管到本站 wp-content/plugins/live-2d/model/{slug}/, 并代为防盗链 (临时签名 URL)。需登录账号并完成付费后才能选择。"
+msgstr "Same as above, but the plugin downloads / hosts the model under wp-content/plugins/live-2d/model/{slug}/ on this site and handles hotlink protection for you (short-lived signed URLs). Available only after sign-in and payment."
+
+#: src/live2d-Utils.php:124
+msgid "选了「托管到本站」后的表单变化"
+msgstr "Form changes after selecting \"Host on this site\""
+
+#: src/live2d-Utils.php:125
+msgid "选「自定义新版模型 · 托管到本站」后, 「模型 API」输入框会被隐藏, 系统自动把它写成本站 wp-content/plugins/live-2d/model/ 根地址。站长唯一需要填的是「模型目录」列表, 每行一个 slug (= 子目录名), 插件会按 {root}{slug}/{slug}.model3.json 自动展开为完整 manifest URL。"
+msgstr "After choosing \"Custom Cubism 4+ model · Host on this site\", the \"Model API\" input is hidden and the system automatically points it at this site's wp-content/plugins/live-2d/model/ root. The only thing you need to fill in is the \"Model directory\" list - one slug (= subfolder name) per line; the plugin expands it to a full manifest URL as {root}{slug}/{slug}.model3.json."
+
+#: src/live2d-Utils.php:126
 msgid "「模型 API」何时以 .json 结尾、何时以斜杠结尾"
 msgstr "When \"Model API\" should end with .json vs. with a trailing slash"
 
-#: src/live2d-Utils.php:124
-msgid "仅当「API 方式 = 自定义模型路径（Cubism 4+）」时，「模型 API」支持以下两种写法，由结尾字符决定走哪种："
-msgstr "Only when \"API mode = Custom model path (Cubism 4+)\" is selected does \"Model API\" accept the two formats below. The trailing character decides which one is used:"
+#: src/live2d-Utils.php:127
+msgid "仅当「API 方式 = 自定义新版模型 · 直链加载」时, 「模型 API」支持以下两种写法, 由结尾字符决定走哪种:"
+msgstr "Only when \"API mode = Custom Cubism 4+ model · Direct link\", the \"Model API\" field supports two forms, distinguished by the trailing character:"
 
-#: src/live2d-Utils.php:126
+#: src/live2d-Utils.php:129
 msgid "写法"
 msgstr "Format"
 
-#: src/live2d-Utils.php:127
+#: src/live2d-Utils.php:130
 msgid "行为"
 msgstr "Behaviour"
 
-#: src/live2d-Utils.php:128
+#: src/live2d-Utils.php:131
 msgid "「模型目录」是否使用"
 msgstr "Is \"Model directory\" used?"
 
-#: src/live2d-Utils.php:130
-msgid "以 .json 结尾（直链单模型）"
-msgstr "Ends with .json (direct link to a single model)"
-
-#: src/live2d-Utils.php:131
-msgid "直接当作 *.model3.json 加载，不再做任何路径拼接。例：https://cdn.example.com/live2d/haru/haru.model3.json"
-msgstr "Loaded as a *.model3.json directly, with no further path concatenation. Example: https://cdn.example.com/live2d/haru/haru.model3.json"
-
-#: src/live2d-Utils.php:132
-msgid "忽略，下方「模型目录」「待机动画文件名」两行会自动隐藏。"
-msgstr "Ignored — the \"Model directory\" and \"Idle motion filename\" rows below are hidden automatically."
-
 #: src/live2d-Utils.php:133
-msgid "以 / 结尾（目录根 + 多模型）"
-msgstr "Ends with / (directory root + multiple models)"
+msgid "以 .json 结尾 (直链单模型)"
+msgstr "Ends with .json (single direct-link model)"
 
 #: src/live2d-Utils.php:134
-msgid "当作根目录使用，配合下方「模型目录」每行一个名称，自动按 {模型 API}{名称}/{名称}.model3.json 拼成完整 URL。"
-msgstr "Treated as a root directory. Combined with the \"Model directory\" list below (one name per line), the full URL is assembled as {Model API}{name}/{name}.model3.json."
+msgid "直接当作 *.model3.json 加载, 不再做任何路径拼接。例: https://cdn.example.com/live2d/haru/haru.model3.json"
+msgstr "Loaded as *.model3.json directly with no path concatenation. Example: https://cdn.example.com/live2d/haru/haru.model3.json"
 
 #: src/live2d-Utils.php:135
-msgid "必填。每行写一个子目录名称，名称必须与 {名称}.model3.json 的前缀完全一致。"
-msgstr "Required. Put one sub-directory name per line; the name must match the prefix of {name}.model3.json exactly."
+msgid "忽略, 下方「模型目录」「待机动画文件名」两行会自动隐藏。"
+msgstr "Ignored. The \"Model directory\" and \"Idle motion file name\" rows below are auto-hidden."
+
+#: src/live2d-Utils.php:136
+msgid "以 / 结尾 (目录根 + 多模型)"
+msgstr "Ends with / (directory root + multiple models)"
 
 #: src/live2d-Utils.php:137
-msgid "补充约束：路径不能包含中文；HTTPS 站点的模型清单及其引用到的所有资源（.moc3、贴图、motion3.json、physics3.json 等）也必须是 HTTPS；放在第三方对象存储 / CDN 时请正确开启 CORS。"
-msgstr "Additional constraints: paths must not contain non-ASCII characters; on HTTPS sites the manifest and every referenced asset (.moc3, textures, motion3.json, physics3.json, etc.) must also be HTTPS; if hosted on third-party object storage / CDN, enable CORS for your site origin."
+msgid "当作根目录使用, 配合下方「模型目录」每行一个 slug, 自动按 {模型 API}{slug}/{slug}.model3.json 拼成完整 URL。"
+msgstr "Treated as a directory root. Combined with the \"Model directory\" list below (one slug per line), full URLs are auto-built as {Model API}{slug}/{slug}.model3.json."
 
 #: src/live2d-Utils.php:138
-msgid "「默认材质 ID」仅 V1 模型使用，V2 模型留空即可。"
-msgstr "\"Default texture ID\" is used only by V1 models — leave it blank for V2."
+msgid "必填。每行写一个子目录名称, 名称必须与 {slug}.model3.json 的前缀完全一致。"
+msgstr "Required. One subfolder name per line; the name must exactly match the {slug}.model3.json prefix."
 
-#: src/live2d-Utils.php:145
-#: src/waifu-Settings-Base.php:97
-msgid "模型防盗保护（Cubism 4+）"
-msgstr "Model anti-leech protection (Cubism 4+)"
+#: src/live2d-Utils.php:140
+msgid "补充约束: 路径不能包含中文; HTTPS 站点的模型清单及其引用到的所有资源 (.moc3、贴图、motion3.json、physics3.json 等) 也必须是 HTTPS; 放在第三方对象存储 / CDN 时请正确开启 CORS。"
+msgstr "Additional constraints: paths must not contain CJK characters; on HTTPS sites, the model manifest and every asset it references (.moc3, textures, motion3.json, physics3.json, etc.) must also be HTTPS; when hosted on third-party object storage / CDN, make sure CORS is enabled correctly."
 
-#: src/live2d-Utils.php:147
-msgid "「模型防盗保护（Cubism 4+）」只对 Cubism 4+ 模型（自定义模型路径）生效，旧版模型（本地 / 自行部署旧版）走站内接口，本身不需要这层保护。"
-msgstr "\"Model anti-leech protection (Cubism 4+)\" applies only to Cubism 4+ models (Custom model path). Legacy models (local / self-hosted legacy) are served by your own site and do not need this layer."
+#: src/live2d-Utils.php:141
+msgid "「默认材质 ID」仅 V1 模型使用, V2 模型留空即可。"
+msgstr "\"Default texture ID\" applies only to V1 models. Leave it empty for V2 models."
 
-#: src/live2d-Utils.php:149
-#: src/waifu-Settings-Base.php:261
-msgid "不缓存 (默认)"
-msgstr "Do not cache (default)"
-
-#: src/live2d-Utils.php:149
-msgid "插件不动您填的「模型 API」，浏览器直接拉源站。适用于您已经把模型放在阿里云 OSS、腾讯云 COS、又拍、七牛、自家 CDN 等已经具备 Referer 防盗 / URL 鉴权能力的存储上。"
-msgstr "The plugin keeps your \"Model API\" untouched and the browser fetches directly from origin. Suitable when your model is hosted on Alibaba OSS, Tencent COS, Upyun, Qiniu, your own CDN, or any storage that already supports Referer / URL-signing protection."
+#: src/live2d-Utils.php:148
+msgid "模型防盗保护 (Cubism 4+)"
+msgstr "Model hotlink protection (Cubism 4+)"
 
 #: src/live2d-Utils.php:150
-#: src/waifu-Settings-Base.php:267
-msgid "缓存到本地 (推荐)"
-msgstr "Cache to local (recommended)"
-
-#: src/live2d-Utils.php:150
-msgid "插件会把模型涉及的全部文件下载到本站 wp-content/plugins/live-2d/model/ 下，并对前端只露出经过签名的临时 URL，访客 F12 也看不到源站地址。适用于源站没有防盗能力（GitHub Pages、jsDelivr、自建 nginx 等）。"
-msgstr "The plugin downloads every model asset under wp-content/plugins/live-2d/model/ on your site and exposes only signed, ephemeral URLs to the front end — visitors cannot see the origin URL even via DevTools. Suitable when the origin lacks anti-leech features (GitHub Pages, jsDelivr, self-hosted nginx, etc.)."
+msgid "防盗链只对 Cubism 4+ 模型的两个「自定义新版模型」选项生效; 旧版 V1 走本站 REST 接口, 不需要这层保护。"
+msgstr "Hotlink protection only applies to the two \"Custom Cubism 4+ model\" options. Legacy V1 goes through this site's REST API and doesn't need this layer."
 
 #: src/live2d-Utils.php:152
-msgid "选择「缓存到本地」后，下方会出现下载面板：可以「全部下载」一键缓存全部已配置模型，也可以等访客首次访问时由插件后台自动懒下载。「清理孤儿」用于删除已经从设置里移除、但还残留在本地缓存里的旧模型文件。"
-msgstr "Selecting \"Cache locally\" exposes a download panel below: use \"Download all\" to cache every configured model in one click, or let the plugin lazily fetch on a visitor's first request. \"Clean orphans\" removes model files that were once configured but are no longer referenced."
+msgid "自定义新版模型 · 直链加载"
+msgstr "Custom Cubism 4+ model · Direct link"
 
-#: src/live2d-Utils.php:159
+#: src/live2d-Utils.php:152
+msgid "插件不动您填的「模型 API」, 浏览器直接拉源站。适用于您已经把模型放在阿里云 OSS、腾讯云 COS、又拍、七牛、自家 CDN 等已经具备 Referer 防盗 / URL 鉴权能力的存储上 (原 protectV2 = direct)。"
+msgstr "The plugin leaves your \"Model API\" untouched and the browser fetches the origin directly. Suitable when the model is hosted on storage that already supports Referer-based hotlink protection / URL signing - e.g. Aliyun OSS, Tencent COS, Upyun, Qiniu, your own CDN (formerly protectV2 = direct)."
+
+#: src/live2d-Utils.php:153
+msgid "自定义新版模型 · 托管到本站 (推荐)"
+msgstr "Custom Cubism 4+ model · Host on this site (recommended)"
+
+#: src/live2d-Utils.php:153
+msgid "插件会把模型文件保存到本站 wp-content/plugins/live-2d/model/{slug}/, 并对前端只露出经过签名的临时 URL, 访客 F12 也看不到源站地址。适用于源站没有防盗能力 (GitHub Pages、jsDelivr、自建 nginx 等) (原 protectV2 = local)。"
+msgstr "The plugin saves model files to this site's wp-content/plugins/live-2d/model/{slug}/ and only exposes signed short-lived URLs to the frontend; visitors using DevTools can't see the origin address. Suitable when the origin lacks hotlink protection (GitHub Pages, jsDelivr, self-hosted nginx, etc.) (formerly protectV2 = local)."
+
+#: src/live2d-Utils.php:155
+msgid "选「托管到本站」后, 「模型 API」输入框会被隐藏, 系统自动写成本站 model/ 根地址; 站长唯一需要填的是「模型目录」列表 (每行一个 slug)。页面下方会出现「模型托管」面板, 含双标签页: 从 URL 下载 / 上传文件夹。两者完成后都会自动把 slug 追加到「模型目录」列表, 点「保存设置」后生效。"
+msgstr "After choosing \"Host on this site\", the \"Model API\" input is hidden and the system writes this site's model/ root automatically. The only thing you need to fill is the \"Model directory\" list (one slug per line). A \"Model hosting\" panel appears at the bottom with two tabs: Download from URL / Upload folder. After either action the slug is appended to the \"Model directory\" list automatically; click \"Save settings\" to apply."
+
+#: src/live2d-Utils.php:156
+msgid "2026-05 后取消了访客首次访问时的「自动懒下载」 (原为默认行为但不可见, 需要站长主动点「下载到本站」或拖拽上传。「清理孤儿」用于删除已经从设置里移除、但还残留在本地缓存里的旧模型文件。"
+msgstr "Since 2026-05, the implicit \"lazy download on first visit\" behavior was removed (it used to be the default but was not visible). The site owner must now explicitly click \"Download to this site\" or drag-and-drop an upload. \"Clean orphans\" is used to delete old model files that were removed from settings but still linger in the local cache."
+
+#: src/live2d-Utils.php:163
 msgid "提示消息与特殊标记"
 msgstr "Tip messages and placeholders"
 
-#: src/live2d-Utils.php:163
+#: src/live2d-Utils.php:167
 msgid "在「高级设置」「提示消息选项」页面点击 %s 可以在同一个事件下追加随机语句，运行时随机选一条显示。"
 msgstr "In the \"Advanced settings\" or \"Tip message options\" page, click %s to add another random sentence to the same event; one of them is picked at random at runtime."
 
-#: src/live2d-Utils.php:166
+#: src/live2d-Utils.php:170
 msgid "以下事件支持在文本中插入特殊标记，运行时会被替换为对应内容："
 msgstr "These events support placeholders that get replaced at runtime:"
 
-#: src/live2d-Utils.php:168
+#: src/live2d-Utils.php:172
 msgid "鼠标悬停时的消息提示：{text} 触发事件的内容、{highlight} 高亮样式占位符"
 msgstr "Mouse hover tip: {text} the triggering content, {highlight} the highlight-style placeholder"
 
-#: src/live2d-Utils.php:169
+#: src/live2d-Utils.php:173
 msgid "鼠标点击时的消息提示：{text} 触发事件的内容、{highlight} 高亮样式占位符"
 msgstr "Mouse click tip: {text} the triggering content, {highlight} the highlight-style placeholder"
 
-#: src/live2d-Utils.php:170
+#: src/live2d-Utils.php:174
 msgid "节日事件：{year} 年份、{highlight} 高亮样式占位符"
 msgstr "Holiday events: {year} the year, {highlight} the highlight-style placeholder"
 
-#: src/live2d-Utils.php:171
+#: src/live2d-Utils.php:175
 msgid "搜索引擎入站提示：{title} 网站标题、{keyword} 关键词、{website} 站点名称、{highlight} 高亮样式占位符（请以预设值为准，并非所有搜索引擎都会带齐这些信息）"
 msgstr "Search-engine referral tip: {title} page title, {keyword} keyword, {website} site name, {highlight} highlight-style placeholder (refer to the defaults — not every search engine provides all of these)."
 
-#: src/live2d-Utils.php:172
+#: src/live2d-Utils.php:176
 msgid "访问本站点的提示：{website} 站点名称、{highlight} 高亮样式占位符"
 msgstr "Site visitor tip: {website} site name, {highlight} highlight-style placeholder"
 
-#: src/live2d-Utils.php:173
+#: src/live2d-Utils.php:177
 msgid "一言 API 的消息：{title}、{source}、{creator}、{date}、{dynasty}、{author}、{highlight}（请以预设值为准，并非所有句子都会带齐这些字段）"
 msgstr "Hitokoto API message: {title}, {source}, {creator}, {date}, {dynasty}, {author}, {highlight} (refer to the defaults — not every sentence carries all of these fields)."
 
-#: src/live2d-Utils.php:177
+#: src/live2d-Utils.php:181
 msgid "高亮用法：在任意 style 属性中插入 %s 即可，高亮颜色请到「提示消息选项」中设置。"
 msgstr "Highlight usage: insert %s into any style attribute; the highlight colour is configured under \"Tip message options\"."
 
-#: src/live2d-Utils.php:180
+#: src/live2d-Utils.php:184
 msgid "如需恢复全部默认值：删除插件后重新安装即可（注意会同时清空已保存的设置）。"
 msgstr "To restore every default: uninstall and reinstall the plugin (this also wipes your saved settings)."
 
-#: src/live2d-Utils.php:187
+#: src/live2d-Utils.php:191
 msgid "样式与工具栏"
 msgstr "Style and toolbar"
 
-#: src/live2d-Utils.php:190
+#: src/live2d-Utils.php:194
 msgid "「看板娘大小」「页面边距」「拖拽样式」位于「样式设置」页，调整后立即对前端生效。"
 msgstr "\"Waifu size\", \"Page padding\" and \"Drag mode\" live on the \"Style settings\" page — changes take effect on the front end immediately."
 
-#: src/live2d-Utils.php:191
+#: src/live2d-Utils.php:195
 msgid "「面页小于指定宽度禁用看板娘」用于在小屏 / 移动端隐藏，留空或填 0 表示始终显示。"
 msgstr "\"Hide waifu when the page is narrower than\" hides the waifu on small screens / mobile devices; leave it empty or set 0 to always display."
 
-#: src/live2d-Utils.php:192
+#: src/live2d-Utils.php:196
 msgid "「模型切换方式」「材质切换方式」分别决定按下工具栏切换按钮时是顺序切换还是随机切换。"
 msgstr "\"Model switch mode\" and \"Texture switch mode\" decide whether the toolbar buttons cycle sequentially or pick at random."
 
-#: src/live2d-Utils.php:193
+#: src/live2d-Utils.php:197
 msgid "「超采样」与「抗锯齿」属于付费功能，仅对 V2 模型有效，开启后可显著提升贴图清晰度，但会增加 GPU 占用。"
 msgstr "\"Super-sampling\" and \"Anti-aliasing\" are paid features that apply only to V2 models. Enabling them noticeably improves texture sharpness at the cost of GPU usage."
 
-#: src/live2d-Utils.php:194
+#: src/live2d-Utils.php:198
 msgid "「Cubism Core for Web 引用地址」一般保留默认（指向插件随包分发的 6.x 本地副本即可）。除非您明确知道在做什么，不建议改成 CDN 地址，官方 CDN 目前仍停留在 5.1.0，会与插件内置 Framework 不兼容。"
 msgstr "\"Cubism Core for Web URL\" is best left at the default value (pointing to the bundled 6.x local copy). Avoid switching to a CDN unless you know what you're doing — the official CDN is still on 5.1.0 and is incompatible with the bundled Framework."
 
-#: src/live2d-Utils.php:202
+#: src/live2d-Utils.php:206
 msgid "进阶文档与链接"
 msgstr "Further reading and links"
 
-#: src/live2d-Utils.php:205
+#: src/live2d-Utils.php:209
 msgid "V1 / V2 模型详细对比"
 msgstr "Detailed V1 vs. V2 comparison"
 
-#: src/live2d-Utils.php:206
+#: src/live2d-Utils.php:210
 msgid "使用 V2 自定义模型（Cubism 4+）"
 msgstr "Using a custom V2 model (Cubism 4+)"
 
-#: src/live2d-Utils.php:207
+#: src/live2d-Utils.php:211
 msgid "V2 模型防盗链详解"
 msgstr "V2 anti-leech protection in depth"
 
-#: src/live2d-Utils.php:208
+#: src/live2d-Utils.php:212
 msgid "V2 模型的触摸区域 (HitArea)"
 msgstr "Touch areas (HitArea) on V2 models"
 
-#: src/live2d-Utils.php:209
+#: src/live2d-Utils.php:213
 msgid "ChatGPT 接入与自定义 API"
 msgstr "ChatGPT integration and custom APIs"
 
-#: src/live2d-Utils.php:210
+#: src/live2d-Utils.php:214
 msgid "Chrome / Edge 浏览器扩展（个人用户）"
 msgstr "Chrome / Edge browser extension (personal users)"
 
-#: src/live2d-Utils.php:212
+#: src/live2d-Utils.php:216
 msgid "源码与 issue 反馈："
 msgstr "Source code and issue tracker:"
 
-#: src/live2d-Utils.php:228
+#: src/live2d-Utils.php:232
 msgid "创意工坊使用说明"
 msgstr "Workshop instructions"
 
-#: src/live2d-Utils.php:230
+#: src/live2d-Utils.php:234
 msgid "本页面列出插件内置的 V1（Cubism 2 / 3 系）模型，例如 bilibili 22 娘 / 33 娘、Potion Maker Pio / Tia、Shizuku 等。点击「下载」后，插件会从作者维护的源站把模型 ZIP 拉到本站、解压到 wp-content/plugins/live-2d/model/ 目录中。"
 msgstr "This page lists the V1 (Cubism 2 / 3 era) models bundled with the plugin — bilibili 22-Niang / 33-Niang, Potion Maker Pio / Tia, Shizuku, and so on. Clicking \"Download\" pulls the ZIP from the author's origin and extracts it into wp-content/plugins/live-2d/model/."
 
-#: src/live2d-Utils.php:231
+#: src/live2d-Utils.php:235
 msgid "使用要求："
 msgstr "Requirements:"
 
-#: src/live2d-Utils.php:233
+#: src/live2d-Utils.php:237
 msgid "已经在 live2dweb.com 完成账号登录，并把账号 Key 保存到「Live 2D 设置 → 登录」选项卡。"
 msgstr "Signed in on live2dweb.com and saved your account Key under \"Live 2D Settings → Sign in\"."
 
-#: src/live2d-Utils.php:234
+#: src/live2d-Utils.php:238
 msgid "已经完成邮箱验证（V1 模型下载本身不收费，但需要可联系到的邮箱以便接收授权变更通知）。"
 msgstr "Verified your email address. (V1 downloads themselves are free, but a reachable email is needed for licence-change notifications.)"
 
-#: src/live2d-Utils.php:236
+#: src/live2d-Utils.php:240
 msgid "下载完成后，请前往「Live 2D 设置 → 基础设置」，把「API 方式」切换到「本地部署旧版模型」，然后在「默认模型 ID」下拉中即可看到刚才下载的模型并选用。"
 msgstr "After downloading, open \"Live 2D Settings → General settings\", switch \"API mode\" to \"Local legacy models\", and the model you just downloaded will be selectable from the \"Default model ID\" dropdown."
 
-#: src/live2d-Utils.php:237
+#: src/live2d-Utils.php:241
 msgid "如果某个模型下载失败：先确认 Key 仍然有效（登录页会提示），并检查站点是否能访问 download.live2dweb.com；网络环境受限的站点也可以在源站手动下载 ZIP 后放进 wp-content/plugins/live-2d/model/ 目录。"
 msgstr "If a download fails: first confirm your Key is still valid (the sign-in page will warn), then check that your server can reach download.live2dweb.com. Sites with restricted network access can also fetch the ZIP manually from the origin and drop it into wp-content/plugins/live-2d/model/."
 
-#: src/live2d-Utils.php:238
-msgid "Cubism 4+ 模型不会出现在本页面，需要在「Live 2D 设置 → 基础设置」选择「自定义模型路径（Cubism 4+）」后自行填写 model3.json 地址，并参考「设置帮助 → API 方式与模型路径」一节。"
-msgstr "Cubism 4+ models never appear on this page. Choose \"Custom model path (Cubism 4+)\" under \"Live 2D Settings → General settings\", supply the model3.json URL yourself, and refer to the \"Settings help → API mode and model path\" section."
+#: src/live2d-Utils.php:242
+msgid "Cubism 4+ 模型不会出现在本页面，需要在「Live 2D 设置 → 基础设置」选择「自定义新版模型 · 直链加载」或「自定义新版模型 · 托管到本站」后自行填写 model3.json 地址(直链)或在「模型目录」每行填一个 slug(托管到本站),并参考「设置帮助 → API 方式与模型路径」一节。"
+msgstr "Cubism 4+ models do not appear on this page. In \"Live 2D Settings → Base settings\", pick \"Custom Cubism 4+ model · Direct link\" or \"Custom Cubism 4+ model · Host on this site\", then either fill in the model3.json URL (direct link) or add one slug per line under \"Model directory\" (host on this site). See the \"Settings help → API mode and model path\" section for details."
 
-#: src/live2d-Utils.php:257
+#: src/live2d-Utils.php:261
 msgid "更多帮助"
 msgstr "More help"
 
-#: src/live2d-Utils.php:258
+#: src/live2d-Utils.php:262
 msgid "插件文档站"
 msgstr "Plugin documentation"
 
-#: src/live2d-Utils.php:259
+#: src/live2d-Utils.php:263
 msgid "账号 / 授权管理"
 msgstr "Account / licence management"
 
-#: src/live2d-Utils.php:260
+#: src/live2d-Utils.php:264
 msgid "GitHub Issues 反馈"
 msgstr "GitHub Issues feedback"
 
-#: src/live2d-V1Api.php:196
-#: src/live2d-V1Api.php:216
+#: src/live2d-V1Api.php:202
+#: src/live2d-V1Api.php:222
 msgid "我的新名字叫做「%s」哦~"
 msgstr "My new name is \"%s\"!"
 
-#: src/live2d-V1Api.php:235
-#: src/live2d-V1Api.php:253
+#: src/live2d-V1Api.php:241
+#: src/live2d-V1Api.php:259
 msgid "我还没有其他衣服呢~"
 msgstr "I don't have any other outfits yet~"
 
-#: src/live2d-V1Api.php:236
-#: src/live2d-V1Api.php:261
+#: src/live2d-V1Api.php:242
+#: src/live2d-V1Api.php:267
 msgid "你帮我换了一件新衣服!"
 msgstr "You changed my outfit!"
 
@@ -606,107 +621,162 @@ msgstr "Model directory"
 msgid "待机动画文件名"
 msgstr "Idle animation filename"
 
-#: src/waifu-Settings-Base.php:108
+#: src/waifu-Settings-Base.php:100
+msgid "模型托管"
+msgstr "Model hosting"
+
+#: src/waifu-Settings-Base.php:111
 msgid "Cubism Core for Web <br/> 引用地址"
 msgstr "Cubism Core for Web<br/>script URL"
 
-#: src/waifu-Settings-Base.php:146
+#: src/waifu-Settings-Base.php:151
 msgid "点击进入下载页面"
 msgstr "Open the download page"
 
-#: src/waifu-Settings-Base.php:148
+#: src/waifu-Settings-Base.php:153
 msgid "模型文件由本插件托管,模型 API 自动指向本站,不会向外网发起请求。"
 msgstr "Model files are hosted by this plugin and the model API automatically points to your own site; no external requests are made."
 
-#: src/waifu-Settings-Base.php:154
-msgid "使用您自己服务器上的旧版模型接口。"
-msgstr "Connect to a legacy model API hosted on your own server."
+#: src/waifu-Settings-Base.php:159
+msgid "使用您自己服务器上的旧版模型接口,跨域,不走防盗链。"
+msgstr "Use the legacy model API on your own server. Cross-origin, no hotlink protection."
 
-#: src/waifu-Settings-Base.php:161
-msgid "适用于 Cubism 4+ 模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。"
-msgstr "For Cubism 4+ models. Provide either the model file URL or the directory it lives in, and add multiple models in the \"Model directory\" list below."
+#: src/waifu-Settings-Base.php:164
+#: src/waifu-Settings-Base.php:176
+msgid "自定义新版模型 · 直链加载（Cubism 4+）"
+msgstr "Custom Cubism 4+ model · Direct link"
 
 #: src/waifu-Settings-Base.php:166
+msgid "模型存放在您自己的 OSS / CDN / GitHub Pages 等跨域位置。访客会直接加载原始 URL,防盗链需要您自己在对象存储/CDN 控制台设置。"
+msgstr "Models live on your own OSS / CDN / GitHub Pages or other cross-origin host. Visitors load the raw URL directly; you must configure hotlink protection yourself in the storage/CDN console."
+
+#: src/waifu-Settings-Base.php:170
+#: src/waifu-Settings-Base.php:179
+msgid "自定义新版模型 · 托管到本站（Cubism 4+, 防盗链）"
+msgstr "Custom Cubism 4+ model · Host on this site (with hotlink protection)"
+
+#: src/waifu-Settings-Base.php:172
+msgid "插件把模型文件保存到您的网站上,并对外只露出临时签名 URL,访客 F12 看不到原始地址。可填写跨域 URL 点击「下载」,或直接「上传文件夹」。"
+msgstr "The plugin saves model files onto your site and only exposes short-lived signed URLs; visitors using DevTools can't see the original address. Enter a cross-origin URL and click \"Download\", or just \"Upload folder\"."
+
+#: src/waifu-Settings-Base.php:175
+#: src/waifu-Settings-Base.php:178
 msgid "完成登录并付费后可用"
 msgstr "Available after signing in and upgrading"
 
-#: src/waifu-Settings-Base.php:169
+#: src/waifu-Settings-Base.php:181
 msgid "Cubism 4+：登录并付费后可使用。"
 msgstr "Cubism 4+: available after signing in and purchasing a license."
 
-#: src/waifu-Settings-Base.php:182
+#: src/waifu-Settings-Base.php:194
 msgid "页面"
 msgstr "Page"
 
-#: src/waifu-Settings-Base.php:183
+#: src/waifu-Settings-Base.php:195
 msgid "小工具(beta)"
 msgstr "Widget (beta)"
 
-#: src/waifu-Settings-Base.php:196
+#: src/waifu-Settings-Base.php:208
 msgid "https://example.com/Samples/Resources/  或  https://example.com/Samples/Resources/haru/haru.model3.json"
 msgstr "https://example.com/Samples/Resources/  or  https://example.com/Samples/Resources/haru/haru.model3.json"
 
-#: src/waifu-Settings-Base.php:200
-msgid "上面「API 方式」选不同选项时, 此处填写要求不同。"
-msgstr "The required value here depends on the \"API mode\" selected above."
-
 #: src/waifu-Settings-Base.php:212
+msgid "上面「API 方式」选不同选项时, 此处填写要求不同:"
+msgstr "The fill-in requirement here depends on which option is selected for \"API mode\" above:"
+
+#: src/waifu-Settings-Base.php:215
+msgid "本地部署旧版模型: 系统自动指向本站, 无需填写"
+msgstr "Local legacy model: automatically points to this site, no input needed"
+
+#: src/waifu-Settings-Base.php:216
+msgid "自行部署旧版模型: 填您自己的旧版 PHP API 根地址"
+msgstr "Self-hosted legacy model: enter the root URL of your own legacy PHP API"
+
+#: src/waifu-Settings-Base.php:217
+msgid "自定义新版模型 · 直链加载: 填 .model3.json 完整 URL, 或目录根 (末尾带 /)"
+msgstr "Custom Cubism 4+ model · Direct link: enter the full .model3.json URL, or a directory root (with trailing /)"
+
+#: src/waifu-Settings-Base.php:218
+msgid "自定义新版模型 · 托管到本站: 本行隐藏, 由系统自动指向本站 model/ 根目录; 请在下面「模型目录」填 slug (= 子目录名), 或从「模型托管」面板下载/上传自动追加"
+msgstr "Custom Cubism 4+ model · Host on this site: this row is hidden and the system auto-points to this site's model/ root. Fill the slug (= subfolder name) in the \"Model directory\" list below, or let the \"Model hosting\" panel append it automatically when you download/upload."
+
+#: src/waifu-Settings-Base.php:230
 msgid "选择或填写默认加载的模型 ID(具体要求取决于上面「API 方式」)。"
 msgstr "Select or enter the default model ID (the exact requirement depends on the \"API mode\" above)."
 
-#: src/waifu-Settings-Base.php:222
+#: src/waifu-Settings-Base.php:240
 msgid "选择或填写默认皮肤 ID；Cubism 4+ 模型不使用此项，可留空。"
 msgstr "Select or enter the default texture ID. Cubism 4+ models do not use this field and may leave it empty."
 
-#: src/waifu-Settings-Base.php:228
-msgid "可以切换的模型名称，请填写每个模型所在的目录名（须与模型自带的配置文件名保持一致）。"
-msgstr "Names of switchable models. Fill in each model's directory name; it must match the model's own config file name."
+#: src/waifu-Settings-Base.php:246
+msgid "模型名称列表: 「自行部署旧版 / 自定义新版」两种模式下, 每行填一个 slug (= 子目录名, 须与 {slug}.model3.json 前缀完全一致); 「自定义新版 · 托管到本站」模式下点「下载 / 上传」会自动追加。"
+msgstr "Model name list. In \"Self-hosted legacy\" / \"Custom Cubism 4+\" modes, enter one slug per line (= subfolder name, must exactly match the {slug}.model3.json prefix). In \"Custom Cubism 4+ · Host on this site\" mode, the slug is appended automatically when you click Download / Upload."
 
-#: src/waifu-Settings-Base.php:236
+#: src/waifu-Settings-Base.php:254
 msgid "待机时播放的动作名称（一行一个），不需要填写扩展名。"
 msgstr "Names of motions to play while idle (one per line). No file extension needed."
 
-#: src/waifu-Settings-Base.php:263
-msgid "不启用防盗保护；如果您使用了云存储或不需要防盗，可选择此项。"
-msgstr "Anti-hotlink disabled. Choose this if you are using cloud storage or simply do not need protection."
+#: src/waifu-Settings-Base.php:274
+msgid "未知"
+msgstr "Unknown"
 
-#: src/waifu-Settings-Base.php:269
-msgid "访客看不到模型的真实地址；需要先把模型文件下载到您的网站上。"
-msgstr "Visitors cannot see the model's real URL. You will need to download the model files to your own site first."
+#: src/waifu-Settings-Base.php:281
+msgid "单文件上限 %s（受服务器 PHP upload_max_filesize 限制）。超过该上限的文件会被红色标记并跳过,如需调高请联系主机商或修改 php.ini / .htaccess。"
+msgstr "Per-file upload limit: %s (constrained by the server's PHP upload_max_filesize). Files over the limit are marked in red and skipped; contact your host or edit php.ini / .htaccess to raise it."
 
-#: src/waifu-Settings-Base.php:276
-msgid "模型本地缓存"
-msgstr "Model Local Cache"
+#: src/waifu-Settings-Base.php:289
+msgid "从 URL 下载"
+msgstr "Download from URL"
 
-#: src/waifu-Settings-Base.php:278
-msgid "插件会把当前模型及其用到的所有文件下载到您的网站上，下载完成后访客加载模型就不再访问外部地址。"
-msgstr "The plugin downloads the current model and all related files to your site. Once finished, visitors no longer load the model from any external URL."
+#: src/waifu-Settings-Base.php:290
+msgid "上传文件夹"
+msgstr "Upload folder"
 
-#: src/waifu-Settings-Base.php:280
-msgid "两种下载方式：【自动】当有访客打开模型时，插件会在后台开始下载，首次访问仍由原始地址提供，下载完成后立即生效；【手动】点击下方「全部下载」或单条下载按钮立即开始下载。"
-msgstr "Two download modes: [Auto] when a visitor first opens a model, the plugin starts downloading in the background; the first visit is served from the original URL, and the local copy takes effect after the download completes. [Manual] click \"Download All\" below or a per-row download button to start immediately."
+#: src/waifu-Settings-Base.php:295
+msgid "插件会从下面输入的 URL 抓取整套模型文件（model3.json + moc3 + 贴图 + 动作等）保存到您的网站上,完成后访客加载就走本地副本,不再访问外部地址。"
+msgstr "The plugin will fetch the full model bundle (model3.json + moc3 + textures + motions, etc.) from the URL below and save it onto your site. Once done, visitors load the local copy instead of the external address."
 
-#: src/waifu-Settings-Base.php:284
-msgid "全部下载"
-msgstr "Download All"
+#: src/waifu-Settings-Base.php:299
+msgid "模型源 URL"
+msgstr "Model source URL"
 
-#: src/waifu-Settings-Base.php:287
+#: src/waifu-Settings-Base.php:303
+msgid "下载到本站"
+msgstr "Download to this site"
+
+#: src/waifu-Settings-Base.php:306
+msgid "填模型 .model3.json 完整 URL,点击「下载到本站」。下载完成后,该模型的 slug(= 文件夹名)会自动追加到上方「模型目录」列表,无需手填。"
+msgstr "Enter the model's full .model3.json URL and click \"Download to this site\". After the download finishes, the model's slug (= folder name) is appended to the \"Model directory\" list above automatically, no manual entry needed."
+
+#: src/waifu-Settings-Base.php:311
 msgid "清理孤儿"
 msgstr "Cleanup Orphans"
 
-#: src/waifu-Settings-Base.php:290
+#: src/waifu-Settings-Base.php:314
 msgid "全部清理"
 msgstr "Cleanup All"
 
-#: src/waifu-Settings-Base.php:297
+#: src/waifu-Settings-Base.php:322
+msgid "如果模型文件只在您本地（没有公网 URL）,可以直接拖拽整个模型文件夹到这里,或点击下方按钮选择文件夹。文件会按相对路径保存到 wp-content/plugins/live-2d/model/{slug}/ 下。"
+msgstr "If the model files only live on your local machine (no public URL), drag the whole folder here, or click the button below to pick one. Files are saved at their relative paths under wp-content/plugins/live-2d/model/{slug}/."
+
+#: src/waifu-Settings-Base.php:326
+msgid "把模型文件夹拖到这里"
+msgstr "Drop the model folder here"
+
+#: src/waifu-Settings-Base.php:330
+msgid "选择文件夹"
+msgstr "Select folder"
+
+#: src/waifu-Settings-Base.php:342
 msgid "正在读取状态…"
 msgstr "Loading status…"
 
-#: src/waifu-Settings-Base.php:317
+#: src/waifu-Settings-Base.php:362
 msgid "未获授权请勿修改此地址；擅自修改可能引发法律问题，相关责任与插件作者无关。"
 msgstr "Do not change this URL without authorization. Any legal consequences from unauthorized changes are not the plugin author's responsibility."
 
-#: src/waifu-Settings-Base.php:318
+#: src/waifu-Settings-Base.php:363
 msgid "软件许可协议："
 msgstr "Software license:"
 
@@ -1042,7 +1112,7 @@ msgstr "On"
 msgid "数字越大越靠下"
 msgstr "Larger values move it downward"
 
-#: src/waifu-Settings.php:39
+#: src/waifu-Settings.php:54
 msgid "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\"."
 msgstr "\"Custom model path (Cubism 4+)\" requires sign-in and payment. The setting was reverted to \"Self-hosted legacy models\" automatically."
 
