@@ -103,7 +103,7 @@ class live2D_Utils{
 				'<td>' . esc_html__('「本地部署旧版模型」或「自行部署旧版模型」', 'live-2d') . '</td></tr>' .
 				'<tr><td>' . esc_html__('Cubism 4+（V2，官方仍在维护的最新格式）', 'live-2d') . '</td>' .
 				'<td><code>*.model3.json</code></td><td><code>*.moc3</code></td>' .
-				'<td>' . esc_html__('「自定义模型路径（Cubism 4+）」（需登录并购买授权）', 'live-2d') . '</td></tr>' .
+				'<td>' . esc_html__('「自定义新版模型 · 直链加载」或「自定义新版模型 · 托管到本站」(均需登录并购买授权)', 'live-2d') . '</td></tr>' .
 				'</tbody></table>' .
 				'<p>' . esc_html__('简单判断：清单文件名以 .model3.json 结尾就是 V2，否则是 V1。', 'live-2d') . '</p>'
 			),
@@ -114,42 +114,46 @@ class live2D_Utils{
 			'id'    => 'live_2d_api_help_tab',
 			'title' => __('API 方式与模型路径', 'live-2d'),
 			'content' => self::wrapHelpContent(
-				'<p>' . esc_html__('「API 方式」是 V1 / V2 链路的总开关，三个选项作用不同：', 'live-2d') . '</p>' .
+				'<p>' . esc_html__('「API 方式」是 V1 / V2 链路的总开关, 2026-05 重构后由原三选项 + protectV2 二态合并为「四选项 radio」, 每个选项作用不同:', 'live-2d') . '</p>' .
 				'<ul>' .
-				'<li><strong>' . esc_html__('本地部署旧版模型', 'live-2d') . '</strong>：' . esc_html__('使用插件随包内置的 V1 模型，由本站 REST 接口（/wp-json/live2d/v1/model/*）提供，不向外网发起请求。「模型 ID」「材质 ID」会自动变成下拉框。需要在「Live 2D 创意工坊」页面先把模型下载到本地。', 'live-2d') . '</li>' .
-				'<li><strong>' . esc_html__('自行部署旧版模型', 'live-2d') . '</strong>：' . esc_html__('对接您自己服务器或第三方提供的 V1 模型 API（即 fghrsh 风格接口），「模型 API」需要填写返回 model_list.json 的接口根地址。', 'live-2d') . '</li>' .
-				'<li><strong>' . esc_html__('自定义模型路径（Cubism 4+）', 'live-2d') . '</strong>：' . esc_html__('用于 Cubism 4+ 模型（V2，*.model3.json）。需要登录账号并完成付费后才能选择。', 'live-2d') . '</li>' .
+				'<li><strong>' . esc_html__('本地部署旧版模型', 'live-2d') . '</strong>:' . esc_html__('使用插件随包内置的 V1 模型, 由本站 REST 接口 (/wp-json/live2d/v1/model/*) 提供, 不向外网发起请求。「模型 ID」「材质 ID」会自动变成下拉框。需要在「Live 2D 创意工坊」页面先把模型下载到本地。', 'live-2d') . '</li>' .
+				'<li><strong>' . esc_html__('自行部署旧版模型', 'live-2d') . '</strong>:' . esc_html__('对接您自己服务器或第三方提供的 V1 模型 API (即 fghrsh 风格接口), 「模型 API」需要填写返回 model_list.json 的接口根地址。', 'live-2d') . '</li>' .
+				'<li><strong>' . esc_html__('自定义新版模型 · 直链加载 (Cubism 4+)', 'live-2d') . '</strong>:' . esc_html__('用于 Cubism 4+ 模型 (V2, *.model3.json), 「模型 API」填跨域 URL, 浏览器直接拉源站。需登录账号并完成付费后才能选择, 防盗链由对象存储 / CDN 站长自己处理。', 'live-2d') . '</li>' .
+				'<li><strong>' . esc_html__('自定义新版模型 · 托管到本站 (Cubism 4+, 推荐)', 'live-2d') . '</strong>:' . esc_html__('同上, 但插件会把模型下载 / 托管到本站 wp-content/plugins/live-2d/model/{slug}/, 并代为防盗链 (临时签名 URL)。需登录账号并完成付费后才能选择。', 'live-2d') . '</li>' .
 				'</ul>' .
+				'<h4>' . esc_html__('选了「托管到本站」后的表单变化', 'live-2d') . '</h4>' .
+				'<p>' . esc_html__('选「自定义新版模型 · 托管到本站」后, 「模型 API」输入框会被隐藏, 系统自动把它写成本站 wp-content/plugins/live-2d/model/ 根地址。站长唯一需要填的是「模型目录」列表, 每行一个 slug (= 子目录名), 插件会按 {root}{slug}/{slug}.model3.json 自动展开为完整 manifest URL。', 'live-2d') . '</p>' .
 				'<h4>' . esc_html__('「模型 API」何时以 .json 结尾、何时以斜杠结尾', 'live-2d') . '</h4>' .
-				'<p>' . esc_html__('仅当「API 方式 = 自定义模型路径（Cubism 4+）」时，「模型 API」支持以下两种写法，由结尾字符决定走哪种：', 'live-2d') . '</p>' .
+				'<p>' . esc_html__('仅当「API 方式 = 自定义新版模型 · 直链加载」时, 「模型 API」支持以下两种写法, 由结尾字符决定走哪种:', 'live-2d') . '</p>' .
 				'<table class="widefat striped"><thead><tr>' .
 				'<th>' . esc_html__('写法', 'live-2d') . '</th>' .
 				'<th>' . esc_html__('行为', 'live-2d') . '</th>' .
 				'<th>' . esc_html__('「模型目录」是否使用', 'live-2d') . '</th>' .
 				'</tr></thead><tbody>' .
-				'<tr><td>' . esc_html__('以 .json 结尾（直链单模型）', 'live-2d') . '</td>' .
-				'<td>' . esc_html__('直接当作 *.model3.json 加载，不再做任何路径拼接。例：https://cdn.example.com/live2d/haru/haru.model3.json', 'live-2d') . '</td>' .
-				'<td>' . esc_html__('忽略，下方「模型目录」「待机动画文件名」两行会自动隐藏。', 'live-2d') . '</td></tr>' .
-				'<tr><td>' . esc_html__('以 / 结尾（目录根 + 多模型）', 'live-2d') . '</td>' .
-				'<td>' . esc_html__('当作根目录使用，配合下方「模型目录」每行一个名称，自动按 {模型 API}{名称}/{名称}.model3.json 拼成完整 URL。', 'live-2d') . '</td>' .
-				'<td>' . esc_html__('必填。每行写一个子目录名称，名称必须与 {名称}.model3.json 的前缀完全一致。', 'live-2d') . '</td></tr>' .
+				'<tr><td>' . esc_html__('以 .json 结尾 (直链单模型)', 'live-2d') . '</td>' .
+				'<td>' . esc_html__('直接当作 *.model3.json 加载, 不再做任何路径拼接。例: https://cdn.example.com/live2d/haru/haru.model3.json', 'live-2d') . '</td>' .
+				'<td>' . esc_html__('忽略, 下方「模型目录」「待机动画文件名」两行会自动隐藏。', 'live-2d') . '</td></tr>' .
+				'<tr><td>' . esc_html__('以 / 结尾 (目录根 + 多模型)', 'live-2d') . '</td>' .
+				'<td>' . esc_html__('当作根目录使用, 配合下方「模型目录」每行一个 slug, 自动按 {模型 API}{slug}/{slug}.model3.json 拼成完整 URL。', 'live-2d') . '</td>' .
+				'<td>' . esc_html__('必填。每行写一个子目录名称, 名称必须与 {slug}.model3.json 的前缀完全一致。', 'live-2d') . '</td></tr>' .
 				'</tbody></table>' .
-				'<p>' . esc_html__('补充约束：路径不能包含中文；HTTPS 站点的模型清单及其引用到的所有资源（.moc3、贴图、motion3.json、physics3.json 等）也必须是 HTTPS；放在第三方对象存储 / CDN 时请正确开启 CORS。', 'live-2d') . '</p>' .
-				'<p>' . esc_html__('「默认材质 ID」仅 V1 模型使用，V2 模型留空即可。', 'live-2d') . '</p>'
+				'<p>' . esc_html__('补充约束: 路径不能包含中文; HTTPS 站点的模型清单及其引用到的所有资源 (.moc3、贴图、motion3.json、physics3.json 等) 也必须是 HTTPS; 放在第三方对象存储 / CDN 时请正确开启 CORS。', 'live-2d') . '</p>' .
+				'<p>' . esc_html__('「默认材质 ID」仅 V1 模型使用, V2 模型留空即可。', 'live-2d') . '</p>'
 			),
 		) );
 
 		// ---- Tab 3: 模型防盗保护 -------------------------------------------------
 		$screen->add_help_tab( array(
 			'id'    => 'live_2d_protect_help_tab',
-			'title' => __('模型防盗保护（Cubism 4+）', 'live-2d'),
+			'title' => __('模型防盗保护 (Cubism 4+)', 'live-2d'),
 			'content' => self::wrapHelpContent(
-				'<p>' . esc_html__('「模型防盗保护（Cubism 4+）」只对 Cubism 4+ 模型（自定义模型路径）生效，旧版模型（本地 / 自行部署旧版）走站内接口，本身不需要这层保护。', 'live-2d') . '</p>' .
+				'<p>' . esc_html__('防盗链只对 Cubism 4+ 模型的两个「自定义新版模型」选项生效; 旧版 V1 走本站 REST 接口, 不需要这层保护。', 'live-2d') . '</p>' .
 				'<ul>' .
-				'<li><strong>' . esc_html__('不缓存 (默认)', 'live-2d') . '</strong>：' . esc_html__('插件不动您填的「模型 API」，浏览器直接拉源站。适用于您已经把模型放在阿里云 OSS、腾讯云 COS、又拍、七牛、自家 CDN 等已经具备 Referer 防盗 / URL 鉴权能力的存储上。', 'live-2d') . '</li>' .
-				'<li><strong>' . esc_html__('缓存到本地 (推荐)', 'live-2d') . '</strong>：' . esc_html__('插件会把模型涉及的全部文件下载到本站 wp-content/plugins/live-2d/model/ 下，并对前端只露出经过签名的临时 URL，访客 F12 也看不到源站地址。适用于源站没有防盗能力（GitHub Pages、jsDelivr、自建 nginx 等）。', 'live-2d') . '</li>' .
+				'<li><strong>' . esc_html__('自定义新版模型 · 直链加载', 'live-2d') . '</strong>:' . esc_html__('插件不动您填的「模型 API」, 浏览器直接拉源站。适用于您已经把模型放在阿里云 OSS、腾讯云 COS、又拍、七牛、自家 CDN 等已经具备 Referer 防盗 / URL 鉴权能力的存储上 (原 protectV2 = direct)。', 'live-2d') . '</li>' .
+				'<li><strong>' . esc_html__('自定义新版模型 · 托管到本站 (推荐)', 'live-2d') . '</strong>:' . esc_html__('插件会把模型文件保存到本站 wp-content/plugins/live-2d/model/{slug}/, 并对前端只露出经过签名的临时 URL, 访客 F12 也看不到源站地址。适用于源站没有防盗能力 (GitHub Pages、jsDelivr、自建 nginx 等) (原 protectV2 = local)。', 'live-2d') . '</li>' .
 				'</ul>' .
-				'<p>' . esc_html__('选择「缓存到本地」后，下方会出现下载面板：可以「全部下载」一键缓存全部已配置模型，也可以等访客首次访问时由插件后台自动懒下载。「清理孤儿」用于删除已经从设置里移除、但还残留在本地缓存里的旧模型文件。', 'live-2d') . '</p>'
+				'<p>' . esc_html__('选「托管到本站」后, 「模型 API」输入框会被隐藏, 系统自动写成本站 model/ 根地址; 站长唯一需要填的是「模型目录」列表 (每行一个 slug)。页面下方会出现「模型托管」面板, 含双标签页: 从 URL 下载 / 上传文件夹。两者完成后都会自动把 slug 追加到「模型目录」列表, 点「保存设置」后生效。', 'live-2d') . '</p>' .
+				'<p>' . esc_html__('2026-05 后取消了访客首次访问时的「自动懒下载」 (原为默认行为但不可见, 需要站长主动点「下载到本站」或拖拽上传。「清理孤儿」用于删除已经从设置里移除、但还残留在本地缓存里的旧模型文件。', 'live-2d') . '</p>'
 			),
 		) );
 
@@ -235,7 +239,7 @@ class live2D_Utils{
 				'</ul>' .
 				'<p>' . esc_html__('下载完成后，请前往「Live 2D 设置 → 基础设置」，把「API 方式」切换到「本地部署旧版模型」，然后在「默认模型 ID」下拉中即可看到刚才下载的模型并选用。', 'live-2d') . '</p>' .
 				'<p>' . esc_html__('如果某个模型下载失败：先确认 Key 仍然有效（登录页会提示），并检查站点是否能访问 download.live2dweb.com；网络环境受限的站点也可以在源站手动下载 ZIP 后放进 wp-content/plugins/live-2d/model/ 目录。', 'live-2d') . '</p>' .
-				'<p>' . esc_html__('Cubism 4+ 模型不会出现在本页面，需要在「Live 2D 设置 → 基础设置」选择「自定义模型路径（Cubism 4+）」后自行填写 model3.json 地址，并参考「设置帮助 → API 方式与模型路径」一节。', 'live-2d') . '</p>'
+				'<p>' . esc_html__('Cubism 4+ 模型不会出现在本页面，需要在「Live 2D 设置 → 基础设置」选择「自定义新版模型 · 直链加载」或「自定义新版模型 · 托管到本站」后自行填写 model3.json 地址(直链)或在「模型目录」每行填一个 slug(托管到本站),并参考「设置帮助 → API 方式与模型路径」一节。', 'live-2d') . '</p>'
 			),
 		) );
 

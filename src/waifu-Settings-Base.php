@@ -73,10 +73,10 @@ class live2D_Settings_Base
             );
 
             // 待机动画文件名 (idle_motion) 原本在 "提示消息选项" 页. 与 modelDir
-            // 共用 "Custom new-format model path" 的联动: 仅 apiType=='custom'
-            // 且 modelAPI 不以 .json 结尾时显示 (live2d-admin.ts refreshModelDirRow
-            // 已扩展为同时 toggle .modelDir / .idle_motion 两行). 付费门槛与
-            // modelDir 同一 block, userLevel<1 不 register, sanitize 兜底见
+            // 共用 "Custom new-format model path" 的联动: 仅 apiType ∈ {custom-remote,
+            // custom-local} 且 modelAPI 不以 .json 结尾时显示 (live2d-admin.ts
+            // refreshModelDirRow 同时 toggle .modelDir / .idle_motion 两行).
+            // 付费门槛与 modelDir 同一 block, userLevel<1 不 register, sanitize 兜底见
             // src/waifu-Settings.php (空串过滤 + 数组校验, 防止 404).
             add_settings_field(
                 'idle_motion', // id
@@ -86,16 +86,19 @@ class live2D_Settings_Base
                 'live_2d_setting_base_section' // section
             );
 
-            // V2(Cubism 4/5)模型防盗链开关 — 仅对 apiType='custom' (.model3.json) 链路生效.
-            // 关闭(默认): wordpress-live2d.php 注入 v2SessionUrl='', 前端 signOneModel 早退到裸链,
-            //            行为与未引入开关前完全一致 (老站升级零感知).
-            // 开启:      注入完整 rest_url, 前端拉 alias 化 manifest, 子资源全部走
-            //            …/v2/m/{token}/{alias}?e=&s=, 访客 F12 看不到真实 modelAPI / *.moc3 / *.png.
-            // 'local'/'remote' (旧 V1 PHP) 不受影响, 模型本来就托管在站内不需要 alias.
+            // 「模型托管」面板 (custom-local 专用): 含 [从 URL 下载] / [上传文件夹] 双 tab
+            // + 状态表格. 由 live2d-admin.ts bindCustomLocalPanel() 控制可见性 (仅 custom-local
+            // 时显示) 与所有交互行为 (轮询 / 入队 / 上传 / 清理).
+            // 后端 ajax 入口集中在 src/live2d-Shop.php (v2_cache_status / v2_cache_enqueue /
+            // v2_cache_cleanup_all / v2_cache_cleanup_orphans / v2_delete_model / v2_upload_model_file).
+            //
+            // 取代旧的 protectV2 二态开关: 现在 apiType='custom-local' 即等同于
+            // 旧 (custom + protectV2='local'); apiType='custom-remote' 即等同于
+            // 旧 (custom + protectV2='direct'),不再需要独立开关。
             add_settings_field(
-                'protectV2',
-                __('模型防盗保护（Cubism 4+）', 'live-2d'),
-                array($this, 'protectV2_callback'),
+                'live2d_host_panel',
+                __('模型托管', 'live-2d'),
+                array($this, 'host_panel_callback'),
                 'live-2d-settings-base',
                 'live_2d_setting_base_section'
             );
@@ -127,13 +130,15 @@ class live2D_Settings_Base
 
     public function apiType_callback()
     {
-        // apiType 三态字符串,详见 src/live2d-V1Api.php live2d_normalize_api_type()。
-        // 旧 DB 里 bool true→'local'、false→'remote';新 'custom' 用于 .model3.json / Cubism 4+ 目录。
+        // apiType 四态字符串: 'local' | 'remote' | 'custom-remote' | 'custom-local'。
+        // 详细枚举与历史兼容见 src/live2d-V1Api.php :: live2d_normalize_api_type。
+        // 2026-05 之前老 DB 里是 apiType 三态 + protectV2 独立字段; 合并后:
+        //   老 (custom, local)  → 新 'custom-local'   (迁移在 sanitize 里完成)
+        //   老 (custom, direct) → 新 'custom-remote'  (live2d_normalize_api_type 兑底)
         $current = function_exists('live2d_normalize_api_type')
             ? live2d_normalize_api_type(isset($this->live_2d__options['apiType']) ? $this->live_2d__options['apiType'] : null)
             : 'remote';
-        // 'local' 走本地 model/ 目录,无需付费/登录;'custom' (Cubism 4+) 走自定义 URL,
-        // 与原 V2 自定 API 行为一致,沿用付费门槛。
+        // 'local' 走本地 model/ 目录,无需付费/登录;两个 'custom-*' 为付费功能。
         $hasPaid = !empty($this->userInfo["userLevel"]) && intval($this->userInfo["userLevel"]) > 0;
         $shopUrl = esc_url(admin_url('admin.php?page=live-2d-shop'));
 ?>
@@ -151,20 +156,27 @@ class live2D_Settings_Base
                 <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-remote" class="apiType" value="remote" <?php echo $current === 'remote' ? 'checked' : ''; ?>>
                 <?php esc_html_e('自行部署旧版模型', 'live-2d'); ?>
             </label><br>
-            <span class="description"><?php esc_html_e('使用您自己服务器上的旧版模型接口。', 'live-2d'); ?></span><br>
+            <span class="description"><?php esc_html_e('使用您自己服务器上的旧版模型接口,跨域,不走防盗链。', 'live-2d'); ?></span><br>
 
             <?php if ($hasPaid): ?>
-                <label for="apiType-custom">
-                    <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-custom" class="apiType" value="custom" <?php echo $current === 'custom' ? 'checked' : ''; ?>>
-                    <?php esc_html_e('自定义模型路径（Cubism 4+）', 'live-2d'); ?>
+                <label for="apiType-custom-remote">
+                    <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-custom-remote" class="apiType" value="custom-remote" <?php echo $current === 'custom-remote' ? 'checked' : ''; ?>>
+                    <?php esc_html_e('自定义新版模型 · 直链加载（Cubism 4+）', 'live-2d'); ?>
                 </label><br>
-                <span class="description"><?php esc_html_e('适用于 Cubism 4+ 模型，可填写模型文件的网址或所在目录，并在下方「模型目录」中添加多个模型。', 'live-2d'); ?></span>
+                <span class="description"><?php esc_html_e('模型存放在您自己的 OSS / CDN / GitHub Pages 等跨域位置。访客会直接加载原始 URL,防盗链需要您自己在对象存储/CDN 控制台设置。', 'live-2d'); ?></span><br>
+
+                <label for="apiType-custom-local">
+                    <input type="radio" name="live_2d_settings_option_name[apiType]" id="apiType-custom-local" class="apiType" value="custom-local" <?php echo $current === 'custom-local' ? 'checked' : ''; ?>>
+                    <?php esc_html_e('自定义新版模型 · 托管到本站（Cubism 4+, 推荐）', 'live-2d'); ?>
+                </label><br>
+                <span class="description"><?php esc_html_e('插件把模型文件保存到您的网站上,并对外只露出临时签名 URL,访客 F12 看不到原始地址。可填写跨域 URL 点击「下载」,或直接「上传文件夹」。', 'live-2d'); ?></span>
             <?php else: ?>
-                <?php // 未登录 / 未付费: radio 与 label 都置灰, 并配合 cursor:not-allowed 提示用户不可点击.
-                      // disabled 属性已经阻止勾选, 这里加视觉反馈; 同时把 title 提示加到 label 上,
-                      // hover 时会显示完整原因, 避免用户以为是 bug. ?>
-                <label for="apiType-custom" style="opacity: 0.5; cursor: not-allowed;" title="<?php esc_attr_e('完成登录并付费后可用', 'live-2d'); ?>">
-                    <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义模型路径（Cubism 4+）', 'live-2d'); ?>
+                <?php // 未登录 / 未付费: 两个 custom-* 都置灰, hover 提示原因。 ?>
+                <label for="apiType-custom-remote" style="opacity: 0.5; cursor: not-allowed;" title="<?php esc_attr_e('完成登录并付费后可用', 'live-2d'); ?>">
+                    <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义新版模型 · 直链加载（Cubism 4+）', 'live-2d'); ?>
+                </label><br>
+                <label for="apiType-custom-local" style="opacity: 0.5; cursor: not-allowed;" title="<?php esc_attr_e('完成登录并付费后可用', 'live-2d'); ?>">
+                    <input type="radio" disabled style="cursor: not-allowed;"> <?php esc_html_e('自定义新版模型 · 托管到本站（Cubism 4+, 推荐）', 'live-2d'); ?>
                 </label><br>
                 <span class="description" style="opacity: 0.7;"><?php esc_html_e('Cubism 4+：登录并付费后可使用。', 'live-2d'); ?></span>
             <?php endif; ?>
@@ -197,8 +209,14 @@ class live2D_Settings_Base
         );
         // 静态帮助文案仅作底层说明;与 apiType 联动的选择性提示由 JS 插入 / 隐藏。
         echo '<p class="description live2d-modelAPI-hint live2d-modelAPI-hint-default">'
-            . esc_html__('上面「API 方式」选不同选项时, 此处填写要求不同。', 'live-2d')
-            . '</p>';
+            . esc_html__('上面「API 方式」选不同选项时, 此处填写要求不同:', 'live-2d')
+            . '</p>'
+            . '<ul class="description live2d-modelAPI-hint live2d-modelAPI-hint-default" style="margin-left:18px;list-style:disc;">'
+            . '<li>' . esc_html__('本地部署旧版模型: 系统自动指向本站, 无需填写', 'live-2d') . '</li>'
+            . '<li>' . esc_html__('自行部署旧版模型: 填您自己的旧版 PHP API 根地址', 'live-2d') . '</li>'
+            . '<li>' . esc_html__('自定义新版模型 · 直链加载: 填 .model3.json 完整 URL, 或目录根 (末尾带 /)', 'live-2d') . '</li>'
+            . '<li>' . esc_html__('自定义新版模型 · 托管到本站: 本行隐藏, 由系统自动指向本站 model/ 根目录; 请在下面「模型目录」填 slug (= 子目录名), 或从「模型托管」面板下载/上传自动追加', 'live-2d') . '</li>'
+            . '</ul>';
     }
 
     public function modelId_callback()
@@ -225,7 +243,7 @@ class live2D_Settings_Base
     public function modelDir_callback()
     {
         live2D_Utils::loopMsg('modelDir','List',true,'live_2d_settings_option_name');
-        echo '<p>' . esc_html__('可以切换的模型名称，请填写每个模型所在的目录名（须与模型自带的配置文件名保持一致）。','live-2d').'</p>';
+        echo '<p>' . esc_html__('模型名称列表: 「自行部署旧版 / 自定义新版」两种模式下, 每行填一个 slug (= 子目录名, 须与 {slug}.model3.json 前缀完全一致); 「自定义新版 · 托管到本站」模式下点「下载 / 上传」会自动追加。','live-2d').'</p>';
     }
 
     // 待机动画文件名 — loopMsg 渲染的 <p class="idle_motion"> 会被
@@ -237,68 +255,95 @@ class live2D_Settings_Base
     }
 
     /**
-     * Cubism 4+ 模型保护策略 — 二态 radio,默认 'direct'。
-     *   - 'direct' 不缓存(默认):不启用防盗链;如果你使用了第三方对象存储工具或者不需要防盗链即可选这个。
-     *   - 'local'  缓存到本地:插件会 alias 化所有模型资源,访客 F12 只看到临时签名 URL。
-     *              需要在下面点「下载到本地」把模型文件拉进插件 model/ 目录。
+     * 「模型托管」面板 — apiType='custom-local' 专用,由 live2d-admin.ts 控制可见性。
+     *   - 顶部 banner: 服务器单文件上传上限 (从 wp_max_upload_size() 读出,后端
+     *     渲染时静态注入,无需额外 ajax)
+     *   - 双 tab: [从 URL 下载] / [上传文件夹]
+     *     · URL 下载: 顶部 「全部下载 / 全部清理 / 清理孤儿」3 个按钮 + 状态表格
+     *     · 上传文件夹: <input type=file webkitdirectory> + 拖拽 dropzone + 进度区
+     *   - 状态表格: 每个 modelApi 一行,slug + 已缓存徽章 + 删除按钮 (TS 动态填充)
      *
-     * 运行时由 wordpress-live2d.php live2D_style() 决定是否注入 v2SessionUrl(仅 'local' 注入)。
-     * 下载区域 (#protectV2-models-section) 的可见性由 live2d-admin.ts 根据 radio 状态 toggle。
+     * 取代旧的 protectV2_callback (已删除): 现在 apiType='custom-local' 的语义
+     * 等同于旧 (custom + protectV2='local'),独立开关合并到 apiType radio 内。
      */
-    public function protectV2_callback()
+    public function host_panel_callback()
     {
-        $current = isset($this->live_2d__options['protectV2']) ? $this->live_2d__options['protectV2'] : 'direct';
-        // 老版本存的是 bool 或 'oss':bool true → 'local',其余非 'local' 一律归为 'direct'
-        if (is_bool($current)) {
-            $current = $current ? 'local' : 'direct';
-        } elseif (!in_array($current, array('local', 'direct'), true)) {
-            $current = 'direct';
-        }
-        ?>
-        <fieldset class="protectV2-fieldset">
-            <label for="protectV2-direct">
-                <input type="radio" name="live_2d_settings_option_name[protectV2]" id="protectV2-direct" class="protectV2" value="direct" <?php checked($current, 'direct'); ?>>
-                <?php esc_html_e('不缓存 (默认)', 'live-2d'); ?>
-            </label>
-            <span class="description" style="margin-left:8px;"><?php esc_html_e('不启用防盗保护；如果您使用了云存储或不需要防盗，可选择此项。', 'live-2d'); ?></span><br>
-
-            <label for="protectV2-local">
-                <input type="radio" name="live_2d_settings_option_name[protectV2]" id="protectV2-local" class="protectV2" value="local" <?php checked($current, 'local'); ?>>
-                <?php esc_html_e('缓存到本地 (推荐)', 'live-2d'); ?>
-            </label>
-            <span class="description" style="margin-left:8px;"><?php esc_html_e('访客看不到模型的真实地址；需要先把模型文件下载到您的网站上。', 'live-2d'); ?></span>
-        </fieldset>
-
-        <?php // 下载区域 —— 默认隐藏, live2d-admin.ts 会在 protectV2='local' 时显示。
-              // 后端 AJAX 在 src/live2d-V2Api.php 里实现,接入点在 src/live2d-Shop.php。
-              // 表格行 + 进度条 + 顶部总按钮的具体内容由 admin TS 动态生成。 ?>
-        <div id="protectV2-models-section" style="display:none;margin-top:12px;padding:12px;border:1px solid #ddd;background:#fafafa;border-radius:4px;">
-            <strong><?php esc_html_e('模型本地缓存', 'live-2d'); ?></strong>
-            <p class="description" style="margin:6px 0;">
-                <?php esc_html_e('插件会把当前模型及其用到的所有文件下载到您的网站上，下载完成后访客加载模型就不再访问外部地址。', 'live-2d'); ?>
-                <br>
-                <?php esc_html_e('两种下载方式：【自动】当有访客打开模型时，插件会在后台开始下载，首次访问仍由原始地址提供，下载完成后立即生效；【手动】点击下方「全部下载」或单条下载按钮立即开始下载。', 'live-2d'); ?>
-            </p>
-            <div id="protectV2-cache-toolbar" style="margin:8px 0;padding:8px;background:#fff;border:1px solid #e5e5e5;border-radius:3px;">
-                <button type="button" class="button button-primary" id="live2d-cache-download-all">
-                    <?php esc_html_e('全部下载', 'live-2d'); ?>
-                </button>
-                <button type="button" class="button" id="live2d-cache-cleanup-orphans" style="margin-left:6px;">
-                    <?php esc_html_e('清理孤儿', 'live-2d'); ?>
-                </button>
-                <button type="button" class="button" id="live2d-cache-cleanup-all" style="margin-left:6px;color:#b32d2e;">
-                    <?php esc_html_e('全部清理', 'live-2d'); ?>
-                </button>
-                <span id="live2d-cache-summary" style="margin-left:12px;color:#1d2327;"></span>
+        // wp_max_upload_size() 综合 upload_max_filesize / post_max_size / WP 自身上限
+        // 取最小值,与 WP 媒体库一致。size_format 自动转 KB/MB/GB 人类可读。
+        $maxBytes      = function_exists('wp_max_upload_size') ? (int) wp_max_upload_size() : 0;
+        $maxBytesHuman = $maxBytes > 0 ? size_format($maxBytes) : __('未知', 'live-2d');
+?>
+        <div id="live2d-host-panel" style="display:none;margin-top:12px;padding:12px;border:1px solid #ddd;background:#fafafa;border-radius:4px;">
+            <div style="margin-bottom:10px;padding:8px 12px;background:#fff8e5;border-left:4px solid #ffb900;font-size:13px;color:#1d2327;">
+                <?php
+                printf(
+                    /* translators: %s: human-readable file size limit, e.g. "8 MB" */
+                    esc_html__('单文件上限 %s（受服务器 PHP upload_max_filesize 限制）。超过该上限的文件会被红色标记并跳过,如需调高请联系主机商或修改 php.ini / .htaccess。', 'live-2d'),
+                    '<strong>' . esc_html($maxBytesHuman) . '</strong>'
+                );
+                ?>
+                <span id="live2d-host-max-bytes" data-max="<?php echo esc_attr((string) $maxBytes); ?>" style="display:none;"></span>
             </div>
-            <div id="protectV2-models-list">
+
+            <ul class="live2d-host-tabs" style="display:flex;gap:0;margin:0 0 12px 0;padding:0;list-style:none;border-bottom:1px solid #ccd0d4;">
+                <li><a href="#" class="live2d-host-tab live2d-host-tab-active" data-tab="download" style="display:inline-block;padding:8px 16px;text-decoration:none;color:#1d2327;border:1px solid #ccd0d4;border-bottom:none;background:#fff;border-radius:4px 4px 0 0;margin-bottom:-1px;"><?php esc_html_e('从 URL 下载', 'live-2d'); ?></a></li>
+                <li style="margin-left:4px;"><a href="#" class="live2d-host-tab" data-tab="upload" style="display:inline-block;padding:8px 16px;text-decoration:none;color:#646970;border:1px solid transparent;border-bottom:none;background:transparent;border-radius:4px 4px 0 0;margin-bottom:-1px;"><?php esc_html_e('上传文件夹', 'live-2d'); ?></a></li>
+            </ul>
+
+            <div class="live2d-host-tab-content" data-tab-content="download">
+                <p class="description" style="margin:6px 0;">
+                    <?php esc_html_e('插件会从下面输入的 URL 抓取整套模型文件（model3.json + moc3 + 贴图 + 动作等）保存到您的网站上,完成后访客加载就走本地副本,不再访问外部地址。', 'live-2d'); ?>
+                </p>
+                <div id="live2d-host-source-row" style="margin:10px 0;padding:10px 12px;background:#fff;border:1px solid #e5e5e5;border-radius:3px;">
+                    <label for="live2d-host-source-url" style="display:block;font-weight:600;margin-bottom:4px;">
+                        <?php esc_html_e('模型源 URL', 'live-2d'); ?>
+                    </label>
+                    <input type="url" id="live2d-host-source-url" class="regular-text" style="width:calc(100% - 140px);max-width:520px;" placeholder="https://example.com/haru/haru.model3.json">
+                    <button type="button" class="button button-primary" id="live2d-host-download-source" style="margin-left:6px;vertical-align:middle;">
+                        <?php esc_html_e('下载到本站', 'live-2d'); ?>
+                    </button>
+                    <p class="description" style="margin:6px 0 0 0;">
+                        <?php esc_html_e('填模型 .model3.json 完整 URL,点击「下载到本站」。下载完成后,该模型的 slug(= 文件夹名)会自动追加到上方「模型目录」列表,无需手填。', 'live-2d'); ?>
+                    </p>
+                </div>
+                <div id="protectV2-cache-toolbar" style="margin:8px 0;padding:8px;background:#fff;border:1px solid #e5e5e5;border-radius:3px;">
+                    <button type="button" class="button" id="live2d-cache-cleanup-orphans">
+                        <?php esc_html_e('清理孤儿', 'live-2d'); ?>
+                    </button>
+                    <button type="button" class="button" id="live2d-cache-cleanup-all" style="margin-left:6px;color:#b32d2e;">
+                        <?php esc_html_e('全部清理', 'live-2d'); ?>
+                    </button>
+                    <span id="live2d-cache-summary" style="margin-left:12px;color:#1d2327;"></span>
+                </div>
+            </div>
+
+            <div class="live2d-host-tab-content" data-tab-content="upload" style="display:none;">
+                <p class="description" style="margin:6px 0;">
+                    <?php esc_html_e('如果模型文件只在您本地（没有公网 URL）,可以直接拖拽整个模型文件夹到这里,或点击下方按钮选择文件夹。文件会按相对路径保存到 wp-content/plugins/live-2d/model/{slug}/ 下。', 'live-2d'); ?>
+                </p>
+                <div id="live2d-host-dropzone" style="margin:10px 0;padding:32px 16px;border:2px dashed #c3c4c7;border-radius:4px;background:#fff;text-align:center;color:#646970;cursor:pointer;transition:border-color .2s, background .2s;">
+                    <p style="margin:0 0 10px 0;font-size:14px;">
+                        <?php esc_html_e('把模型文件夹拖到这里', 'live-2d'); ?>
+                    </p>
+                    <p style="margin:0;">
+                        <label class="button button-primary" style="cursor:pointer;">
+                            <?php esc_html_e('选择文件夹', 'live-2d'); ?>
+                            <input type="file" id="live2d-host-folder-input" webkitdirectory directory multiple style="display:none;">
+                        </label>
+                    </p>
+                </div>
+                <div id="live2d-host-upload-summary" style="margin:8px 0;color:#1d2327;font-size:13px;"></div>
+                <div id="live2d-host-upload-list" style="margin-top:8px;max-height:240px;overflow-y:auto;font-family:monospace;font-size:12px;"></div>
+            </div>
+
+            <div id="protectV2-models-list" style="margin-top:12px;border-top:1px solid #e5e5e5;padding-top:12px;">
                 <?php // 由 admin TS 动态填充列表条目:每个 modelApi 一行,
                       // 包含 slug + 状态徽章 + 进度条 + 当前文件名 + 操作按钮 ?>
                 <span class="description"><?php esc_html_e('正在读取状态…', 'live-2d'); ?></span>
             </div>
             <p id="protectV2-models-msg" style="margin:6px 0;color:#1d2327;"></p>
         </div>
-        <?php
+<?php
     }
 
     // modelZoomNumberV2_callback / modelXYaxis_callback 已迁移到

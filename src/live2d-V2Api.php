@@ -1331,10 +1331,11 @@ class live2d_V2Api
     /**
      * 从当前保存的 live_2d_settings_option_name 还原应该被缓存的全部 modelApi 列表。
      * 与前端 protectV2Settings / protectV2ModelDirSettings 的 URL 推导规则一致:
-     *   - apiType='custom' && modelAPI 以 .json 结尾 → JsonFile 模式,单个 URL
-     *   - apiType='custom' && modelDir 非空           → ModelDir 模式,展开为 [${root}${dir}/${dir}.model3.json, ...]
-     *   - apiType='custom' && 其余                    → 空(没有合法 V2 模型可缓存)
-     *   - 其它 apiType                                → 空(本地/远程 V1 模式不走 V2 防盗链)
+     *   - apiType='custom-local' && modelAPI 以 .json 结尾 → JsonFile 模式,单个 URL
+     *   - apiType='custom-local' && modelDir 非空           → ModelDir 模式,展开为 [${root}${dir}/${dir}.model3.json, ...]
+     *   - apiType='custom-local' && 其余                    → 空(没有合法 V2 模型可缓存)
+     *   - 其它 apiType (local / remote / custom-remote)    → 空
+     *     (custom-remote 不走防盗链也不下载到本地; 只有 custom-local 才需要本地副本)
      * 用于:批量入队、清理孤儿、UI 展示行列表。
      *
      * @return string[] 去重后的 URL 列表
@@ -1344,7 +1345,7 @@ class live2d_V2Api
         $opt = get_option('live_2d_settings_option_name');
         if (!is_array($opt)) return array();
         $apiType = isset($opt['apiType']) ? (string) $opt['apiType'] : '';
-        if ($apiType !== 'custom') return array();
+        if ($apiType !== 'custom-local') return array();
         $modelApi = isset($opt['modelAPI']) ? trim((string) $opt['modelAPI']) : '';
         if ($modelApi === '' || !preg_match('#^https?://#i', $modelApi)) return array();
 
@@ -1363,5 +1364,117 @@ class live2d_V2Api
             $out[] = $root . $dir . '/' . $dir . '.model3.json';
         }
         return array_values(array_unique($out));
+    }
+
+    // ============================================================
+    //  上传接收 (apiType='custom-local' 主动上传文件夹专用)
+    // ============================================================
+
+    /**
+     * 接收前端拖拽 / 选择文件夹上传过来的单个文件,落盘到 model/{slug}/{relPath}。
+     *
+     * 安全考量:
+     *   - relPath 逐段 sanitize_file_name (隔离 path traversal); 插件名不能包含 ..
+     *   - 扩展名白名单 (Cubism 4+ 模型可能涉及的所有文件类型)
+     *   - 落盘后再 realpath 校验仍在 model/{slug}/ 内 (货真价实防 zip-slip)
+     *   - 不占用 download_one_file 的 50MB 限额 (那是拉跨域的兑底;这里上传受 wp_max_upload_size 制约,
+     *     PHP 超限会被报 UPLOAD_ERR_INI_SIZE,前端在 fetch 前也已按 朗炸包 reject)
+     *
+     * @param string $modelApi  用户填的 modelAPI (必填 - 用于派生 slug)
+     * @param string $relPath   相对路径,如 'haru/haru.moc3' 或 'haru/textures/texture_00.png'
+     * @param string $tmpFile   $_FILES['file']['tmp_name']
+     * @param int    $size      $_FILES['file']['size'] (字节)
+     * @return array { errorCode:200|400|500, errorMsg?:string, savedTo?:string, totalBytes?:int }
+     */
+    public static function receive_uploaded_file($modelApi, $relPath, $tmpFile, $size)
+    {
+        $modelApi = trim((string) $modelApi);
+        $relPath  = trim((string) $relPath);
+        if ($modelApi === '' || !preg_match('#^https?://#i', $modelApi)) {
+            return array('errorCode' => 400, 'errorMsg' => 'modelApi 必须是 http(s) URL');
+        }
+        $slug = self::derive_slug($modelApi);
+        if ($slug === '') {
+            return array('errorCode' => 400, 'errorMsg' => '无法从 modelApi 派生有效 slug');
+        }
+        if ($relPath === '' || strlen($relPath) > 512) {
+            return array('errorCode' => 400, 'errorMsg' => 'relPath 为空或超长');
+        }
+        // 绝对路径 / 含 ..  / 包含反斜杠  → 一律拒绝
+        if (preg_match('#^/|^[A-Za-z]:|\\#', $relPath) || strpos($relPath, '..') !== false) {
+            return array('errorCode' => 400, 'errorMsg' => '非法相对路径');
+        }
+        // 逐段 sanitize_file_name (WP 本身的 防 NUL / 限别名 / Windows 保留名 均能测试)
+        $segments = explode('/', $relPath);
+        $cleanSegs = array();
+        foreach ($segments as $seg) {
+            $seg = trim($seg);
+            if ($seg === '' || $seg === '.' || $seg === '..') {
+                return array('errorCode' => 400, 'errorMsg' => '路径含空段或 .. : ' . $relPath);
+            }
+            $san = sanitize_file_name($seg);
+            if ($san === '' || $san !== $seg) {
+                // sanitize_file_name 改名了 → 原始名含不安全字符 (如中文 / 控制符)
+                // 项目约束: 路径不能含中文 (与 custom-model.html 文档一致),直接报错
+                return array('errorCode' => 400, 'errorMsg' => '文件名含不允许字符: ' . $seg);
+            }
+            $cleanSegs[] = $san;
+        }
+        $relPath = implode('/', $cleanSegs);
+
+        // 扩展名白名单
+        // - .json 覆盖 model3.json / motion3.json / physics3.json / cdi3.json / pose3.json /
+        //   userdata3.json / exp3.json / display3.json / .textures.json (多贴图清单)
+        // - .moc3 .moc (主体)
+        // - .png .jpg .jpeg .webp (贴图)
+        // - .wav .mp3 .ogg .m4a (motion 可能挂语音)
+        // - .txt (LICENSE / README 有些模型包会邦带)
+        $allowedExt = array('json', 'moc3', 'moc', 'png', 'jpg', 'jpeg', 'webp', 'wav', 'mp3', 'ogg', 'm4a', 'txt');
+        $ext = strtolower(pathinfo($relPath, PATHINFO_EXTENSION));
+        if ($ext === '' || !in_array($ext, $allowedExt, true)) {
+            return array('errorCode' => 400, 'errorMsg' => '不支持的文件类型: .' . $ext);
+        }
+
+        if (!is_string($tmpFile) || $tmpFile === '' || !is_uploaded_file($tmpFile)) {
+            return array('errorCode' => 400, 'errorMsg' => '上传临时文件不存在');
+        }
+        if ((int) $size <= 0) {
+            return array('errorCode' => 400, 'errorMsg' => '文件为空');
+        }
+
+        // 落盘路径
+        $rootDir = self::model_root_dir();
+        if (!file_exists($rootDir) && !wp_mkdir_p($rootDir)) {
+            return array('errorCode' => 500, 'errorMsg' => 'model/ 目录创建失败');
+        }
+        $modelDir = self::model_local_dir($slug);
+        if (!is_dir($modelDir) && !wp_mkdir_p($modelDir)) {
+            return array('errorCode' => 500, 'errorMsg' => 'model/' . $slug . '/ 目录创建失败');
+        }
+        $destAbs = $modelDir . '/' . $relPath;
+        $parent  = dirname($destAbs);
+        if (!is_dir($parent) && !wp_mkdir_p($parent)) {
+            return array('errorCode' => 500, 'errorMsg' => '子目录创建失败: ' . $parent);
+        }
+
+        // 货真价实的 zip-slip 防御: 落盘前检查解析后路径仍在 modelDir 下
+        $modelDirReal = wp_normalize_path(realpath($modelDir));
+        $destNorm     = wp_normalize_path($destAbs);
+        if ($modelDirReal === false || strpos($destNorm, $modelDirReal) !== 0) {
+            return array('errorCode' => 400, 'errorMsg' => '路径越出托管区: ' . $relPath);
+        }
+
+        // 实际移动 (move_uploaded_file 会在成功后自动干掉临时文件,跳过双份限制)
+        if (!@move_uploaded_file($tmpFile, $destAbs)) {
+            // PHP open_basedir 不允许 / 盘满 等
+            return array('errorCode' => 500, 'errorMsg' => '保存文件失败 (检查该目录是否可写): ' . $destAbs);
+        }
+        @chmod($destAbs, 0644);
+
+        return array(
+            'errorCode'  => 200,
+            'savedTo'    => 'model/' . $slug . '/' . $relPath,
+            'totalBytes' => (int) filesize($destAbs),
+        );
     }
 }

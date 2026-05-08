@@ -1,0 +1,30 @@
+{%- comment -%}
+渲染一篇 wiki 文档的多语言 body。
+
+用法（page front-matter 仅 4 行,不需要任何 HTML body）:
+    ---
+    page_id: anti_hotlink
+    nav_keys: [home, v1_vs_v2, custom_model, chrome_extension]
+    body_key: anti-hotlink
+    ---
+    {% include wiki-body.html name=page.body_key %}
+
+数据约定:
+  docs/_data/wiki/<name>.yml 顶层 4 个 key:
+    'zh-CN': |
+      <p>...</p>
+    en:    |
+      <p>...</p>
+    ja:    |
+      <p>...</p>
+    'zh-TW': |
+      <p>...</p>
+  hyphenated language code 必须加引号 (zh-CN / zh-TW),否则会被 YAML 当算式解析。
+
+容错:
+  - 找不到对应语言时回退到 zh-CN
+  - 仍找不到则输出空字符串(让 Jekyll 不会中断 build)
+{%- endcomment -%}
+{%- assign all_langs = site.data.wiki[include.name] -%}
+{%- assign body = all_langs[page.lang] | default: all_langs['zh-CN'] -%}
+{{ body }}

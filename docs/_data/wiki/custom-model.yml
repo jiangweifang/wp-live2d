@@ -1,0 +1,362 @@
+# Multi-language body for /wiki/custom-model.html (and /<lang>/wiki/custom-model.html).
+# Edit here, the 4 stub HTML files just include this via _includes/wiki-body.html.
+'zh-CN': |
+  
+  <blockquote>
+      <p><strong>本页只讲 V2（Cubism 4+ / 5）模型。</strong>如果你想用 22/33/Pio/Tia 这种老模型，那是 V1，请走插件后台「创意工坊 API 类型 = 本地 / 远程创意工坊」，<em>不需要付费</em>，也不需要本页的任何步骤。先去看 <a href="{{ '/wiki/v1-vs-v2.html' | relative_url }}">V1 / V2 是什么</a>。</p>
+  </blockquote>
+  
+  <h2>1. 先付费</h2>
+  <p>V2 模型走的是 Live2D Cubism 4+ Web SDK 加载器。Live2D 株式会社要求第三方扩展性应用使用 Cubism 4+ 时签订商业合约，本插件作者已经签了长期合约并按其要求分发正版 Cubism Core，所以这条链路对站长收一次性授权费。</p>
+  <ol>
+      <li>在 <a href="https://www.live2dweb.com/" target="_blank" rel="noopener">www.live2dweb.com</a> 完成账号注册与付费。</li>
+      <li>在 <strong>WordPress 后台保持登录状态</strong>（这一步是为了拿到与你账号绑定的 token，让插件能向 live2dweb.com 验证授权）。</li>
+  </ol>
+  <p>没付费 / 没登录的状态下，插件后台「创意工坊 API 类型」里 <strong>自定义</strong> 这一项会被禁用或提示需要登录。</p>
+  
+  <h2>2. 准备好你的 V2 模型文件</h2>
+  <p>V2 模型是 Cubism 4+ 导出的，文件清单是 <code>*.model3.json</code>，主体是 <code>*.moc3</code>，再加上贴图、动作、表情等。</p>
+  
+  <h3>2.1 文件清单要求</h3>
+  <ul>
+      <li>清单文件名一般是 <code>{模型名}.model3.json</code>。</li>
+      <li>路径里 <strong>不能有中文</strong>。</li>
+      <li>如果你的站点是 <code>https</code>，那么清单 <em>以及它引用到的所有文件</em>（<code>.moc3</code>、贴图、motion3.json、physics3.json、cdi3.json 等）都必须是 <code>https</code>，否则浏览器会因为混合内容 / 跨域报错。</li>
+      <li>跨域：把模型放到 OSS / COS / 自家 CDN 时，请正确开启 CORS（一般加上你的站点域名作为允许的 Origin 即可）。</li>
+  </ul>
+  
+  <h3>2.2 把模型放在哪里？</h3>
+  <p>排序按"推荐程度从高到低"：</p>
+  <ol>
+      <li><strong>对象存储 + 防盗链（首选，自带版权保护）</strong>：阿里云 OSS、腾讯云 COS、又拍、七牛等。
+          <ul>
+              <li>开启 Referer 白名单，只允许你的站点访问。</li>
+              <li>套一层自家 CDN 时记得继承防盗链规则。</li>
+          </ul>
+      </li>
+      <li><strong>插件目录下的 <code>model</code> 文件夹</strong>（最简单，但需要你自己控制流量）：
+          <pre><code>wp-content/plugins/live-2d/model/{模型名}/{模型名}.model3.json</code></pre>
+          如果没有 <code>model</code> 文件夹，自己建一个。注意 WordPress 的 URL Rewrite 在某些主题 / 安全插件下可能会误拦截，访问不到时先确认这个 URL 浏览器能直接打开。
+      </li>
+      <li><strong>开启「缓存到本地」让插件接管</strong>：填 <code>modelAPI</code> 之后，在防盗链选项里选「缓存到本地」，插件会把对应文件全部下载到你站点的 <code>wp-content/plugins/live-2d/model/</code>，并对前端只暴露临时签名 URL，访客 F12 也看不到源站。<a href="{{ '/wiki/anti-hotlink.html' | relative_url }}">详见防盗链页</a>。</li>
+      <li>放到 GitHub Pages / jsDelivr 这种公开静态托管：能跑，但<strong>大陆地区不推荐</strong>，jsdelivr 实际还是会回源 raw.githubusercontent.com，速度不稳定，也无法防盗。</li>
+  </ol>
+  
+  <h2>3. 在后台填入 modelAPI</h2>
+  <p>WordPress 后台 → Live2D 设置 → 创意工坊 API 类型选「自定义」。下面有 <code>modelAPI</code> 输入框，<strong>有两种填写方式</strong>，由结尾字符决定走哪一种：</p>
+  
+  <table>
+      <thead>
+          <tr><th style="width:24%">写法</th><th>结尾</th><th>作用</th><th>下方 modelDir 列表</th></tr>
+      </thead>
+      <tbody>
+          <tr><td>① 直链单模型</td><td>以 <code>.json</code> 结尾</td><td>直接加载该 <code>model3.json</code>，不再做任何路径拼接。</td><td>忽略</td></tr>
+          <tr><td>② 目录根 + 多模型</td><td>以 <code>/</code> 结尾</td><td>把它当作根目录，配合下方 <code>modelDir</code> 列表，按 <code>{modelAPI}{名称}/{名称}.model3.json</code> 自动拼接成完整 URL。</td><td>必须填，每行一个子目录名（必须与 <code>{名称}.model3.json</code> 完全一致）。</td></tr>
+      </tbody>
+  </table>
+  
+  <h3>示例</h3>
+  <p>① 直链：</p>
+  <pre><code>https://cdn.example.com/live2d/haru/haru.model3.json</code></pre>
+  
+  <p>② 目录根 + 多模型：</p>
+  <pre><code>modelAPI:  https://cdn.example.com/live2d/
+  
+  modelDir:
+    - haru
+    - mao
+    - shizuku</code></pre>
+  <p>实际加载时插件会拼成：</p>
+  <pre><code>https://cdn.example.com/live2d/haru/haru.model3.json
+  https://cdn.example.com/live2d/mao/mao.model3.json
+  https://cdn.example.com/live2d/shizuku/shizuku.model3.json</code></pre>
+  <p>前台「眨眼按钮」会在这几个模型之间切换。</p>
+  
+  <blockquote>
+      <p><strong>注意：</strong>使用自定义模型后，前台 Live2D 的"上一个 / 下一个"切换按钮在很多模型组合下没意义，建议在后台关闭那两个按钮。</p>
+  </blockquote>
+  
+  <h2>4. 模型贴图（材质）大小</h2>
+  <p>请控制每张贴图不超过 <code>2048×2048</code>。Cubism 4+ 默认贴图就比较大，叠几张过大的 PNG 很容易把首屏加载时间拖到 5~10 秒以上。如果模型本身导出时贴图分辨率超标，可以在 Cubism Editor 里"嵌入纹理图集 → 重新分配尺寸"。</p>
+  
+  <h2>5. 进阶：超采样（仅 V2）</h2>
+  <p>插件 2.1.3 起新增 <strong>超采样</strong>功能，可以让贴图在高分屏上更清晰。<strong>仅对 V2（model3.json）模型生效</strong>，V1 链路不会响应这个开关。</p>
+  
+  <h2>6. 安全 / 版权要点</h2>
+  <ol>
+      <li>请自行保证自己模型的版权。最佳做法：上传到带防盗链的对象存储 + 开启 CORS 限定来源。</li>
+      <li>创意工坊目前不支持自行上传 —— 因为我们没办法替每个上传者保护版权。</li>
+      <li>不要把 OSS 的 <code>SecretKey</code> 写进 WordPress 设置项。如果一定要走私有读 + 签名链接，请走 wp-config.php 环境变量，<a href="{{ '/wiki/anti-hotlink.html' | relative_url }}">见防盗链页底部说明</a>。</li>
+  </ol>
+  
+  <p>有问题欢迎在 <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">GitHub Issues</a> 中反馈。</p>
+'en': |
+  
+  <blockquote>
+      <p><strong>This page is only about V2 (Cubism 4+ / 5) models.</strong> If you want to use 22 / 33 / Pio / Tia type legacy models, those are V1 — set "Workshop API type" to <em>Local</em> or <em>Remote workshop</em> in the plugin settings, no payment is required, and none of the steps on this page apply. Read <a href="{{ '/en/wiki/v1-vs-v2.html' | relative_url }}">What are V1 and V2?</a> first.</p>
+  </blockquote>
+  
+  <h2>1. Pay first</h2>
+  <p>V2 models go through the Live2D Cubism 4+ Web SDK loader. Live2D Inc. requires third-party extensible applications to sign a commercial agreement before using Cubism 4+. The plugin author has signed a long-term contract and ships the official Cubism Core under that contract, so this path bills site owners a one-off licensing fee.</p>
+  <ol>
+      <li>Sign up and pay on <a href="https://www.live2dweb.com/" target="_blank" rel="noopener">www.live2dweb.com</a>.</li>
+      <li>Stay <strong>signed in to the WordPress admin</strong> (this is what gives the plugin a token tied to your account so it can verify the licence with live2dweb.com).</li>
+  </ol>
+  <p>Without payment / sign-in, the <strong>Custom</strong> entry of "Workshop API type" is disabled or asks you to sign in.</p>
+  
+  <h2>2. Prepare your V2 model files</h2>
+  <p>V2 models are exported from Cubism 4+. The manifest is <code>*.model3.json</code>, the main file is <code>*.moc3</code>, plus textures, motions and expressions.</p>
+  
+  <h3>2.1 Manifest requirements</h3>
+  <ul>
+      <li>The manifest file name is usually <code>{model-name}.model3.json</code>.</li>
+      <li>Paths must <strong>not contain Chinese characters</strong>.</li>
+      <li>If your site is on <code>https</code>, then the manifest <em>and every file it references</em> (<code>.moc3</code>, textures, motion3.json, physics3.json, cdi3.json, …) must also be on <code>https</code>; otherwise the browser will refuse them as mixed content / cross-origin.</li>
+      <li>Cross-origin: when hosting on OSS / COS / your own CDN, configure CORS properly — usually just whitelist your site's domain as an allowed Origin.</li>
+  </ul>
+  
+  <h3>2.2 Where should I host the model?</h3>
+  <p>Sorted from most to least recommended:</p>
+  <ol>
+      <li><strong>Object storage with hotlink protection (preferred — built-in copyright protection)</strong>: Aliyun OSS, Tencent COS, Upyun, Qiniu, etc.
+          <ul>
+              <li>Enable referer whitelisting and only allow your own site.</li>
+              <li>If you put a CDN in front, make sure the CDN inherits the same hotlink rules.</li>
+          </ul>
+      </li>
+      <li><strong>The plugin's own <code>model</code> directory</strong> (simplest, but you have to manage your own bandwidth):
+          <pre><code>wp-content/plugins/live-2d/model/{model-name}/{model-name}.model3.json</code></pre>
+          If the <code>model</code> folder does not exist, create it. Some themes / security plugins interfere with WordPress URL rewriting; if the file does not load, check that you can open the URL directly in a browser.
+      </li>
+      <li><strong>Let the plugin take over via "cache locally"</strong>: after filling <code>modelAPI</code>, switch the hotlink option to "cache locally". The plugin will pull every referenced file into <code>wp-content/plugins/live-2d/model/</code> on your site and only serve a temporary signed URL to visitors, so the source URL never leaks even via DevTools. <a href="{{ '/en/wiki/anti-hotlink.html' | relative_url }}">See the hotlink protection page.</a></li>
+      <li>Public static hosting such as GitHub Pages / jsDelivr: it works, but <strong>not recommended in mainland China</strong> — jsDelivr ultimately falls back to raw.githubusercontent.com, latency is unstable, and there is no hotlink protection.</li>
+  </ol>
+  
+  <h2>3. Fill modelAPI in the admin</h2>
+  <p>WordPress admin → Live2D settings → Workshop API type: choose <em>Custom</em>. Below it is the <code>modelAPI</code> input. <strong>There are two ways to fill it</strong>, picked by the trailing character:</p>
+  
+  <table>
+      <thead>
+          <tr><th style="width:24%">Form</th><th>Trailing char</th><th>Effect</th><th>modelDir list below</th></tr>
+      </thead>
+      <tbody>
+          <tr><td>① Direct single-model URL</td><td>ends with <code>.json</code></td><td>Loads that <code>model3.json</code> as is, no further path concatenation.</td><td>Ignored</td></tr>
+          <tr><td>② Directory root + multiple models</td><td>ends with <code>/</code></td><td>Treated as a root directory; combined with the <code>modelDir</code> list below into <code>{modelAPI}{name}/{name}.model3.json</code>.</td><td>Required, one sub-directory name per line (must match <code>{name}.model3.json</code> exactly).</td></tr>
+      </tbody>
+  </table>
+  
+  <h3>Examples</h3>
+  <p>① Direct link:</p>
+  <pre><code>https://cdn.example.com/live2d/haru/haru.model3.json</code></pre>
+  
+  <p>② Directory root + multiple models:</p>
+  <pre><code>modelAPI:  https://cdn.example.com/live2d/
+  
+  modelDir:
+    - haru
+    - mao
+    - shizuku</code></pre>
+  <p>The plugin will resolve them at load time as:</p>
+  <pre><code>https://cdn.example.com/live2d/haru/haru.model3.json
+  https://cdn.example.com/live2d/mao/mao.model3.json
+  https://cdn.example.com/live2d/shizuku/shizuku.model3.json</code></pre>
+  <p>The "blink" button on the frontend will rotate through these models.</p>
+  
+  <blockquote>
+      <p><strong>Note:</strong> with custom models the frontend "previous / next" character buttons rarely make sense; consider disabling them in the admin.</p>
+  </blockquote>
+  
+  <h2>4. Texture (material) size</h2>
+  <p>Keep each texture under <code>2048×2048</code>. Cubism 4+ already uses fairly large textures, so stacking several oversized PNGs will easily push first-paint past 5–10 seconds. If a model exports with oversized textures, you can re-pack them inside Cubism Editor via "Embed texture atlas → resize".</p>
+  
+  <h2>5. Advanced: super-sampling (V2 only)</h2>
+  <p>Plugin 2.1.3 added a <strong>super-sampling</strong> option that sharpens textures on high-DPI displays. <strong>It only takes effect for V2 (model3.json) models</strong>; the V1 path ignores this switch.</p>
+  
+  <h2>6. Security / copyright tips</h2>
+  <ol>
+      <li>Make sure you own (or are licensed for) the model. Best practice: upload to object storage with referer hotlink protection plus CORS limited to your origin.</li>
+      <li>The workshop currently does not accept community uploads — we cannot enforce copyright on behalf of every uploader yet.</li>
+      <li>Do <strong>not</strong> put your OSS <code>SecretKey</code> into a WordPress option. If you must run private-read with signed URLs, put credentials into wp-config.php environment variables; <a href="{{ '/en/wiki/anti-hotlink.html' | relative_url }}">see the bottom of the hotlink page</a>.</li>
+  </ol>
+  
+  <p>Questions? Please open a thread on <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">GitHub Issues</a>.</p>
+'ja': |
+  
+  <blockquote>
+      <p><strong>このページは V2(Cubism 4+ / 5)モデル専用です。</strong>22 / 33 / Pio / Tia のような旧モデルを使いたい場合は V1 ですので、プラグイン管理画面で「クリエイティブワークショップ API タイプ = ローカル / リモートワークショップ」を選択してください。<em>課金は不要</em>で、このページのどの手順も該当しません。先に <a href="{{ '/ja/wiki/v1-vs-v2.html' | relative_url }}">V1 / V2 とは</a> をご覧ください。</p>
+  </blockquote>
+  
+  <h2>1. まず課金する</h2>
+  <p>V2 モデルは Live2D Cubism 4+ Web SDK ローダーを通ります。Live2D 株式会社は、サードパーティ製の拡張可能アプリケーションが Cubism 4+ を使用する際に商用契約を要求しているため、本プラグイン作者はすでに長期契約を締結し、その契約のもとで正規の Cubism Core を再配布しています。そこでこの経路ではサイトオーナーから一括のライセンス料を頂戴します。</p>
+  <ol>
+      <li><a href="https://www.live2dweb.com/" target="_blank" rel="noopener">www.live2dweb.com</a> でアカウント登録と決済を完了します。</li>
+      <li><strong>WordPress 管理画面にログインしたままにしてください</strong>(アカウントに紐付いたトークンを取得し、プラグインから live2dweb.com にライセンス検証できるようにするためです)。</li>
+  </ol>
+  <p>未課金 / 未ログイン状態では、「クリエイティブワークショップ API タイプ」の <strong>カスタム</strong> 項目は無効化されるか、ログインを促されます。</p>
+  
+  <h2>2. V2 モデルファイルを用意する</h2>
+  <p>V2 モデルは Cubism 4+ から書き出したもので、マニフェストは <code>*.model3.json</code>、本体は <code>*.moc3</code>、加えてテクスチャ・モーション・表情などです。</p>
+  
+  <h3>2.1 マニフェストの要件</h3>
+  <ul>
+      <li>マニフェスト名は通常 <code>{model-name}.model3.json</code>。</li>
+      <li>パスに <strong>中国語の文字を含めないでください</strong>。</li>
+      <li>サイトが <code>https</code> なら、マニフェスト<em>とそこから参照される全てのファイル</em>(<code>.moc3</code>、テクスチャ、motion3.json、physics3.json、cdi3.json など)も <code>https</code> である必要があります。さもないとブラウザが Mixed Content / CORS で拒否します。</li>
+      <li>CORS:OSS / COS / 自社 CDN に置く場合は CORS を正しく設定してください(自サイトのドメインを Origin として許可するだけで十分なケースが多いです)。</li>
+  </ul>
+  
+  <h3>2.2 モデルはどこに置く?</h3>
+  <p>推奨度の高い順:</p>
+  <ol>
+      <li><strong>オブジェクトストレージ + 直リンク防止(おすすめ・著作権保護込み)</strong>:Aliyun OSS、Tencent COS、Upyun、Qiniu など。
+          <ul>
+              <li>Referer ホワイトリストを有効化し、自サイトのみ許可。</li>
+              <li>前段に CDN を挟む場合は、CDN 側にも同等の直リンク防止ルールを継承させてください。</li>
+          </ul>
+      </li>
+      <li><strong>プラグイン配下の <code>model</code> ディレクトリ</strong>(最も簡単。ただし帯域は自分で管理が必要):
+          <pre><code>wp-content/plugins/live-2d/model/{model-name}/{model-name}.model3.json</code></pre>
+          <code>model</code> フォルダが無ければ自分で作成してください。テーマやセキュリティプラグインによっては WordPress の URL Rewrite が誤検知でブロックすることがあります。読み込めない場合は、まずブラウザでその URL を直接開けるか確認してください。
+      </li>
+      <li><strong>「ローカルキャッシュ」を有効にしてプラグインに任せる</strong>:<code>modelAPI</code> を入力した上で、直リンク防止オプションを「ローカルキャッシュ」に切り替えると、プラグインが対象ファイル一式を <code>wp-content/plugins/live-2d/model/</code> に取り込み、フロントには一時的な署名 URL のみを露出します。F12 でも元 URL は見えません。<a href="{{ '/ja/wiki/anti-hotlink.html' | relative_url }}">直リンク防止ページを参照</a>。</li>
+      <li>GitHub Pages / jsDelivr のような公開静的ホスティング:動作はしますが <strong>中国本土での運用は非推奨</strong>です。jsDelivr は最終的に raw.githubusercontent.com にフォールバックするため速度が安定せず、直リンク防止もできません。</li>
+  </ol>
+  
+  <h2>3. 管理画面で modelAPI を入力する</h2>
+  <p>WordPress 管理画面 → Live2D 設定 → クリエイティブワークショップ API タイプ:「カスタム」を選択。下に <code>modelAPI</code> 入力欄があります。<strong>2 通りの書き方</strong>があり、末尾文字でどちらかが決まります:</p>
+  
+  <table>
+      <thead>
+          <tr><th style="width:24%">書き方</th><th>末尾</th><th>動作</th><th>下の modelDir 一覧</th></tr>
+      </thead>
+      <tbody>
+          <tr><td>① 単一モデル直リンク</td><td><code>.json</code> で終わる</td><td>その <code>model3.json</code> をそのままロード。パスの追加結合は行いません。</td><td>無視</td></tr>
+          <tr><td>② ディレクトリルート + 複数モデル</td><td><code>/</code> で終わる</td><td>ルートディレクトリとみなし、下の <code>modelDir</code> 一覧と組み合わせて <code>{modelAPI}{name}/{name}.model3.json</code> を自動生成します。</td><td>必須。1 行 1 サブディレクトリ名(<code>{name}.model3.json</code> と完全一致が必要)。</td></tr>
+      </tbody>
+  </table>
+  
+  <h3>例</h3>
+  <p>① 直リンク:</p>
+  <pre><code>https://cdn.example.com/live2d/haru/haru.model3.json</code></pre>
+  
+  <p>② ディレクトリルート + 複数モデル:</p>
+  <pre><code>modelAPI:  https://cdn.example.com/live2d/
+  
+  modelDir:
+    - haru
+    - mao
+    - shizuku</code></pre>
+  <p>ロード時に以下の URL に展開されます:</p>
+  <pre><code>https://cdn.example.com/live2d/haru/haru.model3.json
+  https://cdn.example.com/live2d/mao/mao.model3.json
+  https://cdn.example.com/live2d/shizuku/shizuku.model3.json</code></pre>
+  <p>フロントエンドの「まばたきボタン」がこれらのモデル間を巡回します。</p>
+  
+  <blockquote>
+      <p><strong>注意:</strong>カスタムモデルを利用する場合、フロントエンドの「前のキャラ / 次のキャラ」ボタンは多くの組み合わせで意味を持ちません。管理画面で OFF にすることをおすすめします。</p>
+  </blockquote>
+  
+  <h2>4. テクスチャ(マテリアル)サイズ</h2>
+  <p>1 枚あたり <code>2048×2048</code> を超えないように。Cubism 4+ はそもそもテクスチャが大きいため、過大な PNG を何枚も重ねると初回描画が 5~10 秒以上かかってしまいます。書き出し時にサイズが大きすぎる場合は、Cubism Editor の「テクスチャアトラス埋め込み → サイズ再割り当て」で再パックできます。</p>
+  
+  <h2>5. 上級設定:スーパーサンプリング(V2 限定)</h2>
+  <p>プラグイン 2.1.3 で <strong>スーパーサンプリング</strong>機能を追加しました。高 DPI ディスプレイでテクスチャがよりシャープになります。<strong>V2(model3.json)モデルにのみ有効</strong>で、V1 経路はこのスイッチに反応しません。</p>
+  
+  <h2>6. セキュリティ / 著作権の要点</h2>
+  <ol>
+      <li>モデルの著作権は各自で保証してください。ベストプラクティス:Referer 直リンク防止つきオブジェクトストレージにアップロードし、CORS を自サイトのみに限定。</li>
+      <li>クリエイティブワークショップは現在、自由なアップロードに対応していません。投稿者ごとの著作権を守る術がまだ無いためです。</li>
+      <li>OSS の <code>SecretKey</code> を WordPress の設定項目に書き込まないでください。Private 読み出し + 署名 URL を運用する場合は、wp-config.php の環境変数経由にしてください。<a href="{{ '/ja/wiki/anti-hotlink.html' | relative_url }}">直リンク防止ページの末尾を参照</a>。</li>
+  </ol>
+  
+  <p>ご質問は <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">GitHub Issues</a> までお寄せください。</p>
+'zh-TW': |
+  
+  <blockquote>
+      <p><strong>本頁只談 V2（Cubism 4+ / 5）模型。</strong>若您想用 22/33/Pio/Tia 之類的舊模型，那是 V1，請走外掛後台「創意工坊 API 類型 = 本機 / 遠端創意工坊」，<em>不需要付費</em>，也不需要本頁任何步驟。請先看 <a href="{{ '/zh-TW/wiki/v1-vs-v2.html' | relative_url }}">V1 / V2 是什麼</a>。</p>
+  </blockquote>
+  
+  <h2>1. 先付費</h2>
+  <p>V2 模型走的是 Live2D Cubism 4+ Web SDK 載入器。Live2D 株式會社要求第三方擴充型應用使用 Cubism 4+ 時必須簽訂商業合約，本外掛作者已簽訂長期合約並依其要求散布正版 Cubism Core，所以這條路徑會向站長收取一次性授權費。</p>
+  <ol>
+      <li>於 <a href="https://www.live2dweb.com/" target="_blank" rel="noopener">www.live2dweb.com</a> 完成註冊與付費。</li>
+      <li>於 <strong>WordPress 後台保持登入狀態</strong>（這一步是為了取得與您帳號綁定的 token，讓外掛能向 live2dweb.com 驗證授權）。</li>
+  </ol>
+  <p>未付費 / 未登入時，後台「創意工坊 API 類型」中的 <strong>自訂</strong> 選項會被停用或提示需要登入。</p>
+  
+  <h2>2. 準備好您的 V2 模型檔案</h2>
+  <p>V2 模型由 Cubism 4+ 匯出，清單檔是 <code>*.model3.json</code>，本體為 <code>*.moc3</code>，再加上貼圖、動作、表情等。</p>
+  
+  <h3>2.1 清單檔需求</h3>
+  <ul>
+      <li>清單檔名一般為 <code>{模型名}.model3.json</code>。</li>
+      <li>路徑中 <strong>不能含中文字</strong>。</li>
+      <li>若您的站台是 <code>https</code>，那麼清單<em>以及它引用到的所有檔案</em>（<code>.moc3</code>、貼圖、motion3.json、physics3.json、cdi3.json 等）都必須是 <code>https</code>，否則瀏覽器會以 Mixed Content / 跨來源錯誤拒絕。</li>
+      <li>跨來源：把模型放在 OSS / COS / 自家 CDN 時，請正確設定 CORS（通常加入您的站台網域為允許 Origin 即可）。</li>
+  </ul>
+  
+  <h3>2.2 模型放在哪裡？</h3>
+  <p>依推薦度高到低：</p>
+  <ol>
+      <li><strong>物件儲存 + 防盜連（首選，自帶版權保護）</strong>：阿里雲 OSS、騰訊雲 COS、又拍、七牛等。
+          <ul>
+              <li>啟用 Referer 白名單，只允許您的站台存取。</li>
+              <li>套上自家 CDN 時，請記得讓 CDN 端繼承相同的防盜連規則。</li>
+          </ul>
+      </li>
+      <li><strong>外掛目錄下的 <code>model</code> 資料夾</strong>（最簡單，但流量得自己控制）：
+          <pre><code>wp-content/plugins/live-2d/model/{模型名}/{模型名}.model3.json</code></pre>
+          若沒有 <code>model</code> 資料夾，請自行建立。注意 WordPress 的 URL Rewrite 在某些佈景主題 / 安全外掛下可能會誤攔截，存取不到時請先確認該 URL 能在瀏覽器中直接開啟。
+      </li>
+      <li><strong>啟用「快取至本機」讓外掛接管</strong>：填好 <code>modelAPI</code> 後，把防盜連選項切到「快取至本機」，外掛會把對應檔案全部下載到您站台的 <code>wp-content/plugins/live-2d/model/</code>，並對前端只露出暫時性的簽名 URL，訪客 F12 也看不到原始位址。<a href="{{ '/zh-TW/wiki/anti-hotlink.html' | relative_url }}">詳見防盜連頁</a>。</li>
+      <li>放在 GitHub Pages / jsDelivr 這類公開靜態託管：能跑，但<strong>不建議在中國大陸地區使用</strong>，jsDelivr 最終仍會回源至 raw.githubusercontent.com，速度不穩，也無法防盜。</li>
+  </ol>
+  
+  <h2>3. 在後台填入 modelAPI</h2>
+  <p>WordPress 後台 → Live2D 設定 → 創意工坊 API 類型選「自訂」。下方有 <code>modelAPI</code> 輸入框，<strong>有兩種寫法</strong>，由結尾字元決定走哪一種：</p>
+  
+  <table>
+      <thead>
+          <tr><th style="width:24%">寫法</th><th>結尾</th><th>作用</th><th>下方 modelDir 列表</th></tr>
+      </thead>
+      <tbody>
+          <tr><td>① 直連單模型</td><td>以 <code>.json</code> 結尾</td><td>直接載入該 <code>model3.json</code>，不再做任何路徑串接。</td><td>忽略</td></tr>
+          <tr><td>② 目錄根 + 多模型</td><td>以 <code>/</code> 結尾</td><td>視為根目錄，搭配下方 <code>modelDir</code> 列表，依 <code>{modelAPI}{名稱}/{名稱}.model3.json</code> 自動串成完整 URL。</td><td>必填，每行一個子目錄名（須與 <code>{名稱}.model3.json</code> 完全一致）。</td></tr>
+      </tbody>
+  </table>
+  
+  <h3>範例</h3>
+  <p>① 直連：</p>
+  <pre><code>https://cdn.example.com/live2d/haru/haru.model3.json</code></pre>
+  
+  <p>② 目錄根 + 多模型：</p>
+  <pre><code>modelAPI:  https://cdn.example.com/live2d/
+  
+  modelDir:
+    - haru
+    - mao
+    - shizuku</code></pre>
+  <p>實際載入時外掛會展開為：</p>
+  <pre><code>https://cdn.example.com/live2d/haru/haru.model3.json
+  https://cdn.example.com/live2d/mao/mao.model3.json
+  https://cdn.example.com/live2d/shizuku/shizuku.model3.json</code></pre>
+  <p>前台「眨眼按鈕」會在這幾個模型之間切換。</p>
+  
+  <blockquote>
+      <p><strong>注意：</strong>使用自訂模型後，前台 Live2D 的「上一個 / 下一個」切換按鈕在許多模型組合下沒有意義，建議在後台關閉這兩顆按鈕。</p>
+  </blockquote>
+  
+  <h2>4. 模型貼圖（材質）大小</h2>
+  <p>請控制每張貼圖不超過 <code>2048×2048</code>。Cubism 4+ 預設貼圖就比較大，疊上幾張過大的 PNG 很容易把首屏載入時間拖到 5~10 秒以上。若模型本身匯出時貼圖解析度超標，可在 Cubism Editor 中「嵌入紋理圖集 → 重新分配尺寸」。</p>
+  
+  <h2>5. 進階：超採樣（僅 V2）</h2>
+  <p>外掛 2.1.3 起新增 <strong>超採樣</strong>功能，可讓貼圖在高 DPI 螢幕上更清晰。<strong>僅對 V2（model3.json）模型生效</strong>，V1 路徑不會回應這個開關。</p>
+  
+  <h2>6. 安全 / 版權要點</h2>
+  <ol>
+      <li>請自行保證自家模型的版權。最佳做法：上傳到具防盜連的物件儲存 + 啟用 CORS 限定來源。</li>
+      <li>創意工坊目前不支援自行上傳 —— 因為我們無法替每位上傳者保護版權。</li>
+      <li>不要把 OSS 的 <code>SecretKey</code> 寫進 WordPress 設定項。若一定要走 Private 讀 + 簽名連結，請走 wp-config.php 環境變數，<a href="{{ '/zh-TW/wiki/anti-hotlink.html' | relative_url }}">參見防盜連頁底部說明</a>。</li>
+  </ol>
+  
+  <p>若有疑問，歡迎在 <a href="https://github.com/jiangweifang/wp-live2d/issues" target="_blank" rel="noopener">GitHub Issues</a> 回報。</p>

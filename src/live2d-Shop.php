@@ -15,18 +15,20 @@ add_action("wp_ajax_get_model_list", array(new live2d_SDK, 'GetModelMotions'));
 //设置页 modelTexturesId 下拉框拉取材质列表
 add_action("wp_ajax_get_texture_list", array(new live2d_SDK, 'GetTextureList'));
 
-// V3 模型本地缓存(protectV2='local')— 后台 AJAX 入口。
+// V3 模型本地缓存(apiType='custom-local')— 后台 AJAX 入口。
 // nonce 沿用 'live2d_shop_action'(与 live2d-SDK.php 内一致);capability=manage_options。
 // 入参 modelApi 直接来自 admin TS,服务端用 wp_unslash + 简单 URL 校验,不依赖白名单。
 //
 // 所有「下载」类入口统一走 v2_cache_enqueue + WP Cron 异步队列(详见 live2d-V2Api.php 末尾)。
-// 旧版同步 v2_download_model 已下线 — 单行下载 / 批量下载 / 失败重试 / 访客懒触发 全部用 enqueue。
+// 旧版同步 v2_download_model 已下线 — 单行下载 / 批量下载 / 失败重试 全部用 enqueue。
+// 2026-05 移除访客触发的「自动懒下载」分支,所有下载都是站长在后台手动点。
 add_action('wp_ajax_v2_local_status',           'live2d_v2_ajax_local_status');
 add_action('wp_ajax_v2_delete_model',           'live2d_v2_ajax_delete_model');
 add_action('wp_ajax_v2_cache_enqueue',          'live2d_v2_ajax_cache_enqueue');
 add_action('wp_ajax_v2_cache_status',           'live2d_v2_ajax_cache_status');
 add_action('wp_ajax_v2_cache_cleanup_all',      'live2d_v2_ajax_cache_cleanup_all');
 add_action('wp_ajax_v2_cache_cleanup_orphans',  'live2d_v2_ajax_cache_cleanup_orphans');
+add_action('wp_ajax_v2_upload_model_file',      'live2d_v2_ajax_upload_model_file');
 
 function live2d_v2_ajax_verify()
 {
@@ -150,6 +152,58 @@ function live2d_v2_ajax_cache_cleanup_orphans()
     live2d_v2_ajax_verify();
     $keep = live2d_V2Api::collect_configured_targets();
     wp_send_json(live2d_V2Api::cleanup_orphans_v2($keep));
+}
+
+/**
+ * 接收前端拖拽 / 选择文件夹上传的单个文件。
+ * 入参 (multipart/form-data):
+ *   - modelApi : string — 用于派生 slug
+ *   - relPath  : string — 相对路径,如 'haru/haru.moc3'
+ *   - file     : binary — 实际文件字节
+ *   - _wpnonce : string — live2d_shop_action nonce
+ * 返回:
+ *   { errorCode, savedTo?, totalBytes?, errorMsg? }
+ */
+function live2d_v2_ajax_upload_model_file()
+{
+    live2d_v2_ajax_verify();
+    $modelApi = isset($_POST['modelApi']) ? wp_unslash($_POST['modelApi']) : '';
+    $relPath  = isset($_POST['relPath'])  ? wp_unslash($_POST['relPath'])  : '';
+    if (empty($_FILES['file']) || !isset($_FILES['file']['tmp_name'])) {
+        wp_send_json(array('errorCode' => 400, 'errorMsg' => '缺少 file 字段'));
+    }
+    $err = (int) ($_FILES['file']['error'] ?? UPLOAD_ERR_OK);
+    if ($err !== UPLOAD_ERR_OK) {
+        // PHP 上传错误码映射 — 把常见错给到前端用户能理解的中文
+        $msg = '上传失败';
+        switch ($err) {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                $msg = '文件超过服务器上传上限';
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $msg = '上传被中断,只收到部分数据';
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                $msg = '没有文件上传';
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+            case UPLOAD_ERR_CANT_WRITE:
+                $msg = '服务器临时目录不可写';
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $msg = '上传被 PHP 扩展拒绝';
+                break;
+        }
+        wp_send_json(array('errorCode' => 400, 'errorMsg' => $msg));
+    }
+    $r = live2d_V2Api::receive_uploaded_file(
+        $modelApi,
+        $relPath,
+        (string) $_FILES['file']['tmp_name'],
+        (int)    $_FILES['file']['size']
+    );
+    wp_send_json($r);
 }
 
 class live2d_Shop
