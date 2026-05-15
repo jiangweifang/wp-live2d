@@ -5,7 +5,7 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: live2d, vtuber, anime, animation, chatgpt
 Tested up to: 6.9
 Requires at least: 5.5
-Stable tag: 2.1.3
+Stable tag: 2.2.0
 Requires PHP: 7.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT
@@ -23,6 +23,14 @@ License URI: https://opensource.org/licenses/MIT
 * 插件作者与 Live2D Inc. 无雇佣关系，但保持官方合作关系；如需出版由 Cubism Core 驱动的派生作品（插件本身均属于“拓展性应用”），请参考 EULA 第 2 条、第 6.3 条自行与 Live2D 公司签订 *Live2D 出版许可协议*。
 
 == Changelog ==
+
+= 2.2.0 =
+- 新增：非常感谢大家一直以来的支持，各位用户现在可以下载 Chrome/Edge 插件在本地部署Live2D模型了，之前**已付费**的用户可以直接使用 Cubism 4+ 模型调用方式在本地调用，未付费用户可以使用老模型（需自行下载）
+- [Chrome下载地址](https://chromewebstore.google.com/detail/live2d-web-canvas/nalnegbelgoldpjifdjgefooecchcgel) [Edge下载地址](https://microsoftedge.microsoft.com/addons/detail/live2d-web-canvas/ecplalikklglkeemgkommpjejjplihcj)
+
+- WordPress版本新增：防盗链功能 —— Cubism 4+ 模型本地部署可以使用匿名的链接，可以不用担心其他人复制了你的模型链接去自己的站点中使用。
+- WordPress版本新增：您可以到 https://www.live2dweb.com/ 中配置aliyun或腾讯云中的大模型进行对话。
+- WordPress版本修复：大模型调用的问题，恢复了大模型调用的配置入口。
 
 = 2.1.3 =
 - 新增：内置本地 V1 模型 API（`/wp-json/live2d/v1/model/*`），Pio / Tia / 22 / 33 等经典 moc 模型不再依赖 fghrsh.net 等第三方接口，完全本地化运行。
