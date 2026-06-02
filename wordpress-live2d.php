@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 //定义目录
 define('LIVE2D_ASSETS', plugin_dir_url(__FILE__) . 'assets/'); //资源目录
 define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)) . '/languages'); //基础目录
-define('LIVE2D_VERSION', '2.2.0'); //资源版本号, 用于缓存破坏
+define('LIVE2D_VERSION', '2.2.1'); //资源版本号, 用于缓存破坏
 
 /**
  * 把 wp_enqueue_script 注册的脚本标记为 ES module。
@@ -88,6 +88,8 @@ include_once(dirname(__FILE__)  . '/src/live2d-SDK.php');
 include_once(dirname(__FILE__)  . '/src/live2d-V1Api.php');
 // 加载 V2 模型(model3.json)防盗链 API(对齐 nizima.LIVE 与 wp-live2d-api 的 /Model/Session)
 include_once(dirname(__FILE__)  . '/src/live2d-V2Api.php');
+// 加载 WP 内置 AI 通道(对接 wordpress/php-ai-client SDK,与 Live2dWeb 云端 SignalR 通道并列)
+include_once(dirname(__FILE__)  . '/src/live2d-AiChat.php');
 
 //添加样式（初始化）
 function live2D_style()
@@ -191,6 +193,19 @@ function live2D_style()
         'v2OneTimeTokens' => ($apiTypeRaw === 'custom-local' && class_exists('live2d_V2Api'))
             ? live2d_V2Api::mint_one_time_tokens(8)
             : array(),
+        // AI 后端选择: live2dweb (默认, 走 api.live2dweb.com SignalR /chatmsg)
+        //   或 wp-builtin (走本站 PHP, 调 wordpress/php-ai-client SDK)。
+        // wp-builtin 模式下额外注入 REST URL + 一次性 nonce, 前端 chat 流程走 fetch+SSE。
+        // 详见 src/live2d-AiChat.php / live2d_sdk/src/Wordpress/live2d-tips.ts 的 chatGpt()。
+        'aiProvider'      => (is_array($live2dSettings) && !empty($live2dSettings['aiProvider']))
+            ? (string) $live2dSettings['aiProvider']
+            : 'live2dweb',
+        'aiChatUrl'       => (is_array($live2dSettings) && isset($live2dSettings['aiProvider']) && $live2dSettings['aiProvider'] === 'wp-builtin')
+            ? rest_url('live2d/v1/ai-chat')
+            : '',
+        'aiWpNonce'       => (is_array($live2dSettings) && isset($live2dSettings['aiProvider']) && $live2dSettings['aiProvider'] === 'wp-builtin')
+            ? wp_create_nonce('wp_rest')
+            : '',
         'currentPage' => array('get_the_id' => get_the_id(), 'is_home' => is_front_page(), 'is_single' => is_single())
     ));
 }
@@ -271,6 +286,9 @@ add_action('rest_api_init', function () {
 
     // V2 模型(Cubism 4/5)防盗链 session/manifest/asset
     live2d_V2Api::register_routes();
+
+    // WP 内置 AI 通道 (php-ai-client SDK) — 与 Live2dWeb 云端 SignalR 并列
+    live2d_AiChat::register_routes();
 });
 
 // V2 模型本地缓存 — Cron hook 注册(异步任务队列入口,详见 live2d-V2Api.php 末尾)

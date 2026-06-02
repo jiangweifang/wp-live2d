@@ -130,6 +130,40 @@ class live2D_Settings
 			$sanitary_values['isBotButton'] = (bool)$input['isBotButton'];
 		}
 
+		// AI 后端三件套(详见 src/waifu-Settings-Toolbar.php 的 aiProvider_callback)
+		// 付费门槛: 与 Toolbar init 的 add_settings_field 条件一致, userLevel<1 直接
+		// 跳过整组写入(防止前端绕过 / 老 DB 残留被错读)。
+		$user_token_ai = get_option('live_2d_settings_user_token');
+		$is_paid_ai = is_array($user_token_ai)
+			&& !empty($user_token_ai['userLevel'])
+			&& intval($user_token_ai['userLevel']) > 0;
+		if ($is_paid_ai) {
+			if (isset($input['aiProvider'])) {
+				$ap = (string) $input['aiProvider'];
+				$sanitary_values['aiProvider'] = in_array($ap, array('live2dweb', 'wp-builtin'), true)
+					? $ap
+					: 'live2dweb';
+				// 兜底: SDK 未加载就不能落地 wp-builtin (前端 disabled 可绕过)。
+				if ($sanitary_values['aiProvider'] === 'wp-builtin'
+					&& !class_exists('WordPress\\AiClient\\AiClient')
+				) {
+					$sanitary_values['aiProvider'] = 'live2dweb';
+				}
+			}
+			if (isset($input['aiProviderId'])) {
+				// 仅允许下拉框 / 手填的 provider id 字符 (kebab/snake/字母数字).
+				$pid = trim((string) $input['aiProviderId']);
+				$sanitary_values['aiProviderId'] = preg_match('/^[A-Za-z0-9_-]{0,64}$/', $pid) ? $pid : '';
+			}
+			if (isset($input['aiSystemPrompt'])) {
+				// system prompt 可以是较长的多行文本, 不用 sanitize_text_field (会吃换行)。
+				$sanitary_values['aiSystemPrompt'] = wp_kses_post(wp_unslash($input['aiSystemPrompt']));
+			}
+			if (isset($input['aiModel'])) {
+				$sanitary_values['aiModel'] = sanitize_text_field($input['aiModel']);
+			}
+		}
+
 		if (isset($input['canCloseLive2d'])) {
 			$sanitary_values['canCloseLive2d'] = (bool)$input['canCloseLive2d'];
 		}
@@ -354,6 +388,10 @@ class live2D_Settings
 			$defValue['protectV2'] = 'direct';
 			$defValue['showToolMenu'] = true;
 			$defValue['isBotButton'] = true;
+			$defValue['aiProvider'] = 'live2dweb';
+			$defValue['aiProviderId'] = '';
+			$defValue['aiSystemPrompt'] = '你是可爱的 Live2D 看板娘,回答简洁、温柔, 要有二次元的风格。';
+			$defValue['aiModel'] = '';
 			$defValue['canCloseLive2d'] = true;
 			$defValue['canSwitchModel'] = true;
 			$defValue['canSwitchTextures'] = true;

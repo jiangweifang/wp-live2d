@@ -200,7 +200,69 @@ class live2D_Utils{
 			),
 		) );
 
-		// ---- Tab 6: 文档与外链 ---------------------------------------------------
+		// ---- Tab 6: AI 后端 (ChatGPT 对话) --------------------------------------
+		// 与「工具栏设置」页里的 aiProvider / aiProviderId / aiSystemPrompt / aiModel
+		// 整组字段对齐, 这一整组也是付费门槛 (userLevel>0)。
+		$screen->add_help_tab( array(
+			'id'    => 'live_2d_ai_help_tab',
+			'title' => __('AI 后端 (ChatGPT 对话)', 'live-2d'),
+			'content' => self::wrapHelpContent(
+				'<p>' . esc_html__('「工具栏设置」页的「AI 后端」一组控制看板娘对话气泡背后的大模型链路, 仅登录并完成付费的账号可见。两种后端互斥, 同一时刻只能走其中一条:', 'live-2d') . '</p>' .
+				'<h4>' . esc_html__('① Live2dWeb 云端 (默认)', 'live-2d') . '</h4>' .
+				'<ul>' .
+				'<li>' . esc_html__('请求经 SignalR 转发到 api.live2dweb.com/chatmsg, 后端接通义千问 (qwen) / 腾讯混元 (hunyuan)。', 'live-2d') . '</li>' .
+				'<li>' . esc_html__('优点: 开箱即用, 无需在本站配置任何 API Key, 计费走 Live2dWeb 账号订阅。', 'live-2d') . '</li>' .
+				'<li>' . esc_html__('要求: 已登录 live2dweb.com 并保持订阅有效, 浏览器能访问 api.live2dweb.com。', 'live-2d') . '</li>' .
+				'</ul>' .
+				'<h4>' . esc_html__('② WordPress 内置 (AI Building Blocks / PHP AI Client SDK)', 'live-2d') . '</h4>' .
+				'<p>' . esc_html__('本站 PHP 调 WordPress 官方 PHP AI Client SDK, 通过 REST + SSE 流式输出。用户的 API Key 留在自己服务器上, 不经过 Live2dWeb 中转, 也不计费。', 'live-2d') . '</p>' .
+				'<p>' . esc_html__('启用前提: 网站上能加载到 WordPress\\AiClient\\AiClient 类。任意一个达成即可:', 'live-2d') . '</p>' .
+				'<ul>' .
+				'<li>' . wp_kses(
+					sprintf(
+						/* translators: %s: admin URL of Settings → Connectors */
+						__('WordPress 7.0+ 核心已内置该 SDK, 在 <a href="%s">设置 → Connectors</a> 配置 API Key 即可, 无需额外插件。', 'live-2d'),
+						esc_url(admin_url('options-connectors.php'))
+					),
+					array('a' => array('href' => array()))
+				) . '</li>' .
+				'<li>' . wp_kses(
+					__('或安装 <a href="https://wordpress.org/plugins/ai/" target="_blank" rel="noopener">官方「AI」插件</a> (WP 7.0+)。', 'live-2d'),
+					array('a' => array('href' => array(), 'target' => array(), 'rel' => array()))
+				) . '</li>' .
+				'<li>' . wp_kses(
+					__('或安装 <a href="https://wordpress.org/plugins/ai-provider-for-openai/" target="_blank" rel="noopener">「AI Provider for OpenAI」</a> (WP 6.9+ 即可, 自带 SDK)。', 'live-2d'),
+					array('a' => array('href' => array(), 'target' => array(), 'rel' => array()))
+				) . '</li>' .
+				'<li>' . wp_kses(
+					__('或安装 <a href="https://github.com/felixarntz/ai-services" target="_blank" rel="noopener">「AI Services」</a> (同时支持 OpenAI / Google / Anthropic 等多个 provider)。', 'live-2d'),
+					array('a' => array('href' => array(), 'target' => array(), 'rel' => array()))
+				) . '</li>' .
+				'</ul>' .
+				'<p>' . esc_html__('选了「WordPress 内置」后, 工具栏设置页会展开以下 3 行配套字段; 选回「Live2dWeb 云端」会自动隐藏:', 'live-2d') . '</p>' .
+				'<table class="widefat striped"><thead><tr>' .
+				'<th>' . esc_html__('字段', 'live-2d') . '</th>' .
+				'<th>' . esc_html__('作用', 'live-2d') . '</th>' .
+				'</tr></thead><tbody>' .
+				'<tr><td><strong>' . esc_html__('AI Provider', 'live-2d') . '</strong></td>' .
+				'<td>' . esc_html__('在已注册且已配置 API Key 的 provider 间显式指定 (如 openai / google / anthropic)。留空 = 自动让 SDK 挑首个可用。qwen / hunyuan 等官方 provider 包出来后, 站长在这里选一下就能切, 无需改插件代码。', 'live-2d') . '</td></tr>' .
+				'<tr><td><strong>' . esc_html__('AI 人设 (System Prompt)', 'live-2d') . '</strong></td>' .
+				'<td>' . esc_html__('给模型的系统提示词, 决定看板娘的语气 / 性格 / 输出长度。支持多行。', 'live-2d') . '</td></tr>' .
+				'<tr><td><strong>' . esc_html__('AI 模型 (可选)', 'live-2d') . '</strong></td>' .
+				'<td>' . esc_html__('填写具体模型 ID (如 gpt-4o-mini / gemini-2.5-flash / qwen-turbo); 留空让 SDK 在所选 provider 内自动挑选可用模型。', 'live-2d') . '</td></tr>' .
+				'</tbody></table>' .
+				'<h4>' . esc_html__('鉴权与安全', 'live-2d') . '</h4>' .
+				'<ul>' .
+				'<li>' . esc_html__('对话接口路径: /wp-json/live2d/v1/ai-chat (POST, text/event-stream)。', 'live-2d') . '</li>' .
+				'<li>' . esc_html__('强制要求 WP 登录用户 + REST nonce 双重校验, 防止匿名爆刷 Token。', 'live-2d') . '</li>' .
+				'<li>' . esc_html__('单用户每分钟限流 20 次 (transient), 超出返 429。', 'live-2d') . '</li>' .
+				'<li>' . esc_html__('SDK 真流式 API 尚未发布前, PHP 端先一次性拿全文再按 UTF-8 字符切片伪流式推出去, 前端体验仍为打字机效果。', 'live-2d') . '</li>' .
+				'</ul>' .
+				'<p>' . esc_html__('排错: 如果工具栏设置页提示「未检测到 PHP AI Client SDK」或「SDK 已加载, 但未注册任何 provider」, 说明上述四种 provider 来源都没装好 / 缺 API Key; 装好后刷新即可。前端 ChatGPT 按钮失败提示「AI 后端未正确配置」也是同一根因。', 'live-2d') . '</p>'
+			),
+		) );
+
+		// ---- Tab 7: 文档与外链 ---------------------------------------------------
 		$screen->add_help_tab( array(
 			'id'    => 'live_2d_links_help_tab',
 			'title' => __('进阶文档与链接', 'live-2d'),
