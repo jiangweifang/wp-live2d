@@ -5,7 +5,7 @@ Donate link: https://github.com/jiangweifang/wp-live2d
 Tags: live2d, vtuber, anime, animation, chatgpt
 Tested up to: 6.9
 Requires at least: 5.5
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 Requires PHP: 7.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT
@@ -23,6 +23,13 @@ License URI: https://opensource.org/licenses/MIT
 * 插件作者与 Live2D Inc. 无雇佣关系，但保持官方合作关系；如需出版由 Cubism Core 驱动的派生作品（插件本身均属于“拓展性应用”），请参考 EULA 第 2 条、第 6.3 条自行与 Live2D 公司签订 *Live2D 出版许可协议*。
 
 == Changelog ==
+
+= 2.2.1 =
+- **修复 V1 多皮肤模型加载错误**：`HyperdimensionNeptunia` / `KantaiCollection` / `ShizukuTalk` 等 catalog 标 `skins` 的条目,加载时报 `idb-v1 asset missing: idb-v1://{name}/index.json`,以及共享 `general/` 资源时 `pose.json` / `motions/*.mtn` 全部 miss 的问题。
+- **修复模型重复加载错误**：`chrome.storage.onChanged` 触发再入时,旧实例的 `setInterval`、`document` 事件、`interact` 拖拽绑定与 GL 主循环不会被释放,叠加后表现为同一模型反复初始化、动作与气泡错乱、`run()` 主循环 NPE。
+- **重构 IndexedDB 资产缓存**：新版 `lib/DbCache.ts` 引入 ETag / Last-Modified 协商、TTL、LRU 淘汰、同 URL 并发去重、网络失败回退,并新增内容寻址(`sha:` 前缀)用于应对签名 URL 抖动场景。V1 / V2 / WP 全接入。
+- **精简扩展端 V2 加载链路**：移除 WP 专用的 `protectedManifests` / `createModelSession` 路径,扩展端 V2 直接走 `modelAPI`/`modelDir` 裸链,不再绕 `/Model/Session`。
+- **WebGL shader 内联**:从 `public/shaders/WebGL/*` 迁入 `src/v2/Framework/Shaders/WebGL/*`,由 vite `?raw` 内联进 bundle,扩展 manifest 不再需要 `web_accessible_resources` 暴露 shader 文件。
 
 = 2.2.0 =
 - 新增：非常感谢大家一直以来的支持，各位用户现在可以下载 Chrome/Edge 插件在本地部署Live2D模型了，之前**已付费**的用户可以直接使用 Cubism 4+ 模型调用方式在本地调用，未付费用户可以使用老模型（需自行下载）
