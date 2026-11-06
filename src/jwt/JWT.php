@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Upstream JWT exceptions are data, not HTML; callers do not render them unescaped.
 
 namespace Firebase\JWT;
 
@@ -144,7 +145,7 @@ class JWT
         // token can actually be used. If it's not yet that time, abort.
         if (isset($payload->nbf) && $payload->nbf > ($timestamp + static::$leeway)) {
             throw new BeforeValidException(
-                'Cannot handle token prior to ' . \date(DateTime::ISO8601, $payload->nbf)
+                'Cannot handle token prior to ' . \gmdate(DateTime::ISO8601, $payload->nbf)
             );
         }
 
@@ -153,7 +154,7 @@ class JWT
         // correctly used the nbf claim).
         if (isset($payload->iat) && $payload->iat > ($timestamp + static::$leeway)) {
             throw new BeforeValidException(
-                'Cannot handle token prior to ' . \date(DateTime::ISO8601, $payload->iat)
+                'Cannot handle token prior to ' . \gmdate(DateTime::ISO8601, $payload->iat)
             );
         }
 

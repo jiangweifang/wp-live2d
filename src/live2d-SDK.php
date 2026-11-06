@@ -3,6 +3,7 @@ if (!defined('ABSPATH')) {
     exit; // 阻止直接访问
 }
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+require_once(__DIR__ . '/live2d-ModelFiles.php');
 require_once(__DIR__  . '/jwt/BeforeValidException.php');
 require_once(__DIR__  . '/jwt/CachedKeySet.php');
 require_once(__DIR__  . '/jwt/ExpiredException.php');
@@ -19,17 +20,14 @@ use Firebase\JWT\JWK;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
 
-$dir = explode('/', plugin_dir_url(dirname(__FILE__)));
-$dir_len = count($dir);
-define('IS_PLUGIN_ACTIVE', is_plugin_active($dir[$dir_len - 2] . "/wordpress-live2d.php")); //补丁启用
-define('API_URL', "https://api.live2dweb.com"); //API地址
-define('DOMAIN', "https://www.live2dweb.com"); //API地址
-define('DOWNLOAD_DIR', plugin_dir_path(dirname(__FILE__)) . 'model/'); //服务器下载的路径
-// V1 模型 zip 直链。对齐 Chromium 扩展 v1ModelCache.ts 的 ZIP_BASE:
+define('LIVE2D_IS_PLUGIN_ACTIVE', is_plugin_active(plugin_basename(dirname(__DIR__) . '/wordpress-live2d.php'))); //补丁启用
+define('LIVE2D_API_URL', "https://api.live2dweb.com"); //API地址
+define('LIVE2D_DOMAIN', "https://www.live2dweb.com"); //API地址
+define('LIVE2D_DOWNLOAD_DIR', live2d_ModelFiles::root_dir());
+// V1 模型下载现在要求有效的 HTTPS;旧客户端地址不能用于服务器下载。
 //   GET http://download.live2dweb.com/model/{modelName}.zip,需要 Bearer {sign}
-// 注意:下载域名是 http(不是 https),路径 model 全小写;与 api.live2dweb.com
-// 不是同一个服务,不要随手改回 https 或 /Model。
-define('LIVE2D_V1_ZIP_BASE', 'http://download.live2dweb.com/model');
+// 带授权信息的下载不能回退至 HTTP,也不能关闭证书校验。
+define('LIVE2D_V1_ZIP_BASE', 'https://download.live2dweb.com/model');
 class live2d_SDK
 {
     private $userInfo;
@@ -41,19 +39,32 @@ class live2d_SDK
             $this->apiKey = $this->userInfo["key"];
         }
     }
+
+    public function check_login_permission(WP_REST_Request $request)
+    {
+        if (!current_user_can('manage_options') || !wp_verify_nonce($request->get_header('X-WP-Nonce'), 'wp_rest')) {
+            return new WP_Error('rest_forbidden', 'Administrator authorization is required.', array('status' => 403));
+        }
+        return true;
+    }
     /**
      * 获取用户登录结果
      * 用这个方法可以通过key获取到token
      */
     public function user_login($request)
     {
+        $allowed = $this->check_login_permission($request);
+        if (is_wp_error($allowed)) return $allowed;
         $homeUrl = get_home_url();
         $errCode = intval($request["errorCode"]);
         $sign = $request["sign"];
         $key = $request["key"];
 
-        if (!empty($sign) && !empty($key) && $errCode === 200) {
+        if (is_string($sign) && $sign !== '' && is_string($key) && $key !== '' && $errCode === 200) {
             $signInfo = $this->JwtDecode($sign, $key);
+            if (!is_array($signInfo)) {
+                return new WP_Error('invalid_token', 'Invalid account token.', array('status' => 403));
+            }
             $userInfo = array();
             $userInfo["key"] = $key;
             $userInfo["sign"] = $sign;
@@ -63,20 +74,22 @@ class live2d_SDK
             $userInfo["userLevel"] = intval($signInfo["http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata"]);
             $userInfo["errorCode"] = $errCode;
             $userInfo["hosts"] = $signInfo["aud"];
-            if ($homeUrl == $signInfo["aud"] && IS_PLUGIN_ACTIVE) {
+            if ($homeUrl == $signInfo["aud"] && LIVE2D_IS_PLUGIN_ACTIVE) {
                 update_option('live_2d_settings_user_token', $userInfo);
                 echo "1";
-                error_log('用户登录结果:true');
             } else {
                 echo "0";
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                 error_log('用户登录结果:false');
             }
         } else {
             if ($errCode) {
-                echo $errCode;
+                echo absint($errCode);
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                 error_log('用户登录结果:false ' . $errCode);
             } else {
                 echo "1005";
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                 error_log('用户登录结果:false [1005]');
             }
         }
@@ -94,19 +107,28 @@ class live2d_SDK
     public function refresh_token($request)
     {
         $sign = $request["sign"];
+        if (!is_string($sign) || $sign === '') {
+            return new WP_Error('invalid_token', 'Invalid token.', array('status' => 403));
+        }
         $signInfo = $this->JwtDecode($sign, $this->apiKey);
-        if ($signInfo === 0) {
+        if ($signInfo === false) {
+            return new WP_Error('invalid_token', 'Invalid token.', array('status' => 403));
+        }
+        if ($signInfo === 0 || (int) ($signInfo['exp'] ?? 0) <= time() + 300) {
             $newToken = $this->get_refresh_token($sign);
             if (!$newToken) {
                 status_header(403);
             } else {
                 status_header(200);
-                echo $newToken;
+                header('Content-Type: text/plain; charset=UTF-8');
+                echo esc_html($newToken);
             }
             exit;
         } else {
             status_header(200);
-            echo $sign;
+            header('Content-Type: text/plain; charset=UTF-8');
+            echo esc_html($sign);
+            exit;
         }
     }
     /**
@@ -125,34 +147,39 @@ class live2d_SDK
             $token = $matches[1];
             // 使用你的密钥解码 JWT
             $decoded = $this->JwtDecode($token, $this->apiKey);
-            if (!$decoded) {
+            if ($decoded === false) {
                 status_header(403);
                 exit;
             }
 
             if ($decoded === 0) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                 error_log('JS验证成功但是已经过期');
                 $newToken = $this->get_refresh_token($token);
                 if (!$newToken) {
+                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                     error_log('JS验证失败Token获取时出错。');
                     status_header(403);
                 } else {
-                    error_log('JS验证成功已获取到新Token: ' . $newToken);
                     status_header(200);
-                    echo $newToken;
+                    header('Content-Type: text/plain; charset=UTF-8');
+                    echo esc_html($newToken);
                 }
                 exit;
             }
 
             if (is_array($decoded)) {
-                error_log('JS验证成功 Token: ' . $token);
                 status_header(200);
-                echo $token;
+                header('Content-Type: text/plain; charset=UTF-8');
+                echo esc_html($token);
+                exit;
             } else {
-                error_log('JS验证失败 Token: ' . $token);
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+                error_log('Live2D token verification failed');
                 status_header(403);
             }
         } else {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
             error_log('JS验证收到不正确的请求。');
             status_header(400);
         }
@@ -160,14 +187,28 @@ class live2d_SDK
 
     private function get_refresh_token($sign)
     {
-        $result = $this->DoGet(['key' => $this->apiKey], "Verify/RefreshToken", $sign);
-        if ($result["errorCode"] == 200) {
-            $token = $result["errorMsg"];
+        if (!empty($this->userInfo['sign']) && $this->userInfo['sign'] !== $sign) {
+            $current = $this->JwtDecode($this->userInfo['sign'], $this->apiKey);
+            if (is_array($current) && (int) ($current['exp'] ?? 0) > time() + 300) return $this->userInfo['sign'];
+        }
+        try {
+            // An expired bearer cannot call the provider's authorized RefreshToken endpoint.
+            $token = $this->GetToken($this->apiKey);
+            $claims = $this->JwtDecode($token, $this->apiKey);
+            if (!is_array($claims) || ($claims['aud'] ?? '') !== get_home_url()) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+                error_log('Live2D refreshed token failed verification');
+                return false;
+            }
             $this->userInfo["sign"] = $token;
+            $this->userInfo['userLevel'] = (int) ($claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata'] ?? 0);
+            $this->userInfo['role'] = (int) ($claims['role'] ?? 0);
+            $this->userInfo['hosts'] = $claims['aud'];
             update_option('live_2d_settings_user_token', $this->userInfo);
-            error_log('verify_token:token: ' . $token);
             return $token;
-        } else {
+        } catch (RuntimeException $error) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure; no credentials or provider response are logged.
+            error_log('Live2D token renewal failed.');
             return false;
         }
     }
@@ -224,25 +265,14 @@ class live2d_SDK
      * V1 模型下载(对齐 Chromium 扩展 v1ModelCache.ts 的 downloadAndCacheV1Model 行为):
      *   1. 由前端传入 catalog 中的 modelName,而不是 modelId,免去 Model/ModelInfo 一次往返。
      *   2. 直接 GET LIVE2D_V1_ZIP_BASE/{name}.zip,Bearer 用本地保存的 sign。
-     *   3. zip 落到 DOWNLOAD_DIR/{name}.zip,等前端再发 zip_model 调 OpenZip 解压。
+     *   3. zip 落到 LIVE2D_DOWNLOAD_DIR/{name}.zip,等前端再发 zip_model 调 OpenZip 解压。
      * 解压依旧由 PHP ZipArchive 处理,前端不做任何解压。
      */
     public function DownloadV1Model()
     {
-        // ====诊断日志·一旦报错 看这几行==== //
-        $postedNonce = isset($_POST['_wpnonce']) ? wp_unslash($_POST['_wpnonce']) : '';
-        $freshNonce  = wp_create_nonce('live2d_shop_action');
-        error_log('DownloadV1Model:[ENTER] modelName=' . (isset($_POST['modelName']) ? wp_unslash($_POST['modelName']) : '<missing>')
-            . ' user_id=' . get_current_user_id()
-            . ' logged_in=' . (is_user_logged_in() ? '1' : '0')
-            . ' can_manage=' . (current_user_can('manage_options') ? '1' : '0')
-            . ' posted_nonce=' . $postedNonce
-            . ' fresh_nonce=' . $freshNonce
-            . ' nonce_match=' . ($postedNonce === $freshNonce ? 'EXACT' : 'DIFF')
-            . ' verify_now=' . var_export(wp_verify_nonce($postedNonce, 'live2d_shop_action'), true)
-            . ' session_token=' . substr((string) wp_get_session_token(), 0, 8) . '...');
         $this->verify_admin_ajax('live2d_shop_action');
-        $rawName = isset($_POST['modelName']) ? wp_unslash($_POST['modelName']) : '';
+        check_ajax_referer('live2d_shop_action', '_wpnonce');
+        $rawName = isset($_POST['modelName']) && is_string($_POST['modelName']) ? sanitize_text_field(wp_unslash($_POST['modelName'])) : '';
         $modelName = $this->ResolveV1ModelName($rawName);
         if ($modelName === '') {
             wp_send_json(array('errorCode' => 9400, 'errorMsg' => '未知的 V1 模型名'));
@@ -250,19 +280,23 @@ class live2d_SDK
         }
         if (empty($this->userInfo['sign'])) {
             wp_send_json(array('errorCode' => 9500, 'errorMsg' => '没有登录信息'));
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
             error_log('DownloadV1Model:[9500]没有登录信息');
             return;
         }
-        if (!file_exists(DOWNLOAD_DIR) && !mkdir(DOWNLOAD_DIR, 0777, true)) {
+        if (!file_exists(LIVE2D_DOWNLOAD_DIR) && !wp_mkdir_p(LIVE2D_DOWNLOAD_DIR)) {
             wp_send_json(array('errorCode' => 9500, 'errorMsg' => '文件夹创建失败'));
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
             error_log('DownloadV1Model:[9500]文件夹创建失败');
             return;
         }
 
         $fileUrl = LIVE2D_V1_ZIP_BASE . '/' . rawurlencode($modelName) . '.zip';
+        require_once ABSPATH . 'wp-admin/includes/file.php';
         $tmpfname = wp_tempnam($fileUrl);
-        error_log('DownloadV1Model:[开始下载 ' . $fileUrl . ']');
-        error_log('DownloadV1Model:[临时文件 ' . $tmpfname . ']');
+        if (!$tmpfname) {
+            wp_send_json_error(array('errorCode' => 500, 'errorMsg' => 'Cannot create download temporary file.'), 500);
+        }
 
         // 鉴权要求(对照 wp-live2d-api Live2dJwtBearerEvents.TokenValidated):
         //   1) Authorization: Bearer {sign} —— sign 是 ApiKey 自身做密钥的 HS256 JWT。
@@ -277,32 +311,38 @@ class live2d_SDK
             'User-Agent'    => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
             'Accept'        => '*/*',
         );
-        error_log('DownloadV1Model:[请求头 ' . wp_json_encode(array_keys($headers)) . ']');
 
         $response = wp_safe_remote_get($fileUrl, array(
             'headers'  => $headers,
             'timeout'  => 300,
+            'redirection' => 0,
+            'sslverify' => true,
+            'limit_response_size' => 100 * 1024 * 1024 + 1,
             'stream'   => true,
             'filename' => $tmpfname,
         ));
 
         if (is_wp_error($response)) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
             @unlink($tmpfname);
             wp_send_json(array('errorCode' => 500, 'errorMsg' => $response->get_error_message()));
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
             error_log('DownloadV1Model:[请求失败: ' . $response->get_error_message() . ']');
             return;
         }
         $httpCode = wp_remote_retrieve_response_code($response);
-        $respHeaders = wp_remote_retrieve_headers($response);
-        error_log('DownloadV1Model:[HTTP ' . $httpCode . '] response headers: ' . wp_json_encode((array) $respHeaders));
+        clearstatcache(true, $tmpfname);
+        if (filesize($tmpfname) > 100 * 1024 * 1024) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
+            unlink($tmpfname);
+            wp_send_json_error(array('errorCode' => 413, 'errorMsg' => 'Model archive exceeds 100 MB.'), 413);
+        }
         if ($httpCode === 401 || $httpCode === 403) {
             // stream=true 时 body 不在 response,只有响应头;手工读临时文件首段查看错误说明(如有)
-            $bodyPeek = '';
-            if (file_exists($tmpfname)) {
-                $bodyPeek = (string) @file_get_contents($tmpfname, false, null, 0, 2048);
-            }
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
             @unlink($tmpfname);
-            error_log('DownloadV1Model:[请求失败: ' . $httpCode . '] body 前 2KB: ' . $bodyPeek);
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+            error_log('DownloadV1Model: authorization failed, HTTP ' . $httpCode);
             wp_send_json(array(
                 'errorCode' => $httpCode,
                 'errorMsg'  => '服务器未授权此访问 (HTTP ' . $httpCode . '),详情见 WP error_log',
@@ -310,33 +350,39 @@ class live2d_SDK
             return;
         }
         if ($httpCode !== 200) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
             @unlink($tmpfname);
             wp_send_json(array('errorCode' => $httpCode, 'errorMsg' => '下载失败 HTTP ' . $httpCode));
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
             error_log('DownloadV1Model:[请求失败: HTTP ' . $httpCode . ']');
             return;
         }
 
         // 写到 model/{name}.zip,与 OpenZip 的入参约定保持一致(zip 同名 + 解压目录同名)。
         $sanfilename = sanitize_file_name($modelName . '.zip');
-        $targetPath  = DOWNLOAD_DIR . $sanfilename;
+        $targetPath  = LIVE2D_DOWNLOAD_DIR . $sanfilename;
         // PHP rename() 跨文件系统/挂载点会失败(临时文件常在 /tmp,目标在 plugins/),
         // 失败时退回到 copy + unlink,作为最后兜底。
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Publish a validated local model atomically on the same filesystem.
         $renamed = @rename($tmpfname, $targetPath);
         if (!$renamed) {
             $copyOk = @copy($tmpfname, $targetPath);
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
             @unlink($tmpfname);
             if (!$copyOk) {
-                $perm = is_writable(DOWNLOAD_DIR) ? 'writable' : 'NOT writable';
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Read-only diagnostics for the local extraction directory.
+                $perm = is_writable(LIVE2D_DOWNLOAD_DIR) ? 'writable' : 'NOT writable';
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                 error_log('DownloadV1Model:[9501]保存文件失败 target=' . $targetPath
                     . ' tmp=' . $tmpfname
                     . ' tmp_exists=' . (file_exists($tmpfname) ? '1' : '0')
-                    . ' dir=' . DOWNLOAD_DIR . '(' . $perm . ')');
-                wp_send_json(array('errorCode' => 9501, 'errorMsg' => '保存文件失败,请确认 ' . DOWNLOAD_DIR . ' 可写'));
+                    . ' dir=' . LIVE2D_DOWNLOAD_DIR . '(' . $perm . ')');
+                wp_send_json(array('errorCode' => 9501, 'errorMsg' => '保存文件失败,请确认 ' . LIVE2D_DOWNLOAD_DIR . ' 可写'));
                 return;
             }
         }
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- Set permissions on a validated local model file.
         @chmod($targetPath, 0644);
-        error_log('DownloadV1Model:[文件保存到 ' . $targetPath . ' 大小=' . (file_exists($targetPath) ? filesize($targetPath) : -1) . ']');
 
         wp_send_json(array(
             'errorCode' => 200,
@@ -369,17 +415,18 @@ class live2d_SDK
      *   id   = catalog.name (与下载路由 / 本地目录 / textures.json 前缀一致)
      *   name = catalog.label (UI 显示名)
      *
-     * 只回传已下载并解压到 DOWNLOAD_DIR/{name}/ 的条目,避免用户在下拉框里
+     * 只回传已下载并解压到 LIVE2D_DOWNLOAD_DIR/{name}/ 的条目,避免用户在下拉框里
      * 选到尚未下载的模型,导致前端取不到 model.json/textures。判断标准与
      * live2d_Shop 卡片上"已启用"完全一致(sanitize_file_name + is_dir)。
      */
     public function GetModelMotions()
     {
         $this->verify_admin_ajax('live2d_shop_action');
+        check_ajax_referer('live2d_shop_action', '_wpnonce');
         $list = array();
         foreach (self::GetV1Catalog() as $item) {
             $sanName     = sanitize_file_name($item['name']);
-            $extractPath = DOWNLOAD_DIR . $sanName;
+            $extractPath = LIVE2D_DOWNLOAD_DIR . $sanName;
             if (!is_dir($extractPath)) {
                 continue;
             }
@@ -400,7 +447,8 @@ class live2d_SDK
     public function GetTextureList()
     {
         $this->verify_admin_ajax('live2d_shop_action');
-        $candidate = isset($_POST['modelId']) ? wp_unslash($_POST['modelId']) : '';
+        check_ajax_referer('live2d_shop_action', '_wpnonce');
+        $candidate = isset($_POST['modelId']) && is_string($_POST['modelId']) ? sanitize_text_field(wp_unslash($_POST['modelId'])) : '';
         $modelName = $this->ResolveV1ModelName($candidate);
         if ($modelName === '') {
             wp_send_json(array());
@@ -420,9 +468,6 @@ class live2d_SDK
             // 环境(符号链接 / mu-plugins / Windows 路径)里拼不到插件根的边界情况
             $jsonPath = dirname(__DIR__) . '/assets/v1/' . $modelName . '.textures.json';
             $exists   = file_exists($jsonPath);
-            error_log('GetTextureList:[读取 textures.json] modelName=' . $modelName
-                . ' path=' . $jsonPath
-                . ' exists=' . ($exists ? '1' : '0'));
             if ($exists) {
                 $raw  = file_get_contents($jsonPath);
                 // 去掉 UTF-8 BOM (EF BB BF) 与首尾空白,
@@ -437,6 +482,7 @@ class live2d_SDK
                         $list[] = array('id' => $i, 'name' => self::DescribeTextureEntry($entry, $i));
                     }
                 } else {
+                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                     error_log('GetTextureList:[json_decode 失败] modelName=' . $modelName
                         . ' json_last_error=' . json_last_error_msg());
                 }
@@ -491,14 +537,25 @@ class live2d_SDK
     public function OpenZip()
     {
         $this->verify_admin_ajax('live2d_shop_action');
-        $sanfilename = sanitize_file_name($_POST["fileName"]);
-        $zipFile = DOWNLOAD_DIR . $sanfilename;
+        check_ajax_referer('live2d_shop_action', '_wpnonce');
+        $sanfilename = isset($_POST['fileName']) && is_string($_POST['fileName']) ? sanitize_file_name(wp_unslash($_POST['fileName'])) : '';
+        if ($sanfilename === '' || strtolower(pathinfo($sanfilename, PATHINFO_EXTENSION)) !== 'zip') {
+            wp_die('0', '', array('response' => 400));
+        }
+        $zipFile = LIVE2D_DOWNLOAD_DIR . $sanfilename;
         $zipFileName = pathinfo($zipFile, PATHINFO_FILENAME);
-        $extractTarget = DOWNLOAD_DIR . $zipFileName;
+        $extractTarget = LIVE2D_DOWNLOAD_DIR . $zipFileName;
+        $archiveCheck = $this->validate_v1_archive($zipFile, $extractTarget);
+        if (is_wp_error($archiveCheck)) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+            error_log('Live2D archive rejected: ' . $archiveCheck->get_error_message());
+            wp_die('0', '', array('response' => 400));
+        }
 
         // 1) 首选:WP 官方 unzip_file()
         $wpResult = $this->TryUnzipWithWpFilesystem($zipFile, $extractTarget);
         if ($wpResult === 'ok') {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
             @unlink($zipFile);
             // 必须 wp_die,不然 admin-ajax.php 会追加 "0",前端拿到 "10" 会被判失败
             wp_die('1', '', array('response' => null));
@@ -518,13 +575,17 @@ class live2d_SDK
                 $entryName = $zip->getNameIndex($i);
                 if ($entryName === false) {
                     $zip->close();
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
                     @unlink($zipFile);
+                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                     error_log('OpenZip:[读取 zip 条目失败] file=' . $zipFile);
                     wp_die('0', '', array('response' => null));
                 }
                 if (strpos($entryName, '..') !== false || strpos($entryName, '/..') !== false || preg_match('#^([a-zA-Z]:)?[\\/]#', $entryName)) {
                     $zip->close();
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
                     @unlink($zipFile);
+                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                     error_log('OpenZip:[检测到非法条目路径: ' . $entryName . '] file=' . $zipFile);
                     wp_die('0', '', array('response' => null));
                 }
@@ -532,20 +593,100 @@ class live2d_SDK
             $extractRes = $zip->extractTo($extractTarget);
             $zip->close();
             if ($extractRes !== true) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                 error_log('OpenZip:[ZipArchive::extractTo 失败] ' . self::DescribeFsContext($zipFile, $extractTarget));
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
                 @unlink($zipFile);
                 wp_die('0', '', array('response' => null));
             }
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
             @unlink($zipFile);
             wp_die('1', '', array('response' => null));
         } else {
             $errCode = is_int($res) ? $res : -1;
             $errLabel = self::ZipOpenErrorLabel($errCode);
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
             error_log('OpenZip:[ZipArchive::open 失败] code=' . $errCode . '(' . $errLabel . ') ' . self::DescribeFsContext($zipFile, $extractTarget));
             if (in_array($errCode, array(ZipArchive::ER_NOZIP, ZipArchive::ER_INCONS, ZipArchive::ER_CRC), true)) {
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
                 @unlink($zipFile);
             }
             wp_die('0', '', array('response' => null));
+        }
+    }
+
+    /** 两种解压后端之前统一检查条目及内容,避免 ZIP 中的可执行文件落入站点。 */
+    private function validate_v1_archive($zipFile, $target)
+    {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        $root = realpath(LIVE2D_DOWNLOAD_DIR);
+        $realZip = realpath($zipFile);
+        if ($root === false || $realZip === false || is_link($zipFile)
+            || strpos(wp_normalize_path($realZip), trailingslashit(wp_normalize_path($root))) !== 0
+            || is_link($target) || is_link(rtrim(LIVE2D_DOWNLOAD_DIR, '/\\'))) {
+            return new WP_Error('invalid_archive_path', 'Invalid model archive path.');
+        }
+        if (!wp_mkdir_p($target)) return new WP_Error('mkdir_failed', 'Cannot create model directory.');
+        $zip = null;
+        $entries = array();
+        if (class_exists('ZipArchive')) {
+            $zip = new ZipArchive();
+            if ($zip->open($realZip) !== true) return new WP_Error('invalid_archive', 'Cannot open model archive.');
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $entry = $zip->statIndex($i);
+                if ($entry === false) {
+                    $zip->close();
+                    return new WP_Error('invalid_archive', 'Cannot read archive entry.');
+                }
+                $opsys = $attributes = 0;
+                $zip->getExternalAttributesIndex($i, $opsys, $attributes);
+                $entries[] = array('name' => $entry['name'], 'size' => $entry['size'], 'link' => (($attributes >> 16) & 0170000) === 0120000);
+            }
+        } else {
+            require_once ABSPATH . 'wp-admin/includes/class-pclzip.php';
+            $pclzip = new PclZip($realZip);
+            $list = $pclzip->listContent();
+            if (!is_array($list)) return new WP_Error('invalid_archive', 'Cannot list model archive.');
+            foreach ($list as $entry) $entries[] = array('name' => $entry['filename'], 'size' => $entry['size'], 'link' => false);
+        }
+        $total = 0;
+        try {
+            if (count($entries) > 5000) return new WP_Error('archive_too_large', 'Too many model archive entries.');
+            foreach ($entries as $i => $entry) {
+                $directory = substr($entry['name'], -1) === '/';
+                $relative = $directory ? $entry['name'] . 'live2d-check.json' : $entry['name'];
+                $validationName = $relative;
+                if (in_array(strtoupper(basename($relative)), array('LICENSE', 'README', 'COPYING'), true)) $validationName .= '.txt';
+                $valid = live2d_ModelFiles::validate_relative_file($validationName);
+                if (is_wp_error($valid) || $entry['link']) return new WP_Error('unsafe_archive', 'Unsafe file in model archive.');
+                $dest = live2d_ModelFiles::confined_path($target, $validationName, true);
+                if (is_wp_error($dest) || is_link($target . '/' . $relative)) return new WP_Error('unsafe_archive', 'Unsafe model destination.');
+                if ($directory) continue;
+                $total += $entry['size'];
+                if ($entry['size'] > 50 * 1024 * 1024 || $total > 512 * 1024 * 1024) {
+                    return new WP_Error('archive_too_large', 'Model archive exceeds size limits.');
+                }
+                if ($zip) {
+                    $bytes = $zip->getFromIndex($i, 50 * 1024 * 1024 + 1);
+                } else {
+                    $extracted = $pclzip->extract(PCLZIP_OPT_BY_INDEX, $i, PCLZIP_OPT_EXTRACT_AS_STRING);
+                    $bytes = is_array($extracted) ? ($extracted[0]['content'] ?? false) : false;
+                }
+                if (!is_string($bytes) || strlen($bytes) !== (int) $entry['size']) return new WP_Error('invalid_archive', 'Invalid archive entry size.');
+                $tmp = wp_tempnam('live2d-archive');
+                if (!$tmp) return new WP_Error('temp_failed', 'Cannot create validation file.');
+                try {
+                    if (file_put_contents($tmp, $bytes) !== strlen($bytes)) return new WP_Error('write_failed', 'Cannot validate archive entry.');
+                    $valid = live2d_ModelFiles::validate_file_content($tmp, $validationName);
+                    if (is_wp_error($valid)) return $valid;
+                } finally {
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
+                    unlink($tmp);
+                }
+            }
+            return true;
+        } finally {
+            if ($zip) $zip->close();
         }
     }
 
@@ -571,6 +712,7 @@ class live2d_SDK
         if (empty($wp_filesystem)) {
             // 第三个参数 true 强制 direct,避免在某些环境弹出 FTP 凭据表单
             if (!WP_Filesystem(false, false, true)) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
                 error_log('OpenZip:[WP_Filesystem 初始化失败,回落到 ZipArchive] ' . self::DescribeFsContext($zipFile, $extractTarget));
                 return 'unavailable';
             }
@@ -585,16 +727,19 @@ class live2d_SDK
             $code = $result->get_error_code();
             $msg  = $result->get_error_message();
             $data = $result->get_error_data();
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
             error_log('OpenZip:[unzip_file 失败] code=' . $code
                 . ' msg=' . $msg
                 . ' data=' . (is_scalar($data) ? (string)$data : wp_json_encode($data))
                 . ' ' . self::DescribeFsContext($zipFile, $extractTarget));
             // 仅在确认是 zip 损坏/空包时才删,权限/磁盘类保留现场
             if (in_array($code, array('incompatible_archive', 'empty_archive_pclzip', 'empty_archive_ziparchive', 'corrupt_zip'), true)) {
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
                 @unlink($zipFile);
             }
         } else {
-            error_log('OpenZip:[unzip_file 返回非预期类型] ' . var_export($result, true) . ' ' . self::DescribeFsContext($zipFile, $extractTarget));
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+            error_log('OpenZip: unexpected unzip result, ' . self::DescribeFsContext($zipFile, $extractTarget));
         }
         return 'fail';
     }
@@ -676,9 +821,11 @@ class live2d_SDK
             $proc = (string) get_current_user();
         }
         $dir = dirname($zipFile);
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Read-only diagnostics for the local extraction directory.
         $dirWritable = is_dir($dir) && is_writable($dir);
         $dirPerms = is_dir($dir) ? substr(sprintf('%o', @fileperms($dir)), -4) : '----';
         $extDirExists = is_dir($extractTarget);
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Read-only diagnostics for the local extraction directory.
         $extDirWritable = $extDirExists ? is_writable($extractTarget) : is_writable($dir);
         return 'file=' . $zipFile
             . ' exists=' . ($exists ? '1' : '0')
@@ -703,18 +850,23 @@ class live2d_SDK
     public function ClearFiles()
     {
         $this->verify_admin_ajax('live2d_shop_action');
+        check_ajax_referer('live2d_shop_action', '_wpnonce');
         if (!current_user_can('manage_options')) {
             wp_die('0', '', array('response' => null));
         }
-        $sanfilename = sanitize_file_name($_POST["fileName"]);
-        $filePath = DOWNLOAD_DIR . $sanfilename;
+        $sanfilename = isset($_POST['fileName']) && is_string($_POST['fileName']) ? sanitize_file_name(wp_unslash($_POST['fileName'])) : '';
+        if ($sanfilename === '') {
+            wp_die('0', '', array('response' => 400));
+        }
+        $filePath = LIVE2D_DOWNLOAD_DIR . $sanfilename;
         // 确保路径仍位于下载目录之内
-        $realDir = realpath(DOWNLOAD_DIR);
+        $realDir = realpath(LIVE2D_DOWNLOAD_DIR);
         $realFile = realpath($filePath);
-        if ($realDir === false || $realFile === false || strpos($realFile, $realDir) !== 0) {
+        if ($realDir === false || $realFile === false || strpos(wp_normalize_path($realFile), trailingslashit(wp_normalize_path($realDir))) !== 0) {
             wp_die('0', '', array('response' => null));
         }
         if (file_exists($realFile)) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Delete only a validated model file or a generated temporary file.
             unlink($realFile);
             wp_die('1', '', array('response' => null));
         }
@@ -724,26 +876,18 @@ class live2d_SDK
     }
 
     /**
-     * 统一的后台 AJAX 鉴权: 要求登录 + 管理员权限 + nonce 有效
+     * 后台 AJAX 权限校验;各入口直接校验其操作 nonce。
      */
     private function verify_admin_ajax($action)
     {
         if (!is_user_logged_in() || !current_user_can('manage_options')) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
             error_log('verify_admin_ajax:[FAIL/cap] action=' . $action
                 . ' user_id=' . get_current_user_id()
                 . ' logged_in=' . (is_user_logged_in() ? '1' : '0')
                 . ' can_manage=' . (current_user_can('manage_options') ? '1' : '0'));
             wp_send_json_error(array('errorCode' => 403, 'errorMsg' => 'forbidden'), 403);
         }
-        // check_ajax_referer 在失败时会自动调 wp_die
-        $valid = isset($_POST['_wpnonce']) ? wp_verify_nonce($_POST['_wpnonce'], $action) : false;
-        if (!$valid) {
-            error_log('verify_admin_ajax:[FAIL/nonce] action=' . $action
-                . ' has_nonce=' . (isset($_POST['_wpnonce']) ? 'yes' : 'no')
-                . ' nonce_value=' . (isset($_POST['_wpnonce']) ? substr($_POST['_wpnonce'], 0, 4) . '...' : '')
-                . ' verify_result=' . var_export($valid, true));
-        }
-        check_ajax_referer($action, '_wpnonce');
     }
 
     //排查错误使用
@@ -753,50 +897,23 @@ class live2d_SDK
         unset($value);
     }
 
-    /**
-     * 删除这段有可能会导致保存成功后调用不了我的API
-     */
-    public function Update_Options($value, $old_value)
-    {
-        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'live_2d_settings_base_group-options')) {
-            add_settings_error('live_2d_sdk_error', 500, '保存失败，非法操作。');
-            return $old_value; // 验证失败，返回旧值
-        }
-        $url = $value["modelAPI"];
-        if (preg_match('/^https:\/\/api\.live2dweb\.com/i', $url) && empty($this->userInfo["sign"])) {
-            add_settings_error('live_2d_sdk_error', 500, '保存成功，但是您必须登录才可以使用官方API。');
-        }
-        return $value;
-    }
-
-    public function Update_Advanced_Options($value, $old_value)
-    {
-        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'live_2d_advanced_option_group-options')) {
-            add_settings_error('live_2d_sdk_error', 500, '保存失败，非法操作。');
-            return $old_value; // 验证失败，返回旧值
-        }
-        return $value;
-    }
-
-    public function Update_Login_Options($value, $old_value)
-    {
-        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'live_2d_login_option_group-options')) {
-            add_settings_error('live_2d_sdk_error', 500, '保存失败，非法操作。');
-            return $old_value; // 验证失败，返回旧值
-        }
-        return $value;
-    }
-
     public function JwtDecode($jwt, $key)
     {
         try {
             $setArr = (array)JWT::decode($jwt, new Key($key, 'HS256'));
+            if (($setArr['aud'] ?? '') !== get_home_url()) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+                error_log('Live2D token audience mismatch');
+                return false;
+            }
             return $setArr;
         } catch (ExpiredException $e) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
             error_log("Token 已过期: " . $e->getMessage());
             return 0;
         } catch (Exception $e) {
-            error_log('JwtDecode:签名错误' . $e, 5);
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+            error_log('Live2D JWT signature verification failed');
             return false;
         }
     }
@@ -808,7 +925,7 @@ class live2d_SDK
         $notBefore = $issuedAt; // JWT 立即生效
         $expire = $issuedAt + 7200; // 1 小时后过期
         $payload = [
-            'iss' => DOMAIN,
+            'iss' => LIVE2D_DOMAIN,
             'aud' => get_home_url(),
             'iat' => $issuedAt,
             'nbf' => $notBefore,
@@ -827,24 +944,27 @@ class live2d_SDK
         if (empty($key)) {
             $key = $this->userInfo["key"];
         }
-        $bare_url = API_URL . "/Verify/GetToken";
+        $bare_url = LIVE2D_API_URL . "/Verify/GetToken";
         $param = ['key' => $key];
         $complete_url = add_query_arg($param, $bare_url);
-        error_log('GetToken:请求地址: ' . $complete_url);
         $response = wp_remote_get($complete_url, array(
+            'redirection' => 0,
+            'sslverify' => true,
             'headers' => array(
                 'referer' => get_home_url()
             )
         ));
+        if (is_wp_error($response) || (int) wp_remote_retrieve_response_code($response) !== 200) {
+            throw new RuntimeException('Live2D account verification failed.');
+        }
         $body = wp_remote_retrieve_body($response);
-        error_log('GetToken:回复: ' . $body);
+        if ($body === '') throw new RuntimeException('Live2D account verification returned an empty response.');
         return $body;
     }
 
     public function DoPost($param, $api_name, $jwt)
     {
-        $complete_url = API_URL . "/" . $api_name;
-        error_log('DoPost:请求地址: ' . $complete_url);
+        $complete_url = LIVE2D_API_URL . "/" . $api_name;
         $response = wp_remote_post($complete_url, array(
             'body' => $param,
             'headers' => array(
@@ -855,7 +975,8 @@ class live2d_SDK
         ));
 
         if (is_wp_error($response)) {
-            error_log($complete_url . '请求失败: ' . $response->get_error_message());
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+            error_log('Live2D POST request failed: ' . $response->get_error_message());
             return array(
                 'errorCode' => 500,
                 'errorMsg'  => $response->get_error_message(),
@@ -863,7 +984,8 @@ class live2d_SDK
         }
         $httpCode = wp_remote_retrieve_response_code($response);
         if ($httpCode === 401 || $httpCode === 403) {
-            error_log('DoPost:授权错误, 登录不正确, 请检查是否和域名匹配' . $httpCode, 5);
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+            error_log('Live2D POST authorization failed: ' . $httpCode);
             return array(
                 'errorCode' => $httpCode,
                 'errorMsg' => '登录不正确, 请检查是否和域名匹配'
@@ -875,13 +997,12 @@ class live2d_SDK
 
     public function DoGet($param, $api_name, $jwt)
     {
-        $bare_url = API_URL . "/" . $api_name . "/";
+        $bare_url = LIVE2D_API_URL . "/" . $api_name . "/";
 
         if (!empty($param)) {
             $bare_url = add_query_arg($param, $bare_url);
         }
 
-        error_log('DoGet:请求地址: ' . $bare_url);
         $response = wp_remote_get($bare_url, array(
             'headers' => array(
                 'Authorization' => 'Bearer ' . $jwt,
@@ -890,7 +1011,8 @@ class live2d_SDK
         ));
 
         if (is_wp_error($response)) {
-            error_log($bare_url . '请求失败: ' . $response->get_error_message());
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+            error_log('Live2D GET request failed: ' . $response->get_error_message());
             return array(
                 'errorCode' => 500,
                 'errorMsg'  => $response->get_error_message(),
@@ -898,7 +1020,8 @@ class live2d_SDK
         }
         $httpCode = wp_remote_retrieve_response_code($response);
         if ($httpCode === 401 || $httpCode === 403) {
-            error_log('DoGet:授权错误, 登录不正确, 请检查是否和域名匹配' . $httpCode, 5);
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
+            error_log('Live2D GET authorization failed: ' . $httpCode);
             return array(
                 'errorCode' => $httpCode,
                 'errorMsg' => '登录不正确, 请检查是否和域名匹配'

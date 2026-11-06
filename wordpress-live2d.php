@@ -1,14 +1,16 @@
 <?php
 /*
- * Plugin Name: Live 2D
+ * Plugin Name: Live2DWebCanvas
  * Plugin URI: https://www.live2dweb.com/
  * Description: 看板娘插件
- * Version: 2.2.1
+ * Version: 2.3.0
  * Requires PHP: 7.4
  * Author: Weifang Chiang
  * Author URI: https://github.com/jiangweifang/wp-live2d
  * Text Domain: live-2d
  * Domain Path: /languages
+ * License: MIT
+ * License URI: https://opensource.org/licenses/MIT
  */
 
 if (!defined('ABSPATH')) {
@@ -18,7 +20,9 @@ if (!defined('ABSPATH')) {
 //定义目录
 define('LIVE2D_ASSETS', plugin_dir_url(__FILE__) . 'assets/'); //资源目录
 define('LIVE2D_LANGUAGES', basename(dirname(__FILE__)) . '/languages'); //基础目录
-define('LIVE2D_VERSION', '2.2.0'); //资源版本号, 用于缓存破坏
+define('LIVE2D_VERSION', '2.3.0'); //资源版本号, 用于缓存破坏
+define('LIVE2D_PLUGIN_FILE', __FILE__);
+define('LIVE2D_EXTENSION_API_VERSION', 1);
 
 /**
  * 把 wp_enqueue_script 注册的脚本标记为 ES module。
@@ -75,19 +79,31 @@ function live2d_module_script_tag($tag, $handle, $src)
 add_action('wp_head', 'live2d_print_module_importmap', 0);
 function live2d_print_module_importmap()
 {
-    echo '<script type="importmap">{"imports":{"moment":"data:text/javascript,export default window.moment;"}}</script>' . "\n";
+    if (is_admin()) {
+        $screen = get_current_screen();
+        if (!$screen || strpos($screen->id, 'live-2d') === false) return;
+    }
+    echo '<script type="importmap">' . wp_json_encode(array('imports' => array(
+        'moment' => 'data:text/javascript,export default window.moment;',
+        'jquery' => 'data:text/javascript,export default window.jQuery;',
+        'live2d-shared' => LIVE2D_ASSETS . 'live2d-shared.min.js?ver=' . LIVE2D_VERSION,
+        'live2d-admin-shared' => LIVE2D_ASSETS . 'live2d-admin-shared.min.js?ver=' . LIVE2D_VERSION,
+    )), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '</script>' . "\n";
 }
+add_action('admin_head', 'live2d_print_module_importmap', 0);
 
 // 加载设置组件
+include_once(dirname(__FILE__) . '/src/live2d-Extensions.php');
 include_once(dirname(__FILE__)  . '/src/live2d-Main.php');
 // 加载小工具
 include_once(dirname(__FILE__)  . '/src/live2d-Widget.php');
 // 加载登录确认API
 include_once(dirname(__FILE__)  . '/src/live2d-SDK.php');
+include_once(dirname(__FILE__) . '/src/live2d-ModelMigration.php');
+live2d_ModelMigration::register();
 // 加载本地 V1 模型 API(取代 https://api.live2dweb.com/model/v2 的清单/切换/换装服务)
 include_once(dirname(__FILE__)  . '/src/live2d-V1Api.php');
-// 加载 V2 模型(model3.json)防盗链 API(对齐 nizima.LIVE 与 wp-live2d-api 的 /Model/Session)
-include_once(dirname(__FILE__)  . '/src/live2d-V2Api.php');
+include_once(dirname(__FILE__) . '/src/live2d-AiChat.php');
 
 //添加样式（初始化）
 function live2D_style()
@@ -109,10 +125,7 @@ function live2D_style()
     if ($isLocal && function_exists('live2d_v1api_local_url')) {
         $live2dSettings['modelAPI'] = live2d_v1api_local_url();
     }
-    // 把 apiType 四态字符串在传给 JS 前压成 bool 之前, 先保留原始字符串值.
-    // 下面 wp_localize 里 'v2SessionUrl' 需要用原字符串判断 'custom-local',
-    // 不能等压成 bool 后再判 (那会永远 false, 导致 V2 防盗链 endpoint 不注入,
-    // 前端 signOneModel/signAllModelDirs 短路 fallback 到裸 URL, 暴露源站地址).
+    // 保留原始模型类型，供增强插件选择渲染器。
     $apiTypeRaw = (is_array($live2dSettings) && isset($live2dSettings['apiType']))
         ? (string) $live2dSettings['apiType']
         : '';
@@ -121,45 +134,20 @@ function live2D_style()
     if (is_array($live2dSettings) && function_exists('live2d_api_type_is_local')) {
         $live2dSettings['apiType'] = live2d_api_type_is_local(isset($live2dSettings['apiType']) ? $live2dSettings['apiType'] : null);
     }
-    // shaderDir 不再由 PHP 注入: SDK (live2d_sdk/src/v2/lappdefine.ts) 默认以
-    // import.meta.url 为基准解析到同级 ./shaders/WebGL/, vite.config.wordpress.ts
-    // 会把 shader 文件拷贝到 assets/shaders/WebGL/,跟随插件实际位置/站点 URL。
-    // 注意目录名必须全小写 shaders/(不是 Shaders/),
-    // 避免 Linux 部署下大小写敏感文件系统 404。
-    //
-    // 但旧版插件曾把 shaderDir(默认值 '../../Framework/Shaders/WebGL/') 写进
-    // live_2d_settings_option_name; sanitize 已经不再回写, 但 get_option() 拿到的
-    // 数组里仍可能残留这个老字段, 经 wp_localize_script -> live2d_settings.settings
-    // -> LAppDelegate.initialize 的 `Oe.value = G.shaderDir || Oe.value` 一行,
-    // 会覆盖掉 import.meta.url 算出来的正确 assets/shaders/WebGL/ 绝对 URL,
-    // 让 fetch 退回到相对路径 '../../Framework/...' 命中 404。这里在传给 JS
-    // 前显式剔掉, 避免老站点必须重新打开设置页 Save 一次才能恢复。
     if (is_array($live2dSettings)) {
-        unset($live2dSettings['shaderDir']);
+        $live2dSettings['homePageUrl'] = get_home_url();
+        if (isset($live2dSettings['aboutPageUrl'])) {
+            $live2dSettings['aboutPageUrl'] = esc_url_raw($live2dSettings['aboutPageUrl'], array('http', 'https'));
+        }
     }
     wp_enqueue_style('waifu_css', LIVE2D_ASSETS . "waifu.css", array(), LIVE2D_VERSION); //css
     wp_enqueue_style('fontawesome_css', LIVE2D_ASSETS . "fontawesome/css/all.min.css", array(), LIVE2D_VERSION); //css
-    wp_enqueue_script('moment', LIVE2D_ASSETS . 'moment.min.js', array(), LIVE2D_VERSION); //
-    wp_enqueue_script('live2dv1core', LIVE2D_ASSETS . 'live2dv1.min.js', array(), LIVE2D_VERSION);
+    wp_enqueue_script('moment');
+    wp_enqueue_script('live2dv1core', LIVE2D_ASSETS . 'live2dv1.min.js', array(), LIVE2D_VERSION, true);
     live2d_mark_script_as_module('live2dv1core');
-    // Live2D Cubism Core: 当前固定走插件本地 6.x 副本(assets/cubism-core/)。
-    //   - 官方 CDN https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js
-    //     还停留在 5.1.0,不暴露 csmGetMocVersion(mocBytes) 单参重载;仓库内 Framework
-    //     已按 6.x 单参形式调用,命中老 CDN 会抛 'Cannot read properties of undefined'。
-    //   - live2d_sdk/src/v2/Core/RedistributableFiles.txt 已把 live2dcubismcore.min.js
-    //     列入 Live2D Proprietary Software License Agreement 允许 redistribute 的清单,
-    //     LICENSE.md / RedistributableFiles.txt 已并入 assets/cubism-core/。
-    // 待官方 CDN 升级到 6.x 后,把下面这行恢复为优先用户配置即可(sdkUrl 仍由设置页持久化):
-    //     $live2dCubismCoreUrl = (is_array($live2dSettings) && !empty($live2dSettings['sdkUrl']))
-    //         ? $live2dSettings['sdkUrl']
-    //         : LIVE2D_ASSETS . 'cubism-core/live2dcubismcore.min.js';
-    $live2dCubismCoreUrl = LIVE2D_ASSETS . 'cubism-core/live2dcubismcore.min.js';
-    wp_enqueue_script('live2dv2core', $live2dCubismCoreUrl, array(), LIVE2D_VERSION);
-    wp_enqueue_script('live2dv2sdk', LIVE2D_ASSETS . 'live2dv2.min.js', array('live2dv2core'), LIVE2D_VERSION);
-    live2d_mark_script_as_module('live2dv2sdk');
-    wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'live2dv2sdk', 'moment'), LIVE2D_VERSION);
+    wp_enqueue_script('live2dweb', LIVE2D_ASSETS . 'live2dwebsdk.min.js', array('live2dv1core', 'moment'), LIVE2D_VERSION, true);
     live2d_mark_script_as_module('live2dweb');
-    wp_localize_script('live2dweb', 'live2d_settings', array(
+    $frontend = array(
         'userInfo' => array(
             'sign' => isset($live2dUserInfo["sign"]) ? $live2dUserInfo["sign"] : '',
             'userName' => isset($live2dUserInfo["userName"]) ? $live2dUserInfo["userName"] : '',
@@ -167,32 +155,21 @@ function live2D_style()
         ),
         'waifuTips' => get_option('live_2d_advanced_option_name'),
         'settings' => $live2dSettings,
-        'localPath' => plugin_dir_url(__FILE__) . 'model',
-        // V2 模型(Cubism 4/5)防盗链 endpoint(对应 src/live2d-V2Api.php)。
-        // 仅在 apiType='custom-local' 时注入完整 URL;其他三种 apiType
-        // (local / remote / custom-remote) 都不走防盗链 → 注入空串
-        // → 前端 Wordpress/live2d-tips.ts 的 signOneModel 早退到裸链。
-        // 注意: 此处必须用 $apiTypeRaw (上面在压 bool 之前保留的字符串),
-        // 不能用 $live2dSettings['apiType'] (那已经是 bool, 永远 != 'custom-local').
-        // 2026-05 之前用独立 protectV2 字段控制,现已合并进 apiType。
-        //
-        // 同时下发两件配套件 (V2 防爬虫):
-        //   v2WpNonce       - WP REST nonce, 前端 fetch 时放 X-WP-Nonce 头
-        //                     (rest_cookie_check_errors 双重校验, 拦裸调 API)
-        //   v2OneTimeTokens - 8 个一次性 token, 每签 1 模型用 1 个,
-        //                     服务端再补 1 个 nextToken 进池 → 池永不枯竭
-        //                     (拦"抓 nonce 后批量爬"的脚本: 没访问页面就拿不到初始池)
-        'v2SessionUrl'    => ($apiTypeRaw === 'custom-local')
-            ? rest_url('live2d/v2/session')
-            : '',
-        'v2WpNonce'       => ($apiTypeRaw === 'custom-local')
-            ? wp_create_nonce('wp_rest')
-            : '',
-        'v2OneTimeTokens' => ($apiTypeRaw === 'custom-local' && class_exists('live2d_V2Api'))
-            ? live2d_V2Api::mint_one_time_tokens(8)
-            : array(),
+        'localPath' => rtrim(live2d_ModelFiles::root_url(), '/'),
+        'apiTypeRaw' => live2d_normalize_api_type($apiTypeRaw),
+        'renderer' => in_array(live2d_normalize_api_type($apiTypeRaw), array('local', 'remote'), true) ? 'legacy' : 'unavailable',
+        'proAvailable' => false,
+        'aiProvider' => (is_array($live2dSettings) && !empty($live2dSettings['aiProvider']))
+            ? (string) $live2dSettings['aiProvider'] : 'live2dweb',
+        'aiChatUrl' => (is_array($live2dSettings) && ($live2dSettings['aiProvider'] ?? '') === 'wp-builtin')
+            ? rest_url('live2d/v1/ai-chat') : '',
+        'aiWpNonce' => (is_array($live2dSettings) && ($live2dSettings['aiProvider'] ?? '') === 'wp-builtin')
+            ? wp_create_nonce('wp_rest') : '',
         'currentPage' => array('get_the_id' => get_the_id(), 'is_home' => is_front_page(), 'is_single' => is_single())
-    ));
+    );
+    $frontend = apply_filters('live2d_frontend_config', $frontend, $apiTypeRaw);
+    wp_localize_script('live2dweb', 'live2d_settings', $frontend);
+    do_action('live2d_enqueue_frontend_assets', $frontend, $apiTypeRaw);
 }
 add_action('wp_head', 'live2D_style', 1);
 
@@ -205,20 +182,18 @@ function live_2d_install()
     $live_2d_Settings->install_Default_Advanced();
 }
 
-// 停用插件 — 用户要求: 停用时清理本插件设置过的所有 option, 重新启用即干净状态.
-// 模型文件 (model/) 不在此处理: 卸载时 WP 会连同插件目录一并删除; 仅停用时保留下载的
-// 模型文件无碍 (重新启用后照常可用).
+// 停用保留用户数据，便于升级和恢复。
 register_deactivation_hook(__FILE__, 'live_2d_stop');
 function live_2d_stop()
 {
-    live_2d_purge_options();
+    // 停用不删除用户设置、授权或模型,以便升级和恢复。
 }
 
 //卸载插件 — 走同一份清理逻辑.
 register_uninstall_hook(__FILE__, 'live_2d_uninstall');
 function live_2d_uninstall()
 {
-    live_2d_purge_options();
+    if (get_option('live2d_delete_data_on_uninstall', false)) live_2d_purge_options();
 }
 
 /**
@@ -251,7 +226,7 @@ add_action('rest_api_init', function () {
     register_rest_route('live2d/v1', '/token', array(
         'methods' => 'POST',
         'callback' => array($sdk, 'user_login'),
-        'permission_callback' => '__return_true'
+        'permission_callback' => array($sdk, 'check_login_permission')
     ));
 
     register_rest_route('live2d/v1', '/refresh_token', array(
@@ -269,20 +244,12 @@ add_action('rest_api_init', function () {
     // 本地 V1 模型清单 / 切换 / 换装(取代 api.live2dweb.com/model/v2)
     live2d_V1Api::register_routes();
 
-    // V2 模型(Cubism 4/5)防盗链 session/manifest/asset
-    live2d_V2Api::register_routes();
+    live2d_AiChat::register_routes();
 });
-
-// V2 模型本地缓存 — Cron hook 注册(异步任务队列入口,详见 live2d-V2Api.php 末尾)
-// 必须挂在 init 之前生效,否则 wp_schedule_single_event 触发的 cron 进程跑到这里
-// 时 hook 还没绑定就会丢任务。
-live2d_V2Api::register_cron();
 
 // 初始化加载
 function live2D_Init()
 {
-    // 多语言加载
-    load_plugin_textdomain('live-2d', false, LIVE2D_LANGUAGES);
     // Array of All Options
     $live_2d_options = get_option('live_2d_settings_option_name');
     // ** 用来避免更新后出现错误的判断 **
@@ -337,12 +304,15 @@ function live2D_DefMod()
           // 还未被赋值. inline module 与 src module 共用 defer 队列, 按文档顺序执行,
           // 因此能保证此时 initLive2dWeb 已经挂到 window 上. ?>
     <script type="module">
-        if (typeof window.initLive2dWeb === 'function') {
-            if (document.readyState === 'complete') {
+        const initialize = () => {
+            if (typeof window.initLive2dWeb === 'function') {
                 window.initLive2dWeb();
-            } else {
-                window.addEventListener('load', window.initLive2dWeb);
             }
+        };
+        if (document.readyState === 'complete') {
+            initialize();
+        } else {
+            window.addEventListener('load', initialize, { once: true });
         }
     </script>
 <?php

@@ -28,14 +28,6 @@ class live2D_Settings_Tips {
             'live_2d_setting_tips_section' // section
         );
 
-        add_settings_field(
-			'idle_motion_delay', // id
-			__('待机动画延迟时间（毫秒）','live-2d'), // title
-			array( $this, 'idle_motion_delay_callback' ), // callback
-			'live-2d-settings-tips', // page
-			'live_2d_setting_tips_section' // section
-		);
-
         // 「待机动画文件名」 (idle_motion) 已迁移到「基础设置」页「模型目录」下方,
         // 与 modelDir 使用同一个联动规则(仅 apiType=='custom' 且 modelAPI 不以 .json
         // 结尾时显示)。sanitize/运行时读路径维持不变：
@@ -136,38 +128,30 @@ class live2D_Settings_Tips {
     public function hitokotoAPI_callback() {
         ?> <select name="live_2d_settings_option_name[hitokotoAPI]" id="hitokotoAPI">
             <?php $selected = (isset( $this->live_2d__options['hitokotoAPI'] ) && $this->live_2d__options['hitokotoAPI'] === 'hitokoto.cn') ? 'selected' : '' ; ?>
-            <option <?php echo $selected; ?>>hitokoto.cn</option>
+            <option <?php echo esc_attr($selected); ?>>hitokoto.cn</option>
             <?php $selected = (isset( $this->live_2d__options['hitokotoAPI'] ) && $this->live_2d__options['hitokotoAPI'] === 'jinrishici.com') ? 'selected' : '' ; ?>
-            <option <?php echo $selected; ?>>jinrishici.com</option>
+            <option <?php echo esc_attr($selected); ?>>jinrishici.com</option>
             <?php $selected = (isset( $this->live_2d__options['hitokotoAPI'] ) && $this->live_2d__options['hitokotoAPI'] === 'fghrsh.net') ? 'selected' : '' ; ?>
-            <option <?php echo $selected; ?>>fghrsh.net</option>
+            <option <?php echo esc_attr($selected); ?>>fghrsh.net</option>
         </select> <?php
     }
 
     //待机动画延迟时间
-    public function idle_motion_delay_callback() {
-        printf(
-            '<input type="number" name="live_2d_settings_option_name[idle_motion_delay]" id="idle_motion_delay" value="%s" min = "0" max="3600" > '.esc_html__('秒','live-2d').'
-            <p>'.esc_html__('待机动画延迟时间，单位为秒，默认值为30秒。如果设置为0，则禁用待机动画。','live-2d').'</p>',
-            isset( $this->live_2d__options['idle_motion_delay'] ) ? esc_attr( $this->live_2d__options['idle_motion_delay']) : 30
-        );
-    }
-
     // idle_motion_callback 已迁移到 src/waifu-Settings-Base.php (付费门槛,
     // 与 modelDir 同联动显示/隐藏), 这里不再重复定义。
 
     public function showCopyMessage_callback() {
         ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['showCopyMessage'] ) && $this->live_2d__options['showCopyMessage'] === true ) ? 'checked' : '' ; ?>
-        <label for="showCopyMessage-0"><input type="radio" name="live_2d_settings_option_name[showCopyMessage]" id="showCopyMessage-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('显示','live-2d') ?></label><br>
+        <label for="showCopyMessage-0"><input type="radio" name="live_2d_settings_option_name[showCopyMessage]" id="showCopyMessage-0" value="1" <?php echo esc_attr($checked); ?>> <?php esc_html_e('显示','live-2d') ?></label><br>
         <?php $checked = ( isset( $this->live_2d__options['showCopyMessage'] ) && $this->live_2d__options['showCopyMessage'] === false ) ? 'checked' : '' ; ?>
-        <label for="showCopyMessage-1"><input type="radio" name="live_2d_settings_option_name[showCopyMessage]" id="showCopyMessage-1" value="0" <?php echo $checked; ?>> <?php esc_html_e('隐藏','live-2d') ?></label></fieldset> <?php
+        <label for="showCopyMessage-1"><input type="radio" name="live_2d_settings_option_name[showCopyMessage]" id="showCopyMessage-1" value="0" <?php echo esc_attr($checked); ?>> <?php esc_html_e('隐藏','live-2d') ?></label></fieldset> <?php
     }
 
     public function showWelcomeMessage_callback() {
         ?> <fieldset><?php $checked = ( isset( $this->live_2d__options['showWelcomeMessage'] ) && $this->live_2d__options['showWelcomeMessage'] === true ) ? 'checked' : '' ; ?>
-        <label for="showWelcomeMessage-0"><input type="radio" name="live_2d_settings_option_name[showWelcomeMessage]" id="showWelcomeMessage-0" value="1" <?php echo $checked; ?>> <?php esc_html_e('显示','live-2d') ?></label><br>
+        <label for="showWelcomeMessage-0"><input type="radio" name="live_2d_settings_option_name[showWelcomeMessage]" id="showWelcomeMessage-0" value="1" <?php echo esc_attr($checked); ?>> <?php esc_html_e('显示','live-2d') ?></label><br>
         <?php $checked = ( isset( $this->live_2d__options['showWelcomeMessage'] ) && $this->live_2d__options['showWelcomeMessage'] === false ) ? 'checked' : '' ; ?>
-        <label for="showWelcomeMessage-1"><input type="radio" name="live_2d_settings_option_name[showWelcomeMessage]" id="showWelcomeMessage-1" value="0" <?php echo $checked; ?>> <?php esc_html_e('隐藏','live-2d') ?></label></fieldset> <?php
+        <label for="showWelcomeMessage-1"><input type="radio" name="live_2d_settings_option_name[showWelcomeMessage]" id="showWelcomeMessage-1" value="0" <?php echo esc_attr($checked); ?>> <?php esc_html_e('隐藏','live-2d') ?></label></fieldset> <?php
     }
     
     public function waifuTipsSize_callback() {

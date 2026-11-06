@@ -5,61 +5,44 @@ class live2D_Settings
 	public function live_2d_settings_sanitize($input)
 	{
 
-		$sanitary_values = array();
+		$previous = get_option('live_2d_settings_option_name', array());
+		$previous = is_array($previous) ? $previous : array();
+		$sanitary_values = $previous;
+		if (!is_array($input)) {
+			add_settings_error('live_2d_sdk_error', 'invalid_settings', __('设置格式无效，原配置已保留。', 'live-2d'));
+			return $previous;
+		}
 		if (isset($input['live2dLayoutType'])) {
 			$sanitary_values['live2dLayoutType'] = (bool)$input['live2dLayoutType'];
 		} else {
-			$sanitary_values['live2dLayoutType'] = true;
+			$sanitary_values['live2dLayoutType'] = $previous['live2dLayoutType'] ?? true;
 		}
 
+		$typeRejected = false;
 		if (isset($input['apiType'])) {
 			// apiType 四态字符串: 'local' | 'remote' | 'custom-remote' | 'custom-local'
 			// 详细枚举与历史兼容规则见 src/live2d-V1Api.php :: live2d_normalize_api_type。
-			// 未知值一律退到 'remote' 以最安全(用户继续看到 modelAPI 输入框)。
-			$sanitary_values['apiType'] = function_exists('live2d_normalize_api_type')
+			// 不可用或未知的类型保留旧值，并向管理员报告。
+			$type = function_exists('live2d_normalize_api_type')
 				? live2d_normalize_api_type($input['apiType'])
 				: ($input['apiType'] === 'local' ? 'local' : 'remote');
-		} else {
-			$sanitary_values['apiType'] = 'remote';
-		}
-
-		// 老数据迁移: 旧版 apiType='custom' + protectV2='local' 的组合 → 新 'custom-local'。
-		// 这一步必须在付费门控之前: 用户提交时若仍传旧字段,先合并语义再校验付费。
-		// live2d_normalize_api_type() 只看单字段,把 'custom' 默认归到 'custom-remote',
-		// 这里再根据 protectV2 把 (custom, local) 升级到 'custom-local'。
-		// 升级一次写回 DB 后, 后续 sanitize 不会再看到 'custom' / 'protectV2'。
-		$rawApiType = isset($input['apiType']) ? (is_string($input['apiType']) ? strtolower(trim($input['apiType'])) : '') : '';
-		$rawProtect = isset($input['protectV2']) ? $input['protectV2'] : null;
-		$isOldCustom = ($rawApiType === 'custom' || $sanitary_values['apiType'] === 'custom-remote');
-		$protectIsLocal = (is_bool($rawProtect) && $rawProtect)
-			|| (is_string($rawProtect) && strtolower(trim($rawProtect)) === 'local');
-		if ($isOldCustom && $protectIsLocal) {
-			$sanitary_values['apiType'] = 'custom-local';
-		}
-
-		// 'custom-remote' / 'custom-local' (自定义新版模型 / Cubism 4+) 是付费功能。
-		// 与 waifu-Settings-Base.php apiType_callback 的 UI 门槛保持一致:
-		// 未登录或未付费(userLevel<1) 用户即便绕过前端的 disabled radio 直接 POST,
-		// 服务端也强制退回 'remote'。
-		if (in_array($sanitary_values['apiType'], array('custom-remote', 'custom-local'), true)) {
-			$user_token = get_option('live_2d_settings_user_token');
-			$is_paid = is_array($user_token)
-				&& !empty($user_token['userLevel'])
-				&& intval($user_token['userLevel']) > 0;
-			if (!$is_paid) {
-				$sanitary_values['apiType'] = 'remote';
-				add_settings_error(
-					'live_2d_sdk_error',
-					'live2d_apitype_paywall',
-					__('"自定义模型路径（Cubism 4+）" 需要登录并付费后才能使用, 已自动恢复为 "自行部署旧版模型".', 'live-2d')
-				);
+			$raw = is_string($input['apiType']) ? strtolower(trim($input['apiType'])) : $input['apiType'];
+			$known = in_array($raw, array(true, false, 'local', 'remote', 'custom', 'custom-local', 'custom-remote', '1', '0', 'true', 'false', 'on', 'off', ''), true);
+			if ($known && isset(live2d_Extensions::api_types()[$type])) {
+				$sanitary_values['apiType'] = $type;
+			} else {
+				$typeRejected = true;
+				$sanitary_values['apiType'] = $previous['apiType'] ?? 'remote';
+				add_settings_error('live_2d_sdk_error', 'renderer_unavailable', __('该模型类型的增强插件未启用，原配置已保留。', 'live-2d'));
 			}
+		} else {
+			$sanitary_values['apiType'] = $previous['apiType'] ?? 'remote';
 		}
 
-		if (isset($input['modelAPI'])) {
+		if (!$typeRejected && isset($input['modelAPI'])) {
 			$sanitary_values['modelAPI'] = sanitize_text_field($input['modelAPI']);
 		} else {
-			$sanitary_values['modelAPI'] = "https://live2d.fghrsh.net/api/";
+			$sanitary_values['modelAPI'] = $previous['modelAPI'] ?? "https://live2d.fghrsh.net/api/";
 		}
 
 		// apiType=local(本地部署旧版模型) 强制把 modelAPI 改写到本插件提供的本地
@@ -70,22 +53,9 @@ class live2D_Settings
 			$sanitary_values['modelAPI'] = live2d_v1api_local_url();
 		}
 
-		// apiType=custom-local(自定义新版 · 托管到本站): modelAPI 固定为本站 model/
-		// 根目录, 让 live2d-tips.ts 的 ApiUrlType.ModelDir 分支按 modelDir 数组中
-		// 每个 slug 自动展开为 {root}{slug}/{slug}.model3.json (与 live2d-V2Api.php
-		// collect_configured_targets 完全一致)。这样站长只需在「模型目录」字段里
-		// 填 slug (= 子目录名), 不再需要也看不到 modelAPI 输入框。
-		if ($sanitary_values['apiType'] === 'custom-local') {
-			$sanitary_values['modelAPI'] = plugin_dir_url(dirname(__FILE__)) . 'model/';
-		}
 
-		if (isset($input['modelDir'])) {
-			$sanitary_values['modelDir'] = $input['modelDir'];
-		} 
 
-		// protectV2 字段已退役 (2026-05): 行为合并进 apiType 的 'custom-local' 枚举。
-		// 这里不再回写 $sanitary_values['protectV2'], 让 update_option 自动把旧字段从 DB 中抹掉。
-		// 老值的迁移在上面 apiType 归一化分支里完成 (custom + protectV2='local' → custom-local)。
+
 
 		if (isset($input['tipsMessage'])) {
 			$sanitary_values['tipsMessage'] = sanitize_text_field($input['tipsMessage']);
@@ -103,24 +73,10 @@ class live2D_Settings
 			$sanitary_values['modelTexturesId'] = sanitize_text_field($input['modelTexturesId']);
 		}
 
-		if (isset($input['modelPoint'])) {
-			$sanitary_values['modelPoint']['zoom'] = $input['modelPoint']['zoom'];
-			$sanitary_values['modelPoint']['x'] = (int)$input['modelPoint']['x'];
-			$sanitary_values['modelPoint']['y'] = (int)$input['modelPoint']['y'];
-		} else {
-			$sanitary_values['modelPoint']['zoom'] = "1.0";
-			$sanitary_values['modelPoint']['x'] = 0;
-			$sanitary_values['modelPoint']['y'] = 0;
-		}
 
-		if (isset($input['sdkUrl'])) {
-			$sanitary_values['sdkUrl'] = sanitize_text_field($input['sdkUrl']);
-		} else {
-			$sanitary_values['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
-		}
 
-		// shaderDir 不再持久化: 该路径由 wordpress-live2d.php live2D_style() 在运行时
-		// 按 plugin_dir_url(__FILE__) 自动注入, 跟随插件实际安装位置, 不依赖 DB 值。
+
+
 
 		if (isset($input['showToolMenu'])) {
 			$sanitary_values['showToolMenu'] = (bool)$input['showToolMenu'];
@@ -130,6 +86,30 @@ class live2D_Settings
 			$sanitary_values['isBotButton'] = (bool)$input['isBotButton'];
 		}
 
+		// AI 配置只由后台设置保存,不信任聊天请求内的配置覆盖。
+			if (isset($input['aiProvider'])) {
+				$ap = (string) $input['aiProvider'];
+				$sanitary_values['aiProvider'] = in_array($ap, array('live2dweb', 'wp-builtin'), true)
+					? $ap
+					: 'live2dweb';
+				if ($sanitary_values['aiProvider'] === 'wp-builtin'
+					&& !class_exists('WordPress\\AiClient\\AiClient')
+				) {
+					add_settings_error('live_2d_sdk_error', 'ai_sdk_missing', __('请先安装并启用 WordPress AI SDK/provider；不会自动切换到其他服务。', 'live-2d'));
+				}
+			}
+			if (isset($input['aiProviderId'])) {
+				// 仅允许下拉框 / 手填的 provider id 字符 (kebab/snake/字母数字).
+				$pid = trim((string) $input['aiProviderId']);
+				$sanitary_values['aiProviderId'] = preg_match('/^[A-Za-z0-9_-]{0,64}$/', $pid) ? $pid : '';
+			}
+			if (isset($input['aiSystemPrompt'])) {
+				// system prompt 可以是较长的多行文本, 不用 sanitize_text_field (会吃换行)。
+				$sanitary_values['aiSystemPrompt'] = sanitize_textarea_field($input['aiSystemPrompt']);
+			}
+			if (isset($input['aiModel'])) {
+				$sanitary_values['aiModel'] = sanitize_text_field($input['aiModel']);
+			}
 		if (isset($input['canCloseLive2d'])) {
 			$sanitary_values['canCloseLive2d'] = (bool)$input['canCloseLive2d'];
 		}
@@ -174,30 +154,9 @@ class live2D_Settings
 			$sanitary_values['hitokoto_delay'] = (int)$input['hitokoto_delay'];
 		}
 
-		if (isset($input['idle_motion_delay'])) {
-			$sanitary_values['idle_motion_delay'] = (int)$input['idle_motion_delay'];
-		}
 
-		if (isset($input['idle_motion'])) {
-			// loopMsg('List') 即使用户未填任何动作名也会渲染一个空 input,
-			// 不过滤就会写入 [''], 前端按 length>0 触发 setInterval 后会拼出
-			// `${modelHomeDir}.motion3.json` (例如 /EMOgirl/.motion3.json)
-			// 周期性 404. 这里在持久化阶段统一剔除空白项, 顺便保证类型为字符串.
-			if (is_array($input['idle_motion'])) {
-				$cleaned = array();
-				foreach ($input['idle_motion'] as $m) {
-					if (is_string($m)) {
-						$m = trim(sanitize_text_field($m));
-						if ($m !== '') {
-							$cleaned[] = $m;
-						}
-					}
-				}
-				$sanitary_values['idle_motion'] = array_values($cleaned);
-			} else {
-				$sanitary_values['idle_motion'] = array();
-			}
-		}
+
+
 
 		if (isset($input['showCopyMessage'])) {
 			$sanitary_values['showCopyMessage'] = (bool)$input['showCopyMessage'];
@@ -257,12 +216,13 @@ class live2D_Settings
 			$sanitary_values['waifuDraggableRevert'] = (bool)$input['waifuDraggableRevert'];
 		}
 
-		if (isset($input['homePageUrl'])) {
-			$sanitary_values['homePageUrl'] = sanitize_text_field($input['homePageUrl']);
-		}
+		$sanitary_values['homePageUrl'] = get_home_url();
 
 		if (isset($input['aboutPageUrl'])) {
-			$sanitary_values['aboutPageUrl'] = sanitize_text_field($input['aboutPageUrl']);
+			$sanitary_values['aboutPageUrl'] = is_string($input['aboutPageUrl']) ? esc_url_raw($input['aboutPageUrl'], array('http', 'https')) : '';
+			if ($input['aboutPageUrl'] !== '' && $sanitary_values['aboutPageUrl'] === '') {
+				add_settings_error('live_2d_sdk_error', 'invalid_about_url', __('关于页地址必须为 HTTP(S) 或站内相对地址。', 'live-2d'));
+			}
 		}
 
 		if (isset($input['screenshotCaptureName'])) {
@@ -301,39 +261,9 @@ class live2D_Settings
 			$sanitary_values['waifuTipTop'] = (int) $input['waifuTipTop'];
 		}
 
-		// 高级渲染设置(settings.style.renderScale / settings.style.antialias) 是付费功能,
-		// 与 waifu-Settings-Style.php 的 UI 门槛一致 (userLevel<1 用户即便绕过前端
-		// 不渲染的字段也无法 POST 进 DB). 字段格式参照 Chromium 扩展 storage.ts
 		// StyleSettings: renderScale ∈ {1, 1.5, 2, 3}, antialias 为布尔.
-		if (isset($input['style']) && is_array($input['style'])) {
-			$user_token = get_option('live_2d_settings_user_token');
-			$is_paid = is_array($user_token)
-				&& !empty($user_token['userLevel'])
-				&& intval($user_token['userLevel']) > 0;
-			if ($is_paid) {
-				$style_in = $input['style'];
-				$style_out = array();
-				if (isset($style_in['renderScale'])) {
-					$scale = (float) $style_in['renderScale'];
-					$allowed = array(1.0, 1.5, 2.0, 3.0);
-					if (in_array($scale, $allowed, true)) {
-						// 整数倍率写回 int, 1.5 保留 float, 与扩展存储一致.
-						$style_out['renderScale'] = ($scale == (int) $scale) ? (int) $scale : $scale;
-					} else {
-						$style_out['renderScale'] = 1;
-					}
-				}
-				if (isset($style_in['antialias'])) {
-					$style_out['antialias'] = (bool) $style_in['antialias'];
-				}
-				if (!empty($style_out)) {
-					$sanitary_values['style'] = $style_out;
-				}
-			}
-			// 未付费用户提交了 style 字段直接丢弃 (不写 $sanitary_values['style']),
-			// 之前若已有值 update_option 时会被覆盖为不含 style, 等同于回退到默认.
-		}
-		return $sanitary_values;
+
+		return apply_filters('live2d_sanitize_extension_settings', $sanitary_values, $input, $previous);
 	}
 
 	public function install_Default_Settings()
@@ -346,14 +276,12 @@ class live2D_Settings
 			$defValue['hitokotoAPI'] = 'lwl12.com';
 			$defValue['modelId'] = '1';
 			$defValue['modelTexturesId'] = '53';
-			$defValue['modelPoint']['zoom'] = '1.0';
-			$defValue['modelPoint']['x'] = 0;
-			$defValue['modelPoint']['y'] = 0;
-			$defValue['sdkUrl'] = 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js';
-			// V3 模型保护策略 — 默认 'direct' (不缓存),升级老站不改变行为
-			$defValue['protectV2'] = 'direct';
 			$defValue['showToolMenu'] = true;
 			$defValue['isBotButton'] = true;
+			$defValue['aiProvider'] = 'live2dweb';
+			$defValue['aiProviderId'] = '';
+			$defValue['aiSystemPrompt'] = '你是可爱的 Live2D 看板娘,回答简洁、温柔, 要有二次元的风格。';
+			$defValue['aiModel'] = '';
 			$defValue['canCloseLive2d'] = true;
 			$defValue['canSwitchModel'] = true;
 			$defValue['canSwitchTextures'] = true;

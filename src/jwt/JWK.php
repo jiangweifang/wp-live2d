@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Upstream JWT exceptions are data, not HTML; callers do not render them unescaped.
 
 namespace Firebase\JWT;
 
