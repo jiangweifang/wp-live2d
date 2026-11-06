@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Live 2D 2.1.3\n"
+"Project-Id-Version: Live 2D 2.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 07:24+0000\n"
-"PO-Revision-Date: 2026-05-08 07:24+0000\n"
+"POT-Creation-Date: 2026-11-06 09:12+0000\n"
+"PO-Revision-Date: 2026-11-06 09:12+0000\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -16,71 +16,173 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: build-i18n.py\n"
 
-#: wordpress-live2d.php:239
+#: wordpress-live2d.php:214
 msgid "设置"
 msgstr "設定"
 
-#: wordpress-live2d.php:328
-#: src/live2d-Widget.php:38
+#: wordpress-live2d.php:295
+#: src/live2d-Widget.php:37
 msgid "发送"
 msgstr "送信"
 
-#: src/live2d-Login.php:22
-#: src/live2d-Login.php:29
-#: src/live2d-Login.php:85
+#: src/live2d-AiChat.php:121
+msgid "本站未启用内置 AI 对话。"
+msgstr ""
+
+#: src/live2d-AiChat.php:124
+msgid "请登录后再使用 AI 对话功能。"
+msgstr ""
+
+#: src/live2d-AiChat.php:131
+msgid "请求过于频繁,请稍后再试。"
+msgstr ""
+
+#: src/live2d-AiChat.php:149
+msgid "未检测到 PHP AI Client SDK。请安装下列任一插件并启用:WordPress 官方「AI」(WP 7.0+)、「AI Provider for OpenAI」、「AI Services」。"
+msgstr ""
+
+#: src/live2d-AiChat.php:156
+msgid "PHP AI Client SDK 已就绪,但没有可用 provider。请在 wp-config.php 配置 API Key(如 OPENAI_API_KEY / GOOGLE_API_KEY),或在 provider 插件后台填入凭证。"
+msgstr ""
+
+#: src/live2d-AiChat.php:163
+msgid "消息为空。"
+msgstr ""
+
+#: src/live2d-AiChat.php:199
+msgid "AI 服务调用失败，请联系站点管理员。"
+msgstr ""
+
+#: src/live2d-AiChat.php:205
+msgid "AI 未返回任何内容。"
+msgstr ""
+
+#: src/live2d-Extensions.php:21
+#: src/live2d-Utils.php:113
+msgid "本地部署旧版模型"
+msgstr "ローカルの旧モデル"
+
+#: src/live2d-Extensions.php:22
+msgid "使用本站保存的旧版 Live2D 模型。"
+msgstr "このサイトに保存された旧版 Live2D モデルを使用します。"
+
+#: src/live2d-Extensions.php:25
+#: src/live2d-Utils.php:114
+msgid "自行部署旧版模型"
+msgstr "自前ホストの旧モデル"
+
+#: src/live2d-Extensions.php:26
+msgid "使用旧版模型 JSON 或旧版模型 API。"
+msgstr "旧モデルの JSON または旧モデル API を使用します。"
+
+#: src/live2d-Extensions.php:36
+msgid "Pro 未安装或尚未启用"
+msgstr "Pro は未インストールまたは無効です"
+
+#: src/live2d-Extensions.php:37
+msgid "Pro 与基础插件版本不兼容"
+msgstr "Pro と基本プラグインのバージョンに互換性がありません"
+
+#: src/live2d-Extensions.php:38
+msgid "Pro 已安装，请使用有对应权益的官网账号完成授权；升级账号后请在登录页重新保存 Key 刷新权益。"
+msgstr "対象の利用権限がある公式アカウントを連携してください。アカウントのアップグレード後はログイン画面で Key を再保存して権限を更新します。"
+
+#: src/live2d-Extensions.php:39
+msgid "Pro 已启用"
+msgstr "Pro は有効です"
+
+#: src/live2d-Extensions.php:41
+msgid "增强插件状态不可用"
+msgstr "アドオンの状態を取得できません"
+
+#: src/live2d-Extensions.php:44
+msgid "免费基础版与 Pro 增强版"
+msgstr "無料基本プラグインと Pro アドオン"
+
+#: src/live2d-Extensions.php:45
+msgid "为区分旧版 Live2D 与依赖 Cubism Core 的新版模型，并分别管理许可和分发，插件现拆分为免费基础版与 Pro 增强版。旧版模型和共同功能保留在免费版；新版模型由 Pro 提供。"
+msgstr "旧版 Live2D と Cubism Core が必要な新モデルを分け、ライセンスと配布を個別に管理するため、無料版と Pro に分割しました。旧モデルと共通機能は無料版に残り、新モデルは Pro が提供します。"
+
+#: src/live2d-Extensions.php:46
+msgid "此次拆分不会主动删除已有模型、设置或授权数据。已购用户请使用原账号前往官网确认对应权益并获取 Pro，不需要为同一权益重复付款。"
+msgstr "分割によって既存のモデル、設定、アカウント情報は削除されません。購入済みの方は元のアカウントで公式サイトの利用権限を確認し、Pro を取得してください。同じ権限を再購入する必要はありません。"
+
+#: src/live2d-Extensions.php:48
+msgid "前往官网获取 Pro"
+msgstr "公式サイトで Pro を取得"
+
+#: src/live2d-Extensions.php:50
+msgid "上传 Pro 增强补丁"
+msgstr "Pro アドオンをアップロード"
+
+#: src/live2d-Extensions.php:53
+msgid "下载 Pro ZIP 后，点击上传按钮进入 WordPress 官方安装页，上传并启用补丁。版本与账号权益验证通过后，本设置页会显示 Pro 功能；无需替换 Free。请勿将付费文件直接覆盖到 Free 目录。"
+msgstr "Pro ZIP を取得後、アップロードボタンから WordPress 標準のインストール画面を開き、有効化してください。互換性と利用権限の確認後、この設定画面に Pro 機能が表示されます。Free を削除したり、有料ファイルで上書きしたりしないでください。"
+
+#: src/live2d-Extensions.php:58
+msgid "已保存的模型类型当前不可用。原配置和模型保持不变；请启用兼容且已授权的 Pro 后恢复，不会自动替换为其他角色。"
+msgstr "保存済みのモデル形式は現在利用できません。設定とファイルは保持されています。互換性と利用権限のある Pro を有効化して復元してください。別のキャラクターには置き換えません。"
+
+#: src/live2d-Login.php:25
+#: src/live2d-Login.php:32
 msgid "登录"
 msgstr "ログイン"
 
-#: src/live2d-Login.php:37
+#: src/live2d-Login.php:40
 msgid "请输入key"
 msgstr "Key を入力してください"
 
-#: src/live2d-Login.php:61
+#: src/live2d-Login.php:67
 msgid "保存失败, 登录信息无法解析"
 msgstr "保存に失敗しました。ログイン情報を解析できません"
 
-#: src/live2d-Login.php:64
+#: src/live2d-Login.php:71
 msgid "保存失败, 登录信息为空"
 msgstr "保存に失敗しました。ログイン情報が空です"
 
-#: src/live2d-Login.php:72
+#: src/live2d-Login.php:80
 msgid "如果您无法解决链接问题，请在<a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">官方网站登录</a>，查看Key后将其复制到下方，保存后就可以登录成功了！"
 msgstr "接続の問題を解決できない場合は、<a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">公式サイトでログイン</a>し、Key を確認して以下にコピーしてください。保存するとログインに成功します。"
 
-#: src/live2d-Login.php:95
+#: src/live2d-Login.php:93
+msgid "获取账号 Key"
+msgstr ""
+
+#: src/live2d-Login.php:94
+msgid "请在下方保存 Key 完成登录。为保护站点安全，不再接受未经管理员授权的外部自动登录回调。"
+msgstr ""
+
+#: src/live2d-Login.php:104
 msgid "已登录, 用户名: %s"
 msgstr "ログイン中：%s"
 
-#: src/live2d-Login.php:98
+#: src/live2d-Login.php:107
 msgid "退出登录"
 msgstr "ログアウト"
 
-#: src/live2d-Login.php:106
+#: src/live2d-Login.php:115
 msgid "此站点未绑定, 请<a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">点击此处</a>绑定站点, 绑定时请注意与WordPress中的 站点地址（URL） 相同"
 msgstr "このサイトは未登録です。<a href=\"https://www.live2dweb.com/Sites\" target=\"_blank\">こちら</a>から登録してください。登録時は WordPress の「サイトアドレス（URL）」と一致させてください。"
 
-#: src/live2d-Login.php:114
-#: src/live2d-Shop.php:272
+#: src/live2d-Login.php:123
+#: src/live2d-Shop.php:81
 msgid "您的邮箱未激活, 请<a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">点击此处</a>激活邮箱"
 msgstr "メールアドレスが未有効化です。<a href=\"https://www.live2dweb.com/Email\" target=\"_blank\">こちら</a>から有効化してください。"
 
-#: src/live2d-Login.php:122
-msgid "您是未付费用户, 请<a href=\"https://www.live2dweb.com/Order/Pay\" target=\"_blank\">点击此处</a>付费后使用更多功能"
-msgstr "未課金ユーザーです。<a href=\"https://www.live2dweb.com/Order/Pay\" target=\"_blank\">こちら</a>からお支払いいただくと、より多くの機能を利用できます。"
-
-#: src/live2d-Login.php:137
+#: src/live2d-Login.php:138
 msgid "如果您发现登录没有反应，或者出现了错误，请先检查 <a href=\"%1$s\">%1$s</a> 是否可以被访问"
 msgstr "ログインが反応しない、またはエラーが出る場合は、まず <a href=\"%1$s\">%1$s</a> にアクセスできるか確認してください。"
 
-#: src/live2d-Login.php:151
+#: src/live2d-Login.php:152
+#: src/live2d-ModelMigration.php:92
 msgid "没有权限"
 msgstr "権限がありません"
 
-#: src/live2d-Main.php:35
+#: src/live2d-Main.php:32
 msgid "Live 2D 设置"
 msgstr "Live 2D 設定"
 
-#: src/live2d-Main.php:43
+#: src/live2d-Main.php:40
 msgid "Live 2D 创意工坊"
 msgstr "Live 2D ワークショップ"
 
@@ -89,12 +191,12 @@ msgid "登陆"
 msgstr "ログイン"
 
 #: src/live2d-Main.php:105
-#: src/waifu-Settings-Base.php:15
+#: src/waifu-Settings-Base.php:13
 msgid "基础设置"
 msgstr "基本設定"
 
 #: src/live2d-Main.php:106
-#: src/waifu-Settings-Toolbar.php:10
+#: src/waifu-Settings-Toolbar.php:9
 msgid "工具栏设置"
 msgstr "ツールバー設定"
 
@@ -107,390 +209,510 @@ msgid "样式设置"
 msgstr "スタイル設定"
 
 #: src/live2d-Main.php:109
-#: src/waifu-Advanced.php:18
+#: src/waifu-Advanced.php:21
 msgid "高级设置"
 msgstr "詳細設定"
 
-#: src/live2d-Shop.php:219
+#: src/live2d-ModelMigration.php:99
+msgid "模型文件已校验并迁移（%d 个），原文件和设置备份均已保留。"
+msgstr "%d 個のモデルファイルを検証して移行しました。元ファイルと設定のバックアップは保持されています。"
+
+#: src/live2d-ModelMigration.php:114
+msgid "旧模型仍位于插件目录。请在升级或删除旧插件前，将模型复制到持久存储；迁移会校验文件并保留原文件、设置及授权备份。"
+msgstr "旧モデルがプラグインのディレクトリにあります。旧版の更新や削除前に永続ストレージへコピーしてください。移行時にファイルを検証し、元ファイルと設定・アカウント情報のバックアップを保持します。"
+
+#: src/live2d-ModelMigration.php:116
+msgid "多站点共用旧模型目录，请先由网络管理员完成全网备份及逐站迁移，不要直接替换旧插件。"
+msgstr "マルチサイトでは旧モデルのディレクトリを共有します。ネットワーク管理者が全体をバックアップしてサイトごとに移行するまで、旧プラグインを置き換えないでください。"
+
+#: src/live2d-ModelMigration.php:122
+msgid "备份设置并迁移旧模型"
+msgstr "設定をバックアップして旧モデルを移行"
+
+#: src/live2d-Shop.php:27
 msgid "您没有访问该页面的权限。"
 msgstr "このページへのアクセス権限がありません。"
 
-#: src/live2d-Shop.php:247
+#: src/live2d-Shop.php:56
 msgid "列表中是您可以使用的模型。"
 msgstr "ご利用いただけるモデルの一覧です。"
 
-#: src/live2d-Shop.php:249
+#: src/live2d-Shop.php:58
 msgid "点击「下载」后，插件会自动下载并安装到您的网站中。"
 msgstr "「ダウンロード」をクリックすると、プラグインが自動的にダウンロードしてサイトにインストールします。"
 
-#: src/live2d-Shop.php:265
+#: src/live2d-Shop.php:74
 msgid "您需要登录并完成邮箱验证才可以使用此功能。"
 msgstr "この機能を使用するにはログインとメールアドレスの認証が必要です。"
 
-#: src/live2d-Shop.php:296
-#: src/live2d-Shop.php:324
+#: src/live2d-Shop.php:105
+#: src/live2d-Shop.php:130
 msgid "已启用"
 msgstr "インストール済み"
 
-#: src/live2d-Shop.php:298
-#: src/live2d-Shop.php:325
+#: src/live2d-Shop.php:107
+#: src/live2d-Shop.php:131
 msgid "下载"
 msgstr "ダウンロード"
 
-#: src/live2d-Shop.php:305
+#: src/live2d-Shop.php:114
 msgid "没有可用的模型。"
 msgstr "利用できるモデルがありません。"
 
-#: src/live2d-Shop.php:322
+#: src/live2d-Shop.php:128
 msgid "正在下载..."
 msgstr "ダウンロード中…"
 
-#: src/live2d-Shop.php:323
+#: src/live2d-Shop.php:129
 msgid "正在解压..."
 msgstr "展開中…"
 
-#: src/live2d-Shop.php:326
+#: src/live2d-Shop.php:132
 msgid "解压失败,文件可能损坏。"
 msgstr "展開に失敗しました。ファイルが破損している可能性があります。"
 
-#: src/live2d-Shop.php:327
+#: src/live2d-Shop.php:133
 msgid "下载失败"
 msgstr "ダウンロードに失敗しました"
 
-#: src/live2d-Shop.php:328
+#: src/live2d-Shop.php:134
 msgid "下载请求失败,请检查网络或登录状态。"
 msgstr "ダウンロード要求に失敗しました。ネットワークまたはログイン状態を確認してください。"
 
-#: src/live2d-Utils.php:32
-#: src/live2d-Utils.php:57
-#: src/live2d-Utils.php:69
-#: src/live2d-Utils.php:168
+#: src/live2d-Utils.php:21
+msgid "无效的设置字段类型"
+msgstr ""
+
+#: src/live2d-Utils.php:63
+#: src/live2d-Utils.php:162
 msgid "点击此处增加一条"
 msgstr "ここをクリックして 1 行追加"
 
-#: src/live2d-Utils.php:92
+#: src/live2d-Utils.php:86
 msgid "V1 / V2 模型"
 msgstr "V1 / V2 モデル"
 
-#: src/live2d-Utils.php:94
+#: src/live2d-Utils.php:88
 msgid "本插件同时支持两套独立的 Live2D 加载链路。第一次配置前请先确认手里的模型属于哪一类："
 msgstr "本プラグインは独立した 2 系統の Live2D 読み込みパイプラインをサポートしています。最初の設定の前に、お手元のモデルがどちらに該当するかを確認してください："
 
-#: src/live2d-Utils.php:96
+#: src/live2d-Utils.php:90
 msgid "模型类别"
 msgstr "モデル種別"
 
-#: src/live2d-Utils.php:97
+#: src/live2d-Utils.php:91
 msgid "清单文件"
 msgstr "マニフェストファイル"
 
-#: src/live2d-Utils.php:98
+#: src/live2d-Utils.php:92
 msgid "主体文件"
 msgstr "主要ファイル"
 
-#: src/live2d-Utils.php:99
+#: src/live2d-Utils.php:93
 msgid "对应 API 方式"
 msgstr "対応する API モード"
 
-#: src/live2d-Utils.php:101
+#: src/live2d-Utils.php:95
 msgid "V1（Cubism 2 / 3 系，如 22 娘、Pio、Tia、Shizuku 等）"
 msgstr "V1（Cubism 2 / 3 系。例：22 娘、Pio、Tia、Shizuku など）"
 
-#: src/live2d-Utils.php:103
+#: src/live2d-Utils.php:97
 msgid "「本地部署旧版模型」或「自行部署旧版模型」"
 msgstr "「ローカルの旧モデル」または「自前ホストの旧モデル」"
 
-#: src/live2d-Utils.php:104
+#: src/live2d-Utils.php:98
 msgid "Cubism 4+（V2，官方仍在维护的最新格式）"
 msgstr "Cubism 4+（V2。Live2D 公式が現在も保守している最新フォーマット）"
 
-#: src/live2d-Utils.php:106
+#: src/live2d-Utils.php:100
 msgid "「自定义新版模型 · 直链加载」或「自定义新版模型 · 托管到本站」(均需登录并购买授权)"
 msgstr "「カスタム新バージョンモデル · 直リンク読み込み」または「カスタム新バージョンモデル · このサイトでホスティング」（いずれもログインとライセンス購入が必要）"
 
-#: src/live2d-Utils.php:108
+#: src/live2d-Utils.php:102
 msgid "简单判断：清单文件名以 .model3.json 结尾就是 V2，否则是 V1。"
 msgstr "簡単な見分け方：マニフェストのファイル名が .model3.json で終われば V2、そうでなければ V1 です。"
 
-#: src/live2d-Utils.php:115
+#: src/live2d-Utils.php:109
 msgid "API 方式与模型路径"
 msgstr "API モードとモデルパス"
 
-#: src/live2d-Utils.php:117
+#: src/live2d-Utils.php:111
 msgid "「API 方式」是 V1 / V2 链路的总开关, 2026-05 重构后由原三选项 + protectV2 二态合并为「四选项 radio」, 每个选项作用不同:"
 msgstr "「API 方式」は V1 / V2 のパイプライン全体の切り替えスイッチです。2026-05 のリファクタリングで、従来の 3 選択肢 + protectV2 トグルを 1 つの「4 択ラジオ」に統合しました。各選択肢の挙動は次のとおりです:"
 
-#: src/live2d-Utils.php:119
-#: src/waifu-Settings-Base.php:148
-msgid "本地部署旧版模型"
-msgstr "ローカルの旧モデル"
-
-#: src/live2d-Utils.php:119
+#: src/live2d-Utils.php:113
 msgid "使用插件随包内置的 V1 模型, 由本站 REST 接口 (/wp-json/live2d/v1/model/*) 提供, 不向外网发起请求。「模型 ID」「材质 ID」会自动变成下拉框。需要在「Live 2D 创意工坊」页面先把模型下载到本地。"
 msgstr "プラグインに同梱されている V1 モデルを使用し、本サイトの REST API（/wp-json/live2d/v1/model/*）から提供します。外部ネットワークへのリクエストはありません。「モデル ID」「テクスチャ ID」は自動的にドロップダウンになります。事前に「Live 2D クリエイティブワークショップ」ページからモデルをダウンロードしてください。"
 
-#: src/live2d-Utils.php:120
-#: src/waifu-Settings-Base.php:157
-msgid "自行部署旧版模型"
-msgstr "自前ホストの旧モデル"
-
-#: src/live2d-Utils.php:120
+#: src/live2d-Utils.php:114
 msgid "对接您自己服务器或第三方提供的 V1 模型 API (即 fghrsh 风格接口), 「模型 API」需要填写返回 model_list.json 的接口根地址。"
 msgstr "ご自身のサーバーまたはサードパーティが提供する V1 モデル API（fghrsh 形式の API）と通信します。「モデル API」には model_list.json を返すエンドポイントのルート URL を入力してください。"
 
-#: src/live2d-Utils.php:121
+#: src/live2d-Utils.php:115
 msgid "自定义新版模型 · 直链加载 (Cubism 4+)"
 msgstr "カスタム新バージョンモデル · 直リンク読み込み（Cubism 4+）"
 
-#: src/live2d-Utils.php:121
+#: src/live2d-Utils.php:115
 msgid "用于 Cubism 4+ 模型 (V2, *.model3.json), 「模型 API」填跨域 URL, 浏览器直接拉源站。需登录账号并完成付费后才能选择, 防盗链由对象存储 / CDN 站长自己处理。"
 msgstr "Cubism 4+ モデル（V2、*.model3.json）向け。「モデル API」にクロスオリジンの URL を入力すると、ブラウザがオリジンから直接取得します。アカウントへのログインと課金後に選択可能となり、ホットリンク対策はオブジェクトストレージ / CDN 側でサイト管理者が行います。"
 
-#: src/live2d-Utils.php:122
+#: src/live2d-Utils.php:116
 msgid "自定义新版模型 · 托管到本站 (Cubism 4+, 推荐)"
 msgstr "カスタム新バージョンモデル · このサイトでホスティング（Cubism 4+, 推奨）"
 
-#: src/live2d-Utils.php:122
+#: src/live2d-Utils.php:116
 msgid "同上, 但插件会把模型下载 / 托管到本站 wp-content/plugins/live-2d/model/{slug}/, 并代为防盗链 (临时签名 URL)。需登录账号并完成付费后才能选择。"
 msgstr "上と同じですが、プラグインがモデルを wp-content/plugins/live-2d/model/{slug}/ にダウンロード / ホストし、ホットリンク対策（一時的な署名付き URL）も代行します。アカウントへのログインと課金後に選択可能です。"
 
-#: src/live2d-Utils.php:124
+#: src/live2d-Utils.php:118
 msgid "选了「托管到本站」后的表单变化"
 msgstr "「このサイトでホスティング」を選んだ後のフォームの変化"
 
-#: src/live2d-Utils.php:125
+#: src/live2d-Utils.php:119
 msgid "选「自定义新版模型 · 托管到本站」后, 「模型 API」输入框会被隐藏, 系统自动把它写成本站 wp-content/plugins/live-2d/model/ 根地址。站长唯一需要填的是「模型目录」列表, 每行一个 slug (= 子目录名), 插件会按 {root}{slug}/{slug}.model3.json 自动展开为完整 manifest URL。"
 msgstr "「カスタム新バージョンモデル · このサイトでホスティング」を選ぶと、「モデル API」入力欄は非表示になり、本サイトの wp-content/plugins/live-2d/model/ ルートが自動で書き込まれます。サイト管理者が入力するのは「モデルディレクトリ」リストだけで、1 行に 1 つの slug（= サブフォルダ名）を書きます。プラグインがそれを {root}{slug}/{slug}.model3.json として完全な manifest URL に展開します。"
 
-#: src/live2d-Utils.php:126
+#: src/live2d-Utils.php:120
 msgid "「模型 API」何时以 .json 结尾、何时以斜杠结尾"
 msgstr "「モデル API」を .json で終わらせるか、スラッシュで終わらせるかの判断"
 
-#: src/live2d-Utils.php:127
+#: src/live2d-Utils.php:121
 msgid "仅当「API 方式 = 自定义新版模型 · 直链加载」时, 「模型 API」支持以下两种写法, 由结尾字符决定走哪种:"
 msgstr "「API 方式 = カスタム新バージョンモデル · 直リンク読み込み」のときのみ、「モデル API」は次の 2 通りの書き方をサポートします。末尾の文字で挙動が決まります:"
 
-#: src/live2d-Utils.php:129
+#: src/live2d-Utils.php:123
 msgid "写法"
 msgstr "書き方"
 
-#: src/live2d-Utils.php:130
+#: src/live2d-Utils.php:124
 msgid "行为"
 msgstr "動作"
 
-#: src/live2d-Utils.php:131
+#: src/live2d-Utils.php:125
 msgid "「模型目录」是否使用"
 msgstr "「モデルディレクトリ」を使用するか"
 
-#: src/live2d-Utils.php:133
+#: src/live2d-Utils.php:127
 msgid "以 .json 结尾 (直链单模型)"
 msgstr ".json で終わる（単一モデルへの直リンク）"
 
-#: src/live2d-Utils.php:134
+#: src/live2d-Utils.php:128
 msgid "直接当作 *.model3.json 加载, 不再做任何路径拼接。例: https://cdn.example.com/live2d/haru/haru.model3.json"
 msgstr "*.model3.json としてそのまま読み込み、パスの連結は行いません。例: https://cdn.example.com/live2d/haru/haru.model3.json"
 
-#: src/live2d-Utils.php:135
+#: src/live2d-Utils.php:129
 msgid "忽略, 下方「模型目录」「待机动画文件名」两行会自动隐藏。"
 msgstr "無視されます。下の「モデルディレクトリ」「待機モーションのファイル名」の 2 行は自動で非表示になります。"
 
-#: src/live2d-Utils.php:136
+#: src/live2d-Utils.php:130
 msgid "以 / 结尾 (目录根 + 多模型)"
 msgstr "/ で終わる（ディレクトリルート + 複数モデル）"
 
-#: src/live2d-Utils.php:137
+#: src/live2d-Utils.php:131
 msgid "当作根目录使用, 配合下方「模型目录」每行一个 slug, 自动按 {模型 API}{slug}/{slug}.model3.json 拼成完整 URL。"
 msgstr "ルートディレクトリとして扱われます。下の「モデルディレクトリ」（1 行に 1 つの slug）と組み合わせて、{モデル API}{slug}/{slug}.model3.json の形で完全な URL に自動展開されます。"
 
-#: src/live2d-Utils.php:138
+#: src/live2d-Utils.php:132
 msgid "必填。每行写一个子目录名称, 名称必须与 {slug}.model3.json 的前缀完全一致。"
 msgstr "必須。1 行に 1 つのサブフォルダ名を書きます。名前は {slug}.model3.json の接頭辞と完全一致している必要があります。"
 
-#: src/live2d-Utils.php:140
+#: src/live2d-Utils.php:134
 msgid "补充约束: 路径不能包含中文; HTTPS 站点的模型清单及其引用到的所有资源 (.moc3、贴图、motion3.json、physics3.json 等) 也必须是 HTTPS; 放在第三方对象存储 / CDN 时请正确开启 CORS。"
 msgstr "補足制約: パスに中国語などの全角文字を含めないでください。HTTPS サイトでは、モデルマニフェストとそこから参照されるすべてのリソース（.moc3、テクスチャ、motion3.json、physics3.json など）も HTTPS である必要があります。サードパーティのオブジェクトストレージ / CDN に置く場合は CORS を正しく設定してください。"
 
-#: src/live2d-Utils.php:141
+#: src/live2d-Utils.php:135
 msgid "「默认材质 ID」仅 V1 模型使用, V2 模型留空即可。"
 msgstr "「デフォルトテクスチャ ID」は V1 モデルのみで使用します。V2 モデルでは空欄のままで問題ありません。"
 
-#: src/live2d-Utils.php:148
+#: src/live2d-Utils.php:142
 msgid "模型防盗保护 (Cubism 4+)"
 msgstr "モデルのホットリンク対策（Cubism 4+）"
 
-#: src/live2d-Utils.php:150
+#: src/live2d-Utils.php:144
 msgid "防盗链只对 Cubism 4+ 模型的两个「自定义新版模型」选项生效; 旧版 V1 走本站 REST 接口, 不需要这层保护。"
 msgstr "ホットリンク対策は、Cubism 4+ モデルの 2 つの「カスタム新バージョンモデル」選択肢にのみ有効です。旧バージョン V1 は本サイトの REST API を経由するため、この保護は不要です。"
 
-#: src/live2d-Utils.php:152
+#: src/live2d-Utils.php:146
 msgid "自定义新版模型 · 直链加载"
 msgstr "カスタム新バージョンモデル · 直リンク読み込み"
 
-#: src/live2d-Utils.php:152
+#: src/live2d-Utils.php:146
 msgid "插件不动您填的「模型 API」, 浏览器直接拉源站。适用于您已经把模型放在阿里云 OSS、腾讯云 COS、又拍、七牛、自家 CDN 等已经具备 Referer 防盗 / URL 鉴权能力的存储上 (原 protectV2 = direct)。"
 msgstr "プラグインは「モデル API」をそのまま使い、ブラウザがオリジンから直接取得します。モデルを Aliyun OSS、Tencent COS、Upyun、Qiniu、自前 CDN など、Referer 防御 / URL 署名に対応したストレージに既に置いている場合に適しています（旧 protectV2 = direct）。"
 
-#: src/live2d-Utils.php:153
+#: src/live2d-Utils.php:147
 msgid "自定义新版模型 · 托管到本站 (推荐)"
 msgstr "カスタム新バージョンモデル · このサイトでホスティング（推奨）"
 
-#: src/live2d-Utils.php:153
+#: src/live2d-Utils.php:147
 msgid "插件会把模型文件保存到本站 wp-content/plugins/live-2d/model/{slug}/, 并对前端只露出经过签名的临时 URL, 访客 F12 也看不到源站地址。适用于源站没有防盗能力 (GitHub Pages、jsDelivr、自建 nginx 等) (原 protectV2 = local)。"
 msgstr "プラグインがモデルファイルを本サイトの wp-content/plugins/live-2d/model/{slug}/ に保存し、フロントエンドには署名付きの一時的な URL のみ公開します。訪問者は DevTools でも元のアドレスを確認できません。オリジン側にホットリンク対策がない場合（GitHub Pages、jsDelivr、自前の nginx など）に適しています（旧 protectV2 = local）。"
 
-#: src/live2d-Utils.php:155
+#: src/live2d-Utils.php:149
 msgid "选「托管到本站」后, 「模型 API」输入框会被隐藏, 系统自动写成本站 model/ 根地址; 站长唯一需要填的是「模型目录」列表 (每行一个 slug)。页面下方会出现「模型托管」面板, 含双标签页: 从 URL 下载 / 上传文件夹。两者完成后都会自动把 slug 追加到「模型目录」列表, 点「保存设置」后生效。"
 msgstr "「このサイトでホスティング」を選ぶと、「モデル API」入力欄は非表示になり、本サイトの model/ ルートが自動で書き込まれます。サイト管理者が入力するのは「モデルディレクトリ」リスト（1 行に 1 つの slug）だけです。ページ下部には「モデルホスティング」パネルが表示され、URL からダウンロード / フォルダーをアップロードの 2 つのタブを備えています。どちらの操作でも slug が「モデルディレクトリ」リストに自動追加され、「設定を保存」をクリックすると反映されます。"
 
-#: src/live2d-Utils.php:156
+#: src/live2d-Utils.php:150
 msgid "2026-05 后取消了访客首次访问时的「自动懒下载」 (原为默认行为但不可见, 需要站长主动点「下载到本站」或拖拽上传。「清理孤儿」用于删除已经从设置里移除、但还残留在本地缓存里的旧模型文件。"
 msgstr "2026-05 以降、訪問者が初回アクセスしたときの「自動的な遅延ダウンロード」（従来の既定の挙動でしたが、画面上は見えませんでした）は廃止されました。サイト管理者が自分で「このサイトにダウンロード」をクリックするか、ドラッグ＆ドロップでアップロードする必要があります。「孤児の削除」は、設定からは削除されたのにローカルキャッシュに残っている古いモデルファイルを削除するために使います。"
 
-#: src/live2d-Utils.php:163
+#: src/live2d-Utils.php:157
 msgid "提示消息与特殊标记"
 msgstr "メッセージと特殊プレースホルダ"
 
-#: src/live2d-Utils.php:167
+#: src/live2d-Utils.php:161
 msgid "在「高级设置」「提示消息选项」页面点击 %s 可以在同一个事件下追加随机语句，运行时随机选一条显示。"
 msgstr "「詳細設定」または「メッセージボックス設定」ページで %s をクリックすると、同じイベントにランダムなメッセージを追加できます。実行時にはその中から 1 つがランダムに表示されます。"
 
-#: src/live2d-Utils.php:170
+#: src/live2d-Utils.php:164
 msgid "以下事件支持在文本中插入特殊标记，运行时会被替换为对应内容："
 msgstr "以下のイベントでは本文中に特殊プレースホルダを挿入でき、実行時に対応する内容へ置換されます："
 
-#: src/live2d-Utils.php:172
+#: src/live2d-Utils.php:166
 msgid "鼠标悬停时的消息提示：{text} 触发事件的内容、{highlight} 高亮样式占位符"
 msgstr "マウスオーバー時のメッセージ：{text} はトリガー内容、{highlight} はハイライトスタイル用プレースホルダ"
 
-#: src/live2d-Utils.php:173
+#: src/live2d-Utils.php:167
 msgid "鼠标点击时的消息提示：{text} 触发事件的内容、{highlight} 高亮样式占位符"
 msgstr "マウスクリック時のメッセージ：{text} はトリガー内容、{highlight} はハイライトスタイル用プレースホルダ"
 
-#: src/live2d-Utils.php:174
+#: src/live2d-Utils.php:168
 msgid "节日事件：{year} 年份、{highlight} 高亮样式占位符"
 msgstr "祝日イベント：{year} は年、{highlight} はハイライトスタイル用プレースホルダ"
 
-#: src/live2d-Utils.php:175
+#: src/live2d-Utils.php:169
 msgid "搜索引擎入站提示：{title} 网站标题、{keyword} 关键词、{website} 站点名称、{highlight} 高亮样式占位符（请以预设值为准，并非所有搜索引擎都会带齐这些信息）"
 msgstr "検索エンジンからの来訪メッセージ：{title} ページタイトル、{keyword} キーワード、{website} サイト名、{highlight} ハイライトスタイル用プレースホルダ（既定値を参照してください。すべての検索エンジンがこれらを提供するわけではありません）。"
 
-#: src/live2d-Utils.php:176
+#: src/live2d-Utils.php:170
 msgid "访问本站点的提示：{website} 站点名称、{highlight} 高亮样式占位符"
 msgstr "サイト訪問者へのメッセージ：{website} サイト名、{highlight} ハイライトスタイル用プレースホルダ"
 
-#: src/live2d-Utils.php:177
+#: src/live2d-Utils.php:171
 msgid "一言 API 的消息：{title}、{source}、{creator}、{date}、{dynasty}、{author}、{highlight}（请以预设值为准，并非所有句子都会带齐这些字段）"
 msgstr "Hitokoto API のメッセージ：{title}、{source}、{creator}、{date}、{dynasty}、{author}、{highlight}（既定値を参照してください。すべての文がこれらの項目を備えているわけではありません）。"
 
-#: src/live2d-Utils.php:181
+#: src/live2d-Utils.php:175
 msgid "高亮用法：在任意 style 属性中插入 %s 即可，高亮颜色请到「提示消息选项」中设置。"
 msgstr "ハイライトの使い方：任意の style 属性に %s を挿入してください。ハイライト色は「メッセージボックス設定」で設定します。"
 
-#: src/live2d-Utils.php:184
+#: src/live2d-Utils.php:178
 msgid "如需恢复全部默认值：删除插件后重新安装即可（注意会同时清空已保存的设置）。"
 msgstr "すべてを既定値に戻したい場合：プラグインを削除してから再インストールしてください（保存済みの設定も同時に消去される点に注意）。"
 
-#: src/live2d-Utils.php:191
+#: src/live2d-Utils.php:185
 msgid "样式与工具栏"
 msgstr "スタイルとツールバー"
 
-#: src/live2d-Utils.php:194
+#: src/live2d-Utils.php:188
 msgid "「看板娘大小」「页面边距」「拖拽样式」位于「样式设置」页，调整后立即对前端生效。"
 msgstr "「看板娘のサイズ」「ページ余白」「ドラッグ方式」は「スタイル設定」ページにあり、変更内容は即時にフロント側へ反映されます。"
 
-#: src/live2d-Utils.php:195
+#: src/live2d-Utils.php:189
 msgid "「面页小于指定宽度禁用看板娘」用于在小屏 / 移动端隐藏，留空或填 0 表示始终显示。"
 msgstr "「ページ幅が指定値未満のとき看板娘を無効化」は小画面 / モバイル端末で非表示にする設定です。空欄または 0 を指定すると常に表示します。"
 
-#: src/live2d-Utils.php:196
+#: src/live2d-Utils.php:190
 msgid "「模型切换方式」「材质切换方式」分别决定按下工具栏切换按钮时是顺序切换还是随机切换。"
 msgstr "「モデル切替方式」「テクスチャ切替方式」は、ツールバーの切替ボタンを押した際に順番で切り替えるかランダムで切り替えるかを決めます。"
 
-#: src/live2d-Utils.php:197
+#: src/live2d-Utils.php:191
 msgid "「超采样」与「抗锯齿」属于付费功能，仅对 V2 模型有效，开启后可显著提升贴图清晰度，但会增加 GPU 占用。"
 msgstr "「スーパーサンプリング」と「アンチエイリアス」は有料機能で、V2 モデルにのみ有効です。有効化するとテクスチャの精細さが大きく向上しますが、GPU 負荷も増えます。"
 
-#: src/live2d-Utils.php:198
+#: src/live2d-Utils.php:192
 msgid "「Cubism Core for Web 引用地址」一般保留默认（指向插件随包分发的 6.x 本地副本即可）。除非您明确知道在做什么，不建议改成 CDN 地址，官方 CDN 目前仍停留在 5.1.0，会与插件内置 Framework 不兼容。"
 msgstr "「Cubism Core for Web の参照 URL」は通常そのまま（プラグインに同梱された 6.x のローカル版を指す既定値）にしておくのが推奨です。明確な理由がない限り CDN への変更は避けてください。公式 CDN は現在も 5.1.0 のままで、同梱の Framework とは互換性がありません。"
 
-#: src/live2d-Utils.php:206
+#: src/live2d-Utils.php:202
+msgid "AI 后端 (ChatGPT 对话)"
+msgstr ""
+
+#: src/live2d-Utils.php:204
+msgid "「工具栏设置」页的「AI 后端」一组控制看板娘对话气泡背后的大模型链路, 仅登录并完成付费的账号可见。两种后端互斥, 同一时刻只能走其中一条:"
+msgstr ""
+
+#: src/live2d-Utils.php:205
+msgid "① Live2dWeb 云端 (默认)"
+msgstr ""
+
+#: src/live2d-Utils.php:207
+msgid "请求经 SignalR 转发到 api.live2dweb.com/chatmsg, 后端接通义千问 (qwen) / 腾讯混元 (hunyuan)。"
+msgstr ""
+
+#: src/live2d-Utils.php:208
+msgid "优点: 开箱即用, 无需在本站配置任何 API Key, 计费走 Live2dWeb 账号订阅。"
+msgstr ""
+
+#: src/live2d-Utils.php:209
+msgid "要求: 已登录 live2dweb.com 并保持订阅有效, 浏览器能访问 api.live2dweb.com。"
+msgstr ""
+
+#: src/live2d-Utils.php:211
+msgid "② WordPress 内置 (AI Building Blocks / PHP AI Client SDK)"
+msgstr ""
+
+#: src/live2d-Utils.php:212
+msgid "本站 PHP 调 WordPress 官方 PHP AI Client SDK, 通过 REST + SSE 流式输出。用户的 API Key 留在自己服务器上, 不经过 Live2dWeb 中转, 也不计费。"
+msgstr ""
+
+#: src/live2d-Utils.php:213
+msgid "启用前提: 网站上能加载到 WordPress\\AiClient\\AiClient 类。任意一个达成即可:"
+msgstr ""
+
+#: src/live2d-Utils.php:218
+msgid "WordPress 7.0+ 核心已内置该 SDK, 在 <a href=\"%s\">设置 → Connectors</a> 配置 API Key 即可, 无需额外插件。"
+msgstr ""
+
+#: src/live2d-Utils.php:224
+msgid "或安装 <a href=\"https://wordpress.org/plugins/ai/\" target=\"_blank\" rel=\"noopener\">官方「AI」插件</a> (WP 7.0+)。"
+msgstr ""
+
+#: src/live2d-Utils.php:228
+msgid "或安装 <a href=\"https://wordpress.org/plugins/ai-provider-for-openai/\" target=\"_blank\" rel=\"noopener\">「AI Provider for OpenAI」</a> (WP 6.9+ 即可, 自带 SDK)。"
+msgstr ""
+
+#: src/live2d-Utils.php:232
+msgid "或安装 <a href=\"https://github.com/felixarntz/ai-services\" target=\"_blank\" rel=\"noopener\">「AI Services」</a> (同时支持 OpenAI / Google / Anthropic 等多个 provider)。"
+msgstr ""
+
+#: src/live2d-Utils.php:236
+msgid "选了「WordPress 内置」后, 工具栏设置页会展开以下 3 行配套字段; 选回「Live2dWeb 云端」会自动隐藏:"
+msgstr ""
+
+#: src/live2d-Utils.php:238
+msgid "字段"
+msgstr ""
+
+#: src/live2d-Utils.php:239
+msgid "作用"
+msgstr ""
+
+#: src/live2d-Utils.php:241
+msgid "AI Provider"
+msgstr ""
+
+#: src/live2d-Utils.php:242
+msgid "在已注册且已配置 API Key 的 provider 间显式指定 (如 openai / google / anthropic)。留空 = 自动让 SDK 挑首个可用。qwen / hunyuan 等官方 provider 包出来后, 站长在这里选一下就能切, 无需改插件代码。"
+msgstr ""
+
+#: src/live2d-Utils.php:243
+msgid "AI 人设 (System Prompt)"
+msgstr ""
+
+#: src/live2d-Utils.php:244
+msgid "给模型的系统提示词, 决定看板娘的语气 / 性格 / 输出长度。支持多行。"
+msgstr ""
+
+#: src/live2d-Utils.php:245
+msgid "AI 模型 (可选)"
+msgstr ""
+
+#: src/live2d-Utils.php:246
+msgid "填写具体模型 ID (如 gpt-4o-mini / gemini-2.5-flash / qwen-turbo); 留空让 SDK 在所选 provider 内自动挑选可用模型。"
+msgstr ""
+
+#: src/live2d-Utils.php:248
+msgid "鉴权与安全"
+msgstr ""
+
+#: src/live2d-Utils.php:250
+msgid "对话接口路径: /wp-json/live2d/v1/ai-chat (POST, text/event-stream)。"
+msgstr ""
+
+#: src/live2d-Utils.php:251
+msgid "强制要求 WP 登录用户 + REST nonce 双重校验, 防止匿名爆刷 Token。"
+msgstr ""
+
+#: src/live2d-Utils.php:252
+msgid "单用户每分钟限流 20 次 (transient), 超出返 429。"
+msgstr ""
+
+#: src/live2d-Utils.php:253
+msgid "SDK 真流式 API 尚未发布前, PHP 端先一次性拿全文再按 UTF-8 字符切片伪流式推出去, 前端体验仍为打字机效果。"
+msgstr ""
+
+#: src/live2d-Utils.php:255
+msgid "排错: 如果工具栏设置页提示「未检测到 PHP AI Client SDK」或「SDK 已加载, 但未注册任何 provider」, 说明上述四种 provider 来源都没装好 / 缺 API Key; 装好后刷新即可。前端 ChatGPT 按钮失败提示「AI 后端未正确配置」也是同一根因。"
+msgstr ""
+
+#: src/live2d-Utils.php:262
 msgid "进阶文档与链接"
 msgstr "詳細ドキュメントと関連リンク"
 
-#: src/live2d-Utils.php:209
+#: src/live2d-Utils.php:265
 msgid "V1 / V2 模型详细对比"
 msgstr "V1 / V2 モデルの詳細比較"
 
-#: src/live2d-Utils.php:210
+#: src/live2d-Utils.php:266
 msgid "使用 V2 自定义模型（Cubism 4+）"
 msgstr "V2 カスタムモデル（Cubism 4+）の使い方"
 
-#: src/live2d-Utils.php:211
+#: src/live2d-Utils.php:267
 msgid "V2 模型防盗链详解"
 msgstr "V2 モデルの盗用防止 詳細解説"
 
-#: src/live2d-Utils.php:212
+#: src/live2d-Utils.php:268
 msgid "V2 模型的触摸区域 (HitArea)"
 msgstr "V2 モデルのタッチ領域 (HitArea)"
 
-#: src/live2d-Utils.php:213
+#: src/live2d-Utils.php:269
 msgid "ChatGPT 接入与自定义 API"
 msgstr "ChatGPT の接続とカスタム API"
 
-#: src/live2d-Utils.php:214
+#: src/live2d-Utils.php:270
 msgid "Chrome / Edge 浏览器扩展（个人用户）"
 msgstr "Chrome / Edge ブラウザ拡張（個人ユーザー向け）"
 
-#: src/live2d-Utils.php:216
+#: src/live2d-Utils.php:272
 msgid "源码与 issue 反馈："
 msgstr "ソースコードと issue 報告："
 
-#: src/live2d-Utils.php:232
+#: src/live2d-Utils.php:288
 msgid "创意工坊使用说明"
 msgstr "創意工坊（ワークショップ）の使い方"
 
-#: src/live2d-Utils.php:234
+#: src/live2d-Utils.php:290
 msgid "本页面列出插件内置的 V1（Cubism 2 / 3 系）模型，例如 bilibili 22 娘 / 33 娘、Potion Maker Pio / Tia、Shizuku 等。点击「下载」后，插件会从作者维护的源站把模型 ZIP 拉到本站、解压到 wp-content/plugins/live-2d/model/ 目录中。"
 msgstr "このページには、プラグインに同梱された V1（Cubism 2 / 3 系）モデルが一覧表示されます。bilibili 22 娘 / 33 娘、Potion Maker Pio / Tia、Shizuku などです。「ダウンロード」をクリックすると、プラグインが作者の管理するオリジンから ZIP を取得し、wp-content/plugins/live-2d/model/ 配下に解凍します。"
 
-#: src/live2d-Utils.php:235
+#: src/live2d-Utils.php:291
 msgid "使用要求："
 msgstr "利用条件："
 
-#: src/live2d-Utils.php:237
+#: src/live2d-Utils.php:293
 msgid "已经在 live2dweb.com 完成账号登录，并把账号 Key 保存到「Live 2D 设置 → 登录」选项卡。"
 msgstr "live2dweb.com でアカウントにログイン済みで、アカウントの Key を「Live 2D 設定 → ログイン」タブに保存していること。"
 
-#: src/live2d-Utils.php:238
+#: src/live2d-Utils.php:294
 msgid "已经完成邮箱验证（V1 模型下载本身不收费，但需要可联系到的邮箱以便接收授权变更通知）。"
 msgstr "メールアドレスの認証が完了していること（V1 モデルのダウンロード自体は無料ですが、ライセンス変更通知の受領のため到達可能なメールアドレスが必要です）。"
 
-#: src/live2d-Utils.php:240
+#: src/live2d-Utils.php:296
 msgid "下载完成后，请前往「Live 2D 设置 → 基础设置」，把「API 方式」切换到「本地部署旧版模型」，然后在「默认模型 ID」下拉中即可看到刚才下载的模型并选用。"
 msgstr "ダウンロード完了後、「Live 2D 設定 → 基本設定」へ移動して「API モード」を「ローカルの旧モデル」に切り替えると、「デフォルトモデル ID」のドロップダウンに先ほどダウンロードしたモデルが表示され、選択できるようになります。"
 
-#: src/live2d-Utils.php:241
+#: src/live2d-Utils.php:297
 msgid "如果某个模型下载失败：先确认 Key 仍然有效（登录页会提示），并检查站点是否能访问 download.live2dweb.com；网络环境受限的站点也可以在源站手动下载 ZIP 后放进 wp-content/plugins/live-2d/model/ 目录。"
 msgstr "モデルのダウンロードに失敗した場合：まず Key が有効であることを確認し（ログインページで通知されます）、サイトが download.live2dweb.com に接続できるか確認してください。ネットワークが制限された環境では、オリジンから ZIP を手動でダウンロードして wp-content/plugins/live-2d/model/ 配下に置くこともできます。"
 
-#: src/live2d-Utils.php:242
+#: src/live2d-Utils.php:298
 msgid "Cubism 4+ 模型不会出现在本页面，需要在「Live 2D 设置 → 基础设置」选择「自定义新版模型 · 直链加载」或「自定义新版模型 · 托管到本站」后自行填写 model3.json 地址(直链)或在「模型目录」每行填一个 slug(托管到本站),并参考「设置帮助 → API 方式与模型路径」一节。"
 msgstr "Cubism 4+ モデルはこのページには表示されません。「Live 2D 設定 → 基本設定」で「カスタム新バージョンモデル · 直リンク読み込み」または「カスタム新バージョンモデル · このサイトでホスティング」を選び、model3.json の URL（直リンク）を入力するか、「モデルディレクトリ」に 1 行 1 つの slug（このサイトでホスティング）を追加してください。詳細は「設定ヘルプ → API 方式とモデルパス」をご参照ください。"
 
-#: src/live2d-Utils.php:261
+#: src/live2d-Utils.php:317
 msgid "更多帮助"
 msgstr "詳しいヘルプ"
 
-#: src/live2d-Utils.php:262
+#: src/live2d-Utils.php:318
 msgid "插件文档站"
 msgstr "プラグイン公式ドキュメント"
 
-#: src/live2d-Utils.php:263
+#: src/live2d-Utils.php:319
 msgid "账号 / 授权管理"
 msgstr "アカウント / ライセンス管理"
 
-#: src/live2d-Utils.php:264
+#: src/live2d-Utils.php:320
 msgid "GitHub Issues 反馈"
 msgstr "GitHub Issues でフィードバック"
 
@@ -513,272 +735,133 @@ msgstr "新しい衣装に着替えさせてくれてありがとう！"
 msgid "您可以把看板娘放在一个指定的区域"
 msgstr "看板娘を指定したウィジェットエリアに配置できます。"
 
-#: src/live2d-Widget.php:69
+#: src/live2d-Widget.php:71
 msgid "Title:"
 msgstr "タイトル："
 
-#: src/waifu-Advanced.php:25
+#: src/waifu-Advanced.php:28
 msgid "复制信息时的提示"
 msgstr "コピー時のメッセージ"
 
-#: src/waifu-Advanced.php:33
+#: src/waifu-Advanced.php:36
 msgid "截图时的提示"
 msgstr "スクリーンショット時のメッセージ"
 
-#: src/waifu-Advanced.php:41
+#: src/waifu-Advanced.php:44
 msgid "隐藏看板娘的提示"
 msgstr "看板娘を非表示にした時のメッセージ"
 
-#: src/waifu-Advanced.php:49
+#: src/waifu-Advanced.php:52
 msgid "更换服装时的提示"
 msgstr "衣装変更時のメッセージ"
 
-#: src/waifu-Advanced.php:57
+#: src/waifu-Advanced.php:60
 msgid "每小时提示"
 msgstr "時間ごとのメッセージ"
 
-#: src/waifu-Advanced.php:65
+#: src/waifu-Advanced.php:68
 msgid "搜索引擎入站提示"
 msgstr "検索エンジン経由の来訪メッセージ"
 
-#: src/waifu-Advanced.php:73
+#: src/waifu-Advanced.php:76
 msgid "访问本站点的提示"
 msgstr "サイト訪問者へのメッセージ"
 
-#: src/waifu-Advanced.php:81
+#: src/waifu-Advanced.php:84
 msgid "一言API的消息"
 msgstr "Hitokoto API のメッセージ"
 
-#: src/waifu-Advanced.php:89
+#: src/waifu-Advanced.php:92
 msgid "鼠标悬停时的消息提示"
 msgstr "マウスオーバー時のメッセージ"
 
-#: src/waifu-Advanced.php:97
+#: src/waifu-Advanced.php:100
 msgid "鼠标点击选择器"
 msgstr "マウスクリック用セレクタ"
 
-#: src/waifu-Advanced.php:105
+#: src/waifu-Advanced.php:108
 msgid "鼠标点击时的消息提示"
 msgstr "マウスクリック時のメッセージ"
 
-#: src/waifu-Advanced.php:113
+#: src/waifu-Advanced.php:116
 msgid "节日事件"
 msgstr "イベント／祝日"
 
-#: src/waifu-Advanced.php:195
+#: src/waifu-Advanced.php:198
 msgid "第一个输入框：没有可换服装时显示的提示语；第二个输入框：每次切换服装时显示的提示语。"
 msgstr "1 つ目の入力欄：着替えできる衣装が無いときのメッセージ。2 つ目の入力欄：衣装を切り替えるたびに表示されるメッセージ。"
 
-#: src/waifu-Advanced.php:204
+#: src/waifu-Advanced.php:207
 msgid "时间按 t{开始小时}-{结束小时} 的格式填写，例如 t5-7 或 t7-11（为避免填错，目前该项不可修改）。"
 msgstr "時間は t{開始時}-{終了時} の形式で入力してください。例：t5-7 や t7-11（誤入力を避けるため、現在この項目は変更できません）。"
 
-#: src/waifu-Advanced.php:211
+#: src/waifu-Advanced.php:214
 msgid "请不要修改 {} 里的内容：{title} 是网页标题、{keyword} 是关键词、{website} 是站点名称。"
 msgstr "{} の中身は変更しないでください。{title} はページタイトル、{keyword} はキーワード、{website} はサイト名を表します。"
 
-#: src/waifu-Advanced.php:221
+#: src/waifu-Advanced.php:224
 msgid "请不要修改 {} 里的内容；lwl12.com 接口有时没有作者信息，多个句子之间需要用「|」分隔。"
 msgstr "{} の中身は変更しないでください。lwl12.com の API では作者情報が無い場合があるため、複数の文は「|」で区切ってください。"
 
-#: src/waifu-Advanced.php:226
+#: src/waifu-Advanced.php:229
 msgid "鼠标悬停的元素位置（按 <a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery 选择器</a> 格式填写）。"
 msgstr "マウスを乗せる要素の位置を <a href=\"https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp\" target=\"_blank\">jQuery セレクタ</a> の形式で指定してください。"
 
-#: src/waifu-Advanced.php:239
+#: src/waifu-Advanced.php:242
 msgid "点击看板娘会循环以上的每一行点击事件"
 msgstr "看板娘をクリックすると、上記の各行のクリックイベントが順番に表示されます。"
 
-#: src/waifu-Advanced.php:246
+#: src/waifu-Advanced.php:249
 msgid "在指定的日期说提示语。日期格式为 MM/dd，例如 2 月 14 日填为 02/14；也可以填一个时间区间，例如 11/05-11/12。"
 msgstr "指定した日付にメッセージを表示します。日付は MM/dd 形式（例：2 月 14 日は 02/14）。11/05-11/12 のような期間指定もできます。"
 
-#: src/waifu-Settings-Base.php:23
+#: src/waifu-Settings-Base.php:20
 msgid "看板娘模式"
 msgstr "看板娘の表示モード"
 
-#: src/waifu-Settings-Base.php:34
+#: src/waifu-Settings-Base.php:27
 msgid "API 方式"
 msgstr "API モード"
 
-#: src/waifu-Settings-Base.php:41
+#: src/waifu-Settings-Base.php:34
 msgid "模型 API"
 msgstr "モデル API"
 
-#: src/waifu-Settings-Base.php:49
+#: src/waifu-Settings-Base.php:42
 msgid "默认模型 ID"
 msgstr "デフォルトモデル ID"
 
-#: src/waifu-Settings-Base.php:57
+#: src/waifu-Settings-Base.php:50
 msgid "默认材质 ID"
 msgstr "デフォルトテクスチャ ID"
 
-#: src/waifu-Settings-Base.php:69
-msgid "模型目录"
-msgstr "モデルディレクトリ"
+#: src/waifu-Settings-Base.php:76
+msgid "已保存的模型类型需要尚未启用的增强插件，当前设置会保留。"
+msgstr ""
 
-#: src/waifu-Settings-Base.php:83
-msgid "待机动画文件名"
-msgstr "アイドルアニメーションのファイル名"
-
-#: src/waifu-Settings-Base.php:100
-msgid "模型托管"
-msgstr "モデルホスティング"
-
-#: src/waifu-Settings-Base.php:111
-msgid "Cubism Core for Web <br/> 引用地址"
-msgstr "Cubism Core for Web<br/>スクリプト URL"
-
-#: src/waifu-Settings-Base.php:151
-msgid "点击进入下载页面"
-msgstr "ダウンロードページを開く"
-
-#: src/waifu-Settings-Base.php:153
-msgid "模型文件由本插件托管,模型 API 自动指向本站,不会向外网发起请求。"
-msgstr "モデルファイルはこのプラグインで管理され、モデル API は自動的に自サイトを参照します。外部へのリクエストは行いません。"
-
-#: src/waifu-Settings-Base.php:159
-msgid "使用您自己服务器上的旧版模型接口,跨域,不走防盗链。"
-msgstr "ご自身のサーバーにある旧バージョンのモデル API を使用します。クロスオリジンで、ホットリンク保護はありません。"
-
-#: src/waifu-Settings-Base.php:164
-#: src/waifu-Settings-Base.php:176
-msgid "自定义新版模型 · 直链加载（Cubism 4+）"
-msgstr "カスタム新バージョンモデル · 直リンク読み込み（Cubism 4+）"
-
-#: src/waifu-Settings-Base.php:166
-msgid "模型存放在您自己的 OSS / CDN / GitHub Pages 等跨域位置。访客会直接加载原始 URL,防盗链需要您自己在对象存储/CDN 控制台设置。"
-msgstr "モデルはご自身の OSS / CDN / GitHub Pages などクロスオリジンの場所に置きます。訪問者は元の URL を直接読み込むため、ホットリンク対策はオブジェクトストレージ / CDN のコンソールでご自身で設定してください。"
-
-#: src/waifu-Settings-Base.php:170
-#: src/waifu-Settings-Base.php:179
-msgid "自定义新版模型 · 托管到本站（Cubism 4+, 防盗链）"
-msgstr "カスタム新バージョンモデル · このサイトでホスティング（Cubism 4+, ホットリンク対策付き）"
-
-#: src/waifu-Settings-Base.php:172
-msgid "插件把模型文件保存到您的网站上,并对外只露出临时签名 URL,访客 F12 看不到原始地址。可填写跨域 URL 点击「下载」,或直接「上传文件夹」。"
-msgstr "プラグインがモデルファイルをサイトに保存し、外部には一時的な署名付き URL のみ公開します。訪問者は DevTools でも元のアドレスを確認できません。クロスオリジンの URL を入力して「ダウンロード」をクリックするか、直接「フォルダーをアップロード」してください。"
-
-#: src/waifu-Settings-Base.php:175
-#: src/waifu-Settings-Base.php:178
-msgid "完成登录并付费后可用"
-msgstr "ログインおよび課金後に利用可能"
-
-#: src/waifu-Settings-Base.php:181
-msgid "Cubism 4+：登录并付费后可使用。"
-msgstr "Cubism 4+：ログインおよび課金後に利用可能です。"
-
-#: src/waifu-Settings-Base.php:194
+#: src/waifu-Settings-Base.php:88
 msgid "页面"
 msgstr "ページ"
 
-#: src/waifu-Settings-Base.php:195
+#: src/waifu-Settings-Base.php:89
 msgid "小工具(beta)"
 msgstr "ウィジェット（Beta）"
 
-#: src/waifu-Settings-Base.php:208
+#: src/waifu-Settings-Base.php:102
 msgid "https://example.com/Samples/Resources/  或  https://example.com/Samples/Resources/haru/haru.model3.json"
 msgstr "https://example.com/Samples/Resources/  または  https://example.com/Samples/Resources/haru/haru.model3.json"
 
-#: src/waifu-Settings-Base.php:212
-msgid "上面「API 方式」选不同选项时, 此处填写要求不同:"
-msgstr "上の「API 方式」で選んだ項目によって、ここに入力する内容が変わります:"
+#: src/waifu-Settings-Base.php:104
+msgid "填写当前模式对应的模型 JSON 或模型 API 地址，具体要求见上方模式说明。"
+msgstr ""
 
-#: src/waifu-Settings-Base.php:215
-msgid "本地部署旧版模型: 系统自动指向本站, 无需填写"
-msgstr "ローカル配置の旧バージョンモデル: システムが自動的に本サイトを指すため、入力不要"
-
-#: src/waifu-Settings-Base.php:216
-msgid "自行部署旧版模型: 填您自己的旧版 PHP API 根地址"
-msgstr "自前ホストの旧バージョンモデル: ご自身の旧バージョン PHP API のルート URL を入力"
-
-#: src/waifu-Settings-Base.php:217
-msgid "自定义新版模型 · 直链加载: 填 .model3.json 完整 URL, 或目录根 (末尾带 /)"
-msgstr "カスタム新バージョンモデル · 直リンク読み込み: .model3.json の完全な URL、またはディレクトリのルート（末尾に / が付く形）を入力"
-
-#: src/waifu-Settings-Base.php:218
-msgid "自定义新版模型 · 托管到本站: 本行隐藏, 由系统自动指向本站 model/ 根目录; 请在下面「模型目录」填 slug (= 子目录名), 或从「模型托管」面板下载/上传自动追加"
-msgstr "カスタム新バージョンモデル · このサイトでホスティング: この行は非表示になり、システムが自動的に本サイトの model/ ルートを指します。下の「モデルディレクトリ」に slug（= サブフォルダ名）を入力するか、「モデルホスティング」パネルからダウンロード / アップロードすると自動的に追加されます。"
-
-#: src/waifu-Settings-Base.php:230
+#: src/waifu-Settings-Base.php:115
 msgid "选择或填写默认加载的模型 ID(具体要求取决于上面「API 方式」)。"
 msgstr "デフォルトで読み込むモデル ID を選択／入力してください（要件は上の「API モード」に依存します）。"
 
-#: src/waifu-Settings-Base.php:240
+#: src/waifu-Settings-Base.php:125
 msgid "选择或填写默认皮肤 ID；Cubism 4+ 模型不使用此项，可留空。"
 msgstr "デフォルトのテクスチャ ID を選択／入力してください。Cubism 4+ モデルでは使用しないため、空欄でも構いません。"
-
-#: src/waifu-Settings-Base.php:246
-msgid "模型名称列表: 「自行部署旧版 / 自定义新版」两种模式下, 每行填一个 slug (= 子目录名, 须与 {slug}.model3.json 前缀完全一致); 「自定义新版 · 托管到本站」模式下点「下载 / 上传」会自动追加。"
-msgstr "モデル名のリスト。「自前ホストの旧バージョン / カスタム新バージョン」モードでは 1 行に 1 つの slug（= サブフォルダ名、{slug}.model3.json の接頭辞と完全一致）を入力します。「カスタム新バージョン · このサイトでホスティング」モードでは「ダウンロード / アップロード」をクリックすると自動で追加されます。"
-
-#: src/waifu-Settings-Base.php:254
-msgid "待机时播放的动作名称（一行一个），不需要填写扩展名。"
-msgstr "待機中に再生するモーション名（1 行に 1 件）。拡張子は不要です。"
-
-#: src/waifu-Settings-Base.php:274
-msgid "未知"
-msgstr "不明"
-
-#: src/waifu-Settings-Base.php:281
-msgid "单文件上限 %s（受服务器 PHP upload_max_filesize 限制）。超过该上限的文件会被红色标记并跳过,如需调高请联系主机商或修改 php.ini / .htaccess。"
-msgstr "1 ファイルあたりの上限: %s（サーバーの PHP upload_max_filesize に制限されます）。上限を超えるファイルは赤くマークされてスキップされます。引き上げるにはホスティング業者に連絡するか、php.ini / .htaccess を変更してください。"
-
-#: src/waifu-Settings-Base.php:289
-msgid "从 URL 下载"
-msgstr "URL からダウンロード"
-
-#: src/waifu-Settings-Base.php:290
-msgid "上传文件夹"
-msgstr "フォルダーをアップロード"
-
-#: src/waifu-Settings-Base.php:295
-msgid "插件会从下面输入的 URL 抓取整套模型文件（model3.json + moc3 + 贴图 + 动作等）保存到您的网站上,完成后访客加载就走本地副本,不再访问外部地址。"
-msgstr "下に入力した URL からモデル一式（model3.json + moc3 + テクスチャ + モーション等）を取得し、サイトに保存します。完了後、訪問者はローカルのコピーを読み込み、外部のアドレスにはアクセスしなくなります。"
-
-#: src/waifu-Settings-Base.php:299
-msgid "模型源 URL"
-msgstr "モデルのソース URL"
-
-#: src/waifu-Settings-Base.php:303
-msgid "下载到本站"
-msgstr "このサイトにダウンロード"
-
-#: src/waifu-Settings-Base.php:306
-msgid "填模型 .model3.json 完整 URL,点击「下载到本站」。下载完成后,该模型的 slug(= 文件夹名)会自动追加到上方「模型目录」列表,无需手填。"
-msgstr "モデルの .model3.json の完全な URL を入力し、「このサイトにダウンロード」をクリックしてください。ダウンロード完了後、そのモデルの slug（= フォルダ名）は上の「モデルディレクトリ」リストに自動で追加されるため、手入力は不要です。"
-
-#: src/waifu-Settings-Base.php:311
-msgid "清理孤儿"
-msgstr "孤立キャッシュを削除"
-
-#: src/waifu-Settings-Base.php:314
-msgid "全部清理"
-msgstr "すべて削除"
-
-#: src/waifu-Settings-Base.php:322
-msgid "如果模型文件只在您本地（没有公网 URL）,可以直接拖拽整个模型文件夹到这里,或点击下方按钮选择文件夹。文件会按相对路径保存到 wp-content/plugins/live-2d/model/{slug}/ 下。"
-msgstr "モデルファイルがお手元にしかない（公開 URL がない）場合は、フォルダーごとここにドラッグするか、下のボタンからフォルダーを選択してください。ファイルは相対パスのまま wp-content/plugins/live-2d/model/{slug}/ 以下に保存されます。"
-
-#: src/waifu-Settings-Base.php:326
-msgid "把模型文件夹拖到这里"
-msgstr "モデルフォルダーをここにドロップ"
-
-#: src/waifu-Settings-Base.php:330
-msgid "选择文件夹"
-msgstr "フォルダーを選択"
-
-#: src/waifu-Settings-Base.php:342
-msgid "正在读取状态…"
-msgstr "状態を読み込み中…"
-
-#: src/waifu-Settings-Base.php:362
-msgid "未获授权请勿修改此地址；擅自修改可能引发法律问题，相关责任与插件作者无关。"
-msgstr "正規のライセンスがない限り、この URL を変更しないでください。無断で変更したことに起因する法的問題について、プラグイン作者は責任を負いません。"
-
-#: src/waifu-Settings-Base.php:363
-msgid "软件许可协议："
-msgstr "ソフトウェアライセンス："
 
 #: src/waifu-Settings-Style.php:11
 msgid "这里可以设置看板娘的外观"
@@ -824,121 +907,64 @@ msgstr "ドラッグ方式"
 msgid "松开鼠标还原拖拽位置"
 msgstr "マウスを放したら位置を戻す"
 
-#: src/waifu-Settings-Style.php:109
-msgid "模型缩放倍数"
-msgstr "モデルの拡大率"
-
-#: src/waifu-Settings-Style.php:117
-msgid "看板娘位置"
-msgstr "看板娘の位置"
-
-#: src/waifu-Settings-Style.php:125
-msgid "画面清晰度（高级）"
-msgstr "画面の鮮明さ（詳細設定）"
-
-#: src/waifu-Settings-Style.php:133
-msgid "边缘平滑（高级）"
-msgstr "輪郭の滑らかさ（詳細設定）"
-
-#: src/waifu-Settings-Style.php:147
+#: src/waifu-Settings-Style.php:105
 msgid "是"
 msgstr "はい"
 
-#: src/waifu-Settings-Style.php:149
+#: src/waifu-Settings-Style.php:107
 msgid "否"
 msgstr "いいえ"
 
-#: src/waifu-Settings-Style.php:155
-#: src/waifu-Settings-Style.php:164
+#: src/waifu-Settings-Style.php:113
+#: src/waifu-Settings-Style.php:122
 msgid "随机"
 msgstr "ランダム"
 
-#: src/waifu-Settings-Style.php:157
-#: src/waifu-Settings-Style.php:166
+#: src/waifu-Settings-Style.php:115
+#: src/waifu-Settings-Style.php:124
 msgid "顺序"
 msgstr "順番"
 
-#: src/waifu-Settings-Style.php:174
+#: src/waifu-Settings-Style.php:132
 msgid "由于看板娘大小不同，请自行设置：宽度 x 高度"
 msgstr "看板娘によりサイズが異なるため、幅 x 高さを各自で設定してください。"
 
-#: src/waifu-Settings-Style.php:183
+#: src/waifu-Settings-Style.php:141
 msgid "设置为 0 时，任何大小的屏幕都会启用看板娘"
 msgstr "0 に設定すると、画面サイズに関係なく看板娘が有効になります。"
 
-#: src/waifu-Settings-Style.php:190
+#: src/waifu-Settings-Style.php:148
 msgid "启用"
 msgstr "有効"
 
-#: src/waifu-Settings-Style.php:192
-#: src/waifu-Settings-Style.php:212
+#: src/waifu-Settings-Style.php:150
+#: src/waifu-Settings-Style.php:170
 msgid "禁用"
 msgstr "無効"
 
-#: src/waifu-Settings-Style.php:197
+#: src/waifu-Settings-Style.php:155
 msgid "靠左"
 msgstr "左寄せ"
 
-#: src/waifu-Settings-Style.php:199
+#: src/waifu-Settings-Style.php:157
 msgid "靠右"
 msgstr "右寄せ"
 
-#: src/waifu-Settings-Style.php:214
+#: src/waifu-Settings-Style.php:172
 msgid "只能水平拖拽"
 msgstr "水平方向のみ"
 
-#: src/waifu-Settings-Style.php:216
+#: src/waifu-Settings-Style.php:174
 msgid "自由拖拽"
 msgstr "自由にドラッグ"
 
-#: src/waifu-Settings-Style.php:222
+#: src/waifu-Settings-Style.php:180
 msgid "还原"
 msgstr "元に戻す"
 
-#: src/waifu-Settings-Style.php:224
+#: src/waifu-Settings-Style.php:182
 msgid "不还原"
 msgstr "そのまま"
-
-#: src/waifu-Settings-Style.php:230
-msgid "设置看板娘在画框中的缩放比例，最小1倍，最大5倍，可以有小数点"
-msgstr "看板娘のフレーム内拡大率を設定します。1～5 倍の範囲で、小数も指定できます。"
-
-#: src/waifu-Settings-Style.php:239
-msgid "设置看板娘的位置，可以是负数"
-msgstr "看板娘の位置を設定します。負の値も指定できます。"
-
-#: src/waifu-Settings-Style.php:256
-msgid "1×（默认）"
-msgstr "1×（既定）"
-
-#: src/waifu-Settings-Style.php:257
-msgid "1.5×（更清晰）"
-msgstr "1.5×（より鮮明）"
-
-#: src/waifu-Settings-Style.php:258
-msgid "2×（高画质，更耗显存）"
-msgstr "2×（高画質、VRAM 使用量増）"
-
-#: src/waifu-Settings-Style.php:259
-msgid "3×（最清晰，非常耗显存）"
-msgstr "3×（最も鮮明、VRAM を大量に使用）"
-
-#: src/waifu-Settings-Style.php:269
-msgid "提高模型画面的清晰度，让边缘看起来更顺滑。倍数越高画面越清晰，但对显卡的占用也越大。"
-msgstr "モデルの画面をくっきり描画し、輪郭を滑らかにします。倍率を上げるほど鮮明になりますが、その分グラフィック性能を多く使います。"
-
-#: src/waifu-Settings-Style.php:281
-msgid "开启（默认）"
-msgstr "オン（デフォルト）"
-
-#: src/waifu-Settings-Style.php:282
-#: src/waifu-Settings-Toolbar.php:166
-msgid "关闭"
-msgstr "オフ"
-
-#: src/waifu-Settings-Style.php:284
-msgid "让模型的边缘看起来更平滑。关闭后边缘可能出现锯齿。修改后请刷新前台页面才会生效。"
-msgstr "モデルの輪郭を滑らかに見せます。オフにすると輪郭がギザギザに見えることがあります。変更後はフロント側のページを再読み込みすると反映されます。"
 
 #: src/waifu-Settings-Tips.php:10
 msgid "提示框设置"
@@ -952,167 +978,273 @@ msgstr "Hitokoto を有効化"
 msgid "一言 API"
 msgstr "Hitokoto API"
 
-#: src/waifu-Settings-Tips.php:33
-msgid "待机动画延迟时间（毫秒）"
-msgstr "アイドルアニメーションの遅延時間（ミリ秒）"
-
-#: src/waifu-Settings-Tips.php:46
+#: src/waifu-Settings-Tips.php:38
 msgid "显示“复制内容”提示"
 msgstr "「コピー」メッセージを表示"
 
-#: src/waifu-Settings-Tips.php:54
+#: src/waifu-Settings-Tips.php:46
 msgid "显示进入面页欢迎词"
 msgstr "ページ読込時のウェルカムメッセージを表示"
 
-#: src/waifu-Settings-Tips.php:62
+#: src/waifu-Settings-Tips.php:54
 msgid "提示框大小"
 msgstr "メッセージボックスのサイズ"
 
-#: src/waifu-Settings-Tips.php:70
+#: src/waifu-Settings-Tips.php:62
 msgid "提示框字号(px)"
 msgstr "メッセージボックスのフォントサイズ (px)"
 
-#: src/waifu-Settings-Tips.php:77
+#: src/waifu-Settings-Tips.php:69
 msgid "提示框位置(px)"
 msgstr "メッセージボックスの位置 (px)"
 
-#: src/waifu-Settings-Tips.php:85
+#: src/waifu-Settings-Tips.php:77
 msgid "提示框背景色"
 msgstr "メッセージボックスの背景色"
 
-#: src/waifu-Settings-Tips.php:93
+#: src/waifu-Settings-Tips.php:85
 msgid "边框颜色"
 msgstr "枠線の色"
 
-#: src/waifu-Settings-Tips.php:101
+#: src/waifu-Settings-Tips.php:93
 msgid "阴影颜色"
 msgstr "影の色"
 
-#: src/waifu-Settings-Tips.php:109
+#: src/waifu-Settings-Tips.php:101
 msgid "提示框文字颜色"
 msgstr "メッセージ文字の色"
 
-#: src/waifu-Settings-Tips.php:117
+#: src/waifu-Settings-Tips.php:109
 msgid "高亮文字颜色"
 msgstr "ハイライト色"
 
-#: src/waifu-Settings-Tips.php:130
-#: src/waifu-Settings-Tips.php:150
+#: src/waifu-Settings-Tips.php:122
 msgid "秒"
 msgstr "秒"
 
-#: src/waifu-Settings-Tips.php:131
-#: src/waifu-Settings-Tips.php:151
+#: src/waifu-Settings-Tips.php:123
 msgid "待机动画延迟时间，单位为秒，默认值为30秒。如果设置为0，则禁用待机动画。"
 msgstr "アイドルアニメーションの遅延（秒）。デフォルトは 30 秒。0 に設定するとアイドルアニメーションを無効化します。"
 
-#: src/waifu-Settings-Tips.php:161
-#: src/waifu-Settings-Tips.php:168
-#: src/waifu-Settings-Toolbar.php:150
-#: src/waifu-Settings-Toolbar.php:157
-#: src/waifu-Settings-Toolbar.php:171
-#: src/waifu-Settings-Toolbar.php:178
-#: src/waifu-Settings-Toolbar.php:185
-#: src/waifu-Settings-Toolbar.php:192
-#: src/waifu-Settings-Toolbar.php:199
-#: src/waifu-Settings-Toolbar.php:206
+#: src/waifu-Settings-Tips.php:145
+#: src/waifu-Settings-Tips.php:152
+#: src/waifu-Settings-Toolbar.php:186
+#: src/waifu-Settings-Toolbar.php:193
+#: src/waifu-Settings-Toolbar.php:391
+#: src/waifu-Settings-Toolbar.php:398
+#: src/waifu-Settings-Toolbar.php:405
+#: src/waifu-Settings-Toolbar.php:412
+#: src/waifu-Settings-Toolbar.php:419
+#: src/waifu-Settings-Toolbar.php:426
 msgid "显示"
 msgstr "表示"
 
-#: src/waifu-Settings-Tips.php:163
-#: src/waifu-Settings-Tips.php:170
-#: src/waifu-Settings-Toolbar.php:152
-#: src/waifu-Settings-Toolbar.php:159
-#: src/waifu-Settings-Toolbar.php:173
-#: src/waifu-Settings-Toolbar.php:180
-#: src/waifu-Settings-Toolbar.php:187
-#: src/waifu-Settings-Toolbar.php:194
-#: src/waifu-Settings-Toolbar.php:201
-#: src/waifu-Settings-Toolbar.php:208
+#: src/waifu-Settings-Tips.php:147
+#: src/waifu-Settings-Tips.php:154
+#: src/waifu-Settings-Toolbar.php:188
+#: src/waifu-Settings-Toolbar.php:195
+#: src/waifu-Settings-Toolbar.php:393
+#: src/waifu-Settings-Toolbar.php:400
+#: src/waifu-Settings-Toolbar.php:407
+#: src/waifu-Settings-Toolbar.php:414
+#: src/waifu-Settings-Toolbar.php:421
+#: src/waifu-Settings-Toolbar.php:428
 msgid "隐藏"
 msgstr "非表示"
 
-#: src/waifu-Settings-Tips.php:177
+#: src/waifu-Settings-Tips.php:161
 msgid "由于提示大小不同，请自行设置：宽度 x 高度"
 msgstr "メッセージボックスのサイズは個別に異なるため、幅 x 高さを各自で設定してください。"
 
-#: src/waifu-Settings-Tips.php:193
+#: src/waifu-Settings-Tips.php:177
 msgid "数字越大越靠上"
 msgstr "数値が大きいほど上に寄ります"
 
-#: src/waifu-Settings-Toolbar.php:17
+#: src/waifu-Settings-Toolbar.php:16
 msgid "工具栏"
 msgstr "ツールバー"
 
-#: src/waifu-Settings-Toolbar.php:25
+#: src/waifu-Settings-Toolbar.php:24
 msgid "ChatGPT按钮"
 msgstr "ChatGPT ボタン"
 
 #: src/waifu-Settings-Toolbar.php:33
+msgid "AI 后端"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:41
+msgid "AI Provider(WP 内置)"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:52
+msgid "AI 人设(System Prompt)"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:61
+msgid "AI 模型(可选)"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:69
 msgid "关闭看板娘按钮"
 msgstr "看板娘を閉じるボタン"
 
-#: src/waifu-Settings-Toolbar.php:41
+#: src/waifu-Settings-Toolbar.php:77
 msgid "模型切换按钮"
 msgstr "モデル切替ボタン"
 
-#: src/waifu-Settings-Toolbar.php:49
+#: src/waifu-Settings-Toolbar.php:85
 msgid "材质切换按钮"
 msgstr "テクスチャ切替ボタン"
 
-#: src/waifu-Settings-Toolbar.php:57
+#: src/waifu-Settings-Toolbar.php:93
 msgid "一言切换按钮"
 msgstr "Hitokoto 切替ボタン"
 
-#: src/waifu-Settings-Toolbar.php:65
+#: src/waifu-Settings-Toolbar.php:101
 msgid "看板娘截图按钮"
 msgstr "スクリーンショットボタン"
 
-#: src/waifu-Settings-Toolbar.php:73
+#: src/waifu-Settings-Toolbar.php:109
 msgid "看板娘截图文件名"
 msgstr "スクリーンショットのファイル名"
 
-#: src/waifu-Settings-Toolbar.php:81
+#: src/waifu-Settings-Toolbar.php:117
 msgid "返回首页按钮"
 msgstr "ホームへ戻るボタン"
 
-#: src/waifu-Settings-Toolbar.php:89
+#: src/waifu-Settings-Toolbar.php:125
 msgid "跳转关于页按钮"
 msgstr "About ページボタン"
 
-#: src/waifu-Settings-Toolbar.php:97
+#: src/waifu-Settings-Toolbar.php:133
 msgid "关于页地址"
 msgstr "About ページの URL"
 
-#: src/waifu-Settings-Toolbar.php:105
+#: src/waifu-Settings-Toolbar.php:141
 msgid "工具栏图标大小(px)"
 msgstr "ツールバーアイコンサイズ (px)"
 
-#: src/waifu-Settings-Toolbar.php:113
+#: src/waifu-Settings-Toolbar.php:149
 msgid "工具栏行高(px)"
 msgstr "ツールバーの行の高さ (px)"
 
-#: src/waifu-Settings-Toolbar.php:121
+#: src/waifu-Settings-Toolbar.php:157
 msgid "工具栏顶部边距(px)"
 msgstr "ツールバーの上部余白 (px)"
 
-#: src/waifu-Settings-Toolbar.php:129
+#: src/waifu-Settings-Toolbar.php:165
 msgid "工具栏图标颜色"
 msgstr "ツールバーアイコンの色"
 
-#: src/waifu-Settings-Toolbar.php:137
+#: src/waifu-Settings-Toolbar.php:173
 msgid "鼠标触碰时图标颜色"
 msgstr "ホバー時のアイコン色"
 
-#: src/waifu-Settings-Toolbar.php:164
+#: src/waifu-Settings-Toolbar.php:226
+msgid "Live2dWeb 云端(默认, qwen / hunyuan)"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:231
+msgid "通过 <a href=\"https://www.live2dweb.com/Sites/\" target=\"_blank\" rel=\"noopener\">Live2dWeb</a> 走插件作者后端的 qwen / hunyuan,需要登录付费账号。"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:242
+msgid "WordPress 内置(AI Building Blocks / PHP AI Client SDK)"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:247
+msgid "依赖 <a href=\"https://make.wordpress.org/ai/2025/07/17/ai-building-blocks/\" target=\"_blank\" rel=\"noopener\">AI Building Blocks</a> 体系,任选其一即可:"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:261
+msgid "WordPress 7.0+ 核心内置 SDK,在 <a href=\"%s\">设置 → Connectors</a> 配置(无需额外插件)"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:271
+msgid "<a href=\"https://wordpress.org/plugins/ai/\" target=\"_blank\" rel=\"noopener\">官方「AI」插件</a>(WP 7.0+)"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:279
+msgid "<a href=\"https://wordpress.org/plugins/ai-provider-for-openai/\" target=\"_blank\" rel=\"noopener\">「AI Provider for OpenAI」</a>(WP 6.9+ 即可)"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:287
+msgid "<a href=\"https://github.com/felixarntz/ai-services\" target=\"_blank\" rel=\"noopener\">「AI Services」</a>(同时支持 OpenAI / Google / Anthropic 等)"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:293
+msgid "当前检测结果:"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:295
+msgid "未检测到 PHP AI Client SDK — 请先安装上述任一插件并启用,本选项才能使用。"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:297
+msgid "SDK 已加载,但未注册任何 provider"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:299
+msgid "已注册 provider:"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:301
+msgid "已配置(可用):"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:303
+msgid "无"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:349
+msgid "自动(让 SDK 挑首个可用)"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:354
+msgid "未配置"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:357
+msgid "仅「WordPress 内置」模式生效。留空 = 自动。"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:364
+msgid "你是可爱的 Live2D 看板娘,回答简洁、温柔, 要有二次元的风格。"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:367
+msgid "仅「WordPress 内置」模式生效。"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:378
+msgid "留空让 SDK 自动挑选可用模型;填写如 gpt-4o-mini / gemini-2.5-flash / qwen-turbo 等具体模型 ID。仅「WordPress 内置」模式生效。"
+msgstr ""
+
+#: src/waifu-Settings-Toolbar.php:384
 msgid "开启"
 msgstr "オン"
 
-#: src/waifu-Settings-Toolbar.php:228
+#: src/waifu-Settings-Toolbar.php:386
+msgid "关闭"
+msgstr "オフ"
+
+#: src/waifu-Settings-Toolbar.php:448
 msgid "数字越大越靠下"
 msgstr "数値が大きいほど下に寄ります"
 
-#: src/waifu-Settings.php:54
-msgid "\"自定义模型路径（Cubism 4+）\" 需要登录并付费后才能使用, 已自动恢复为 \"自行部署旧版模型\"."
-msgstr "\"カスタムモデルパス（Cubism 4+）\" はログインおよび課金後にのみ利用可能です。\"自前ホストの旧モデル\" に自動で戻しました。"
+#: src/waifu-Settings.php:12
+msgid "设置格式无效，原配置已保留。"
+msgstr "設定形式が無効です。元の設定を保持しました。"
+
+#: src/waifu-Settings.php:36
+msgid "该模型类型的增强插件未启用，原配置已保留。"
+msgstr "このモデル形式のアドオンは利用できません。元の設定を保持しました。"
+
+#: src/waifu-Settings.php:98
+msgid "请先安装并启用 WordPress AI SDK/provider；不会自动切换到其他服务。"
+msgstr ""
+
+#: src/waifu-Settings.php:224
+msgid "关于页地址必须为 HTTP(S) 或站内相对地址。"
+msgstr ""
 

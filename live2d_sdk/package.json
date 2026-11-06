@@ -1,0 +1,29 @@
+{
+  "name": "wp-live2d-free-sdk",
+  "version": "2.3.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run typecheck && vite build && node scripts/copy-licenses.cjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@microsoft/signalr": "7.0.14",
+    "dexie": "3.2.7",
+    "dompurify": "3.4.17",
+    "interactjs": "1.10.27",
+    "marked": "15.0.12",
+    "version-parser": "0.0.2"
+  },
+  "devDependencies": {
+    "@types/jquery": "3.5.32",
+    "@types/node": "^22.15.0",
+    "esbuild": "0.28.2",
+    "jquery": "3.7.1",
+    "moment": "2.31.0",
+    "sass": "1.87.0",
+    "typescript": "5.9.3",
+    "vite": "8.3.5"
+  }
+}

@@ -1,114 +1,64 @@
-# Live2D Web Canvas - WordPress 插件
+# Live2DWebCanvas 免费基础版
 
-[![sdk](https://img.shields.io/badge/Live2D-v5.r5-blue?color=%23ff6e2d)](https://www.live2d.com/download/cubism-sdk/download-web/)  [![showcase](https://img.shields.io/badge/Live2dWebCanvas-v2.1.3-blue)](https://www.live2d.com/showcase/title/live2dwebcanvas/)  [![wordpress](https://img.shields.io/badge/Wordpress-v6.9.5-blue)](https://wordpress.org/download/releases/)  [![plugin](https://img.shields.io/badge/wordpress.org-live--2d-blue?logo=wordpress&logoColor=white)](https://wordpress.org/plugins/live-2d/)
+WordPress 看板娘基础插件。2.3.0 将旧版 Live2D 与依赖 Cubism Core 的新版模型拆分，避免在免费包中携带被付费开关锁住的实现，并分别管理许可和分发。
 
-> 📖 **使用帮助 / 文档中心：** **<https://jiangweifang.github.io/wp-live2d/>**
->
-> 收录：[自定义模型教程](https://jiangweifang.github.io/wp-live2d/wiki/custom-model.html) · [ChatGPT 配置](https://jiangweifang.github.io/wp-live2d/wiki/chatgpt.html) · [浏览器扩展隐私政策](https://jiangweifang.github.io/wp-live2d/privacy/extension.html) · 注意事项与常见问题。
+**当前是未发布的拆分草稿，不应直接覆盖生产站点。** 技术测试通过也不等于获得 WordPress.org 重新开放或第三方许可批准。
 
-- 基于 Live2D 看板娘前端 HTML 源码改写。
-- 在 WordPress 后台 → 插件 → 搜索 "live 2d" 即可一键安装：<https://wordpress.org/plugins/live-2d/>。觉得好用的话欢迎给个好评！
+中文说明见本文及 [完整中文说明](readme.zh-CN.txt)。仅 [目录专用说明](readme.txt) 保留英文，以符合 [WordPress.org 的说明文件语言要求](https://make.wordpress.org/plugins/2025/07/28/requiring-the-readme-to-be-written-in-english/)。
 
-<img src='https://user-images.githubusercontent.com/38683169/216086597-6acf9f5e-f694-4c14-85cc-08cbbdfbfd4c.png' width='300px' />
+## 两个版本
 
-## 这是个什么插件？
-
-安装并启用后，你的 WordPress 站点右下角会出现一个会动的二次元小人（也就是常说的"看板娘"），可以摆姿势、说话、被点击互动。
-
-- **零配置就能跑**：装完即用，自带几个示例模型。
-- **想换造型 / 换皮肤**：到设置页里换一个 `modelAPI` 地址就行，详细教程见 [自定义模型教程](https://jiangweifang.github.io/wp-live2d/wiki/custom-model.html)。
-- **想让她会聊天**：可以接 ChatGPT，参考 [ChatGPT 配置](https://jiangweifang.github.io/wp-live2d/wiki/chatgpt.html)。
-
-更多说明、截图、常见问题都在 **<https://jiangweifang.github.io/wp-live2d/>**。
-
-### 默认外观（可在设置里改）
-
-这些是对话气泡的默认配色，看不顺眼可以到设置页随便改：
-
-- 提示框背景色：rgba(236, 217, 188, 0.5)
-- 边框颜色：rgba(224, 186, 140, 0.62)
-- 阴影颜色：rgba(191, 158, 118, 0.2)
-- 字体颜色：#32373c
-- 高亮提醒颜色：#0099cc
-
-## 进阶玩法（普通用户可以跳过）
-
-> 本节是给已经在用对象存储 / CDN、并且担心模型被别人盗链的站长看的。
-> 如果你只是想让看板娘正常显示，**默认配置就够了，下面这些都不用看**。
-
-### "防盗链" 开关怎么选？
-
-所谓"盗链"，就是别人发现你的模型文件地址后，直接拿到自己网站上去用，白嫖你的流量。
-
-设置页 → "基础设置" → **防盗链 (Cubism 4+ 模型)** 只有两个选项，分别对应两种完全不同的思路，**二选一，不要叠加**：
-
-| 选项 | 谁来挡盗链？ | 什么时候选 |
+| 功能 | Free（本仓库） | Pro（独立增强插件） |
 |---|---|---|
-| **不缓存（默认）** | 你自己（去对象存储 / CDN 控制台开防盗链） | 模型已经放在阿里云 OSS、腾讯云 COS、七牛、又拍、自家 CDN 等地方 |
-| **缓存到本地（推荐）** | 插件自己处理（自动给文件起别名 + 临时签名链接） | 模型放在 GitHub Pages、jsDelivr、自己搭的 nginx 这种没有防盗链功能的地方 |
+| 旧版 Live2D 模型及贴图切换 | 支持，无需 Pro；普通模型不要求官网账号 | 复用 Free |
+| 气泡、布局、工具栏、截图、消息净化、资源缓存 | 共享实现 | 复用 Free |
+| WordPress AI、聊天界面及外部服务接入 | 保留；外部服务仍按提供方条款使用 | 复用 Free |
+| Cubism Core、新版模型、专用托管及渲染控制 | 不包含、不自动下载 | 由 Pro 提供 |
 
-#### 情况 A：模型已经在 OSS / COS / CDN 上 → 选 "不缓存"
+Pro 依赖 Free，不是替换 Free 的另一个完整插件。获取入口：**<https://www.live2dweb.com/Downloads/WordPressPro>**。已有用户使用原账号核对对应权益，不需要为同一权益重复付款。账号升级后，在插件登录页重新保存 Key 可刷新站点权益。
 
-这时让对象存储自己挡盗链最省事。常见三种做法（从简单到复杂）：
+此后公共 Git 只包含 Free 和共享代码。历史没有改写，过去公开的内容不会因此消失。Pro 安装包私有分发也不意味着浏览器收到的脚本或模型无法被查看、复制；签名资源地址不是 DRM。
 
-1. **公共读 + Referer 白名单（最简单，零代码）**
-   - 阿里云 OSS：Bucket → 数据安全 → 防盗链，把你的网站域名加进白名单。
-   - 腾讯云 COS：存储桶 → 安全管理 → 防盗链设置，操作类似。
-   - 原理：浏览器加载模型时会带上 "我从哪个网站来的"（Referer），不在白名单的来源直接拒绝。
-   - 局限：稍微懂点抓包的人能伪造来源绕过。
+## 旧版本升级：先迁移，后替换
 
-2. **套一层自家 CDN，开 URL 鉴权（中等）**
-   - 在 OSS 前面套阿里云 CDN / 腾讯云 CDN / Cloudflare，开启 "URL 鉴权" 或 "Token 校验"。
-   - 然后把插件设置页里的 `modelAPI` 填成 CDN 那边给的带签名地址。
+1. 备份数据库、完整旧插件和旧 `model` 目录，暂时关闭自动更新。**不要先停用、卸载或删除旧版本**，旧版的停用逻辑可能删除设置。
+2. 有 Pro 权益的用户先安装 Pro。在旧完整版本仍启用时，Pro 只显示兼容性及迁移提示，不重复加载新版 API/渲染器。
+3. 点击“备份设置并迁移旧模型”。迁移逐文件校验并复制到 WordPress uploads 下的 `live2d-models`，校验成功后才切换；原文件保留，设置及授权快照保存在私有数据库选项 `live2d_model_migration_backup`。
+4. 确认迁移成功后，更新 Free，再检查 Pro 状态和前台。迁移失败时不要继续替换；错误会说明冲突或不支持的文件。不要把备份中的账号 Key 放入公开目录或提交 Git。
+5. 不使用 Pro 的旧用户：升级前由站点管理员备份数据库并将已验证的旧模型完整复制到 `wp-content/uploads/live2d-models`（自定义 uploads 路径按站点实际配置）。完成备份、校验后再更新；不要依赖更新完成后的代码挽救已被删除的旧目录。
 
-3. **私有读 + 签名链接（最严格，需要自己写代码）**
-   - Bucket 设成私有，每次访问都必须带签名才能下载。
-   - 这种模式没法直接在插件设置页里配置，需要懂 PHP 的人自己在主题 `functions.php` 里写一段代码动态生成签名地址。
-   - **插件不内置这层功能**，原因见下面。
+新安装的模型放在 uploads 持久目录。尚有旧目录且未完成迁移时仍使用旧目录，不静默切换。多站点共用旧模型目录不自动迁移，须由网络管理员先备份并逐站处理。自动复制需要目标文件系统支持硬链接以保证发布时不覆盖并发写入；不支持时保留原数据并明确报错。
 
-#### 情况 B：模型放在 GitHub Pages 之类没法配防盗链的地方 → 选 "缓存到本地"
+Free 缺少兼容且已授权的 Pro 时，仅暂停已保存的新版模型，不自动换角色。Free 从 2.3.0 起，停用默认不删除设置、授权或模型；卸载默认保留数据库数据，但 WordPress 仍会删除插件目录，因此旧模型必须先迁走。
 
-选这个之后，插件会把模型文件全部下载到你自己的 WordPress 站点里（`wp-content/plugins/live-2d/model/`），并且对外只露出一个加密过的临时链接，访客 F12 看到的也是这个临时链接，不会暴露源站地址。
+## 安全修复
 
-- **只在第一次下载时占用源站流量**，之后访客都是从你自己的服务器拿，源站再也不会被白嫖。
-- 行为和老版本（V1）模型放在站内一样，对小流量服务器（比如月 1TB 带宽）很友好。
+- CVE-2026-92895：访客只能访问管理员已配置的模型；不信任客户端清单，不允许访客入队下载。
+- 文件上传、下载及 ZIP 解包校验路径、扩展名、内容和符号链接；下载任务记录并复查管理员授权。
+- 新版模型的远程清单、资源及重定向固定到已校验的公网 IPv4，保持 TLS 校验，不支持该链路的 HTTP 代理。
+- 账号绑定要求管理员与 nonce；保留手动 Key 登录。无效凭据不覆盖旧值，令牌续期更新账号权益。
+- 消息、搜索标题、引用和每次 AI 流式片段经过 DOMPurify；工具栏只允许 HTTP(S) 导航。
+- 内置 WordPress AI 后端需要站长明确启用及已登录的 WordPress 用户。
 
-#### 为什么插件不直接帮你接 OSS 私有读？
+更新不会删除攻击者已经植入的文件。受影响站点仍需检查数据库、模型目录及其他站点文件。
 
-经常有人问 "为啥不能让插件自己拿我的 OSS AccessKey 去签名转发？" 三个原因：
+## 构建
 
-1. **AccessKey 不能存数据库**。WordPress 的设置项是明文存的，万一数据库泄漏（被黑、备份外泄、共享主机出事），你的整个 OSS Bucket 就全没了，比模型被盗严重得多。
-2. **每家云的签名算法都不一样**。阿里云、腾讯云、AWS、Cloudflare R2、MinIO 各搞一套，做完一家就有人提"加 XX 云支持"，没完没了。
-3. **真要用的人不需要插件帮忙**。能搞定 OSS 私有读的站长，自己写几行 PHP 比点设置页方便得多，也更安全（凭据可以走环境变量，不进数据库）。
+`live2d_sdk` 是普通 Free 源码目录，不再是子模块；完整 SDK 子模块由私有 Pro 项目维护。jQuery 和 Moment 使用 WordPress 自带版本。
 
-#### 想自己改代码接 OSS 签名链接？
+```powershell
+Set-Location .\live2d_sdk
+npm ci
+npm run build
+```
 
-目前插件**没有提供专门的钩子**给你拦截这个流程。如果实在想改，只能 fork 仓库，去 [src/live2d-V2Api.php](src/live2d-V2Api.php) 里改 `get_asset()` / `stream_local()` 这两个函数，让它在命中你的私有 OSS 路径时返回一个 302 跳转到 OSS 预签名地址。如果以后用这个功能的人多了，我们会考虑加一个正式的 `live2d_v2_resolve_alias` 钩子，但**插件本身永远不会内置任何具体云厂商的 SDK**。
+回归测试、夹具、测试工具及安装包验证由私有项目维护，不随公开 Git 或插件安装包分发。
 
-如果你真打算这么干，请务必：
-- 用最小权限的子账号（只给 "读取对象" 权限，限定到具体 Bucket / 目录）；
-- **千万不要把 SecretKey 直接写进 WordPress 设置项里**，用环境变量或专门的密钥管理服务。
+## 发布阻塞与许可
 
-## 版权声明
+- 本项目自有代码保留 [MIT 许可](LICENSE)；上游 `journey-ad/live2d_src` 的 GPL v2.0 及其他第三方许可不被重新许可。
+- 新版 Cubism Core 已移出 Free，Pro 保留其原始许可文件。但**“旧引擎免费”不等于“GPL 兼容”**：旧引擎、改编的 Framework 和模型预览资源仍需要明确的许可及可读源码依据；当前不宣称它们已通过 WordPress.org 审核。
+- `download.live2dweb.com` 的证书主机名问题须由服务端修复。在此之前不会关闭 TLS 验证或回退 HTTP，受影响的经典模型下载会失败。
+- 生产 COS 私有桶、包对象及签名过期验证、官网部署和 WordPress.org 复审须另行完成。没有推送 Git、提交 SVN、上传 Pro 包或发送复审邮件。
 
-- 本插件本体遵循 **MIT 许可证**（见仓库根目录 [`LICENSE`](LICENSE)）。
-- [live2d_src / ©journey-ad / GPL v2.0][1] —— 上游原作品仍受其 GPL v2.0 约束。
-  
-  [1]: https://github.com/journey-ad/live2d_src "基于 #fea64e4 的修改版"
-  
-- Live2D Web Canvas - WordPress 插件不属于 Live2D Inc. 它是一个非官方产品
-
-## Live2D Cubism Core 再配布声明
-
-本插件随包分发 Live2D Cubism Core 6.x（位于 [`assets/cubism-core/`](assets/cubism-core/)，包含 `live2dcubismcore.min.js` 与随附的 [`LICENSE.md`](assets/cubism-core/LICENSE.md) / [`RedistributableFiles.txt`](assets/cubism-core/RedistributableFiles.txt)）。该目录下的文件遵循 **Live2D Proprietary Software License Agreement**，与本插件主体的 MIT 许可独立，未随本插件重新许可。
-
-- 协议全文：<https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_cn.html>
-- 该目录下的 `live2dcubismcore.min.js` 依据官方 `RedistributableFiles.txt` 清单允许再配布；二次分发者请保留该目录内原始 LICENSE / RedistributableFiles 文件，不得删改。
-- 二次分发者需要求 downstream distributor 与终端用户接受与原协议同等效力的保护条款（EULA 5.2.2）。
-- 与本插件及 Cubism Core 相关的第三方费用 / 诉讼须由二次分发者自行免责、抗辩与补偿 Live2D 公司（EULA 5.2.3）。
-- 插件作者与 Live2D Inc. 无雇佣关系，但保持官方合作关系。本插件支持加载任意第三方 model3.json / 切换皮肤 / 所有 V2 区存仓库模型，按 EULA 1.5 / 2.1 / 6.3 定义属于“拓展性应用 (拡張性アプリ)”；出版派生作品前（包括在 wordpress.org / GitHub Releases / 自有站点公开使用）请参照 EULA 第 2 条、第 6.3 条自行与 Live2D 公司签订 *Live2D 出版许可协议*（符合 EULA 2.2 “一般用户 / 小规模事业者 / 适格教育机构”资格且获 Live2D 书面批准者可免除）。
-
-## 软件许可协议
-[![MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Proprietary Software](https://img.shields.io/badge/license-Live2D%20Proprietary%20Software-blue)](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html)
-[![Open Software](https://img.shields.io/badge/license-Live2D%20Open%20Software-blue)](https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html)
+使用帮助：<https://jiangweifang.github.io/wp-live2d/>。旧教程中关于单包包含新版模型的说明须按上述拆分规则理解。本插件不是 Live2D Inc. 的官方产品。

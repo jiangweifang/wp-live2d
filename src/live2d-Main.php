@@ -16,10 +16,7 @@ class live2D
 	{
 		add_action('admin_menu', array($this, 'live_2d__add_plugin_page'));
 		add_action('admin_init', array($this, 'live_2d_waifu_page_init'));
-		// 保存设置JSON的钩子 在执行update_option_live_2d_advanced_option_name之后进行
-		add_filter("pre_update_option_live_2d_settings_option_name", array(new live2D_SDK(), 'Update_Options'), 10, 3);
-		add_filter("pre_update_option_live_2d_advanced_option_name", array(new live2D_SDK(), 'Update_Advanced_Options'), 10, 3);
-		add_filter("pre_update_option_live_2d_settings_user_token", array(new live2D_SDK(), 'Update_Login_Options'), 10, 3);
+		// Settings API handles form capability/nonces; REST and AJAX verify their own authorization.
 		add_action('updated_option', array($this, 'live2D_Advanced_Save'), 10, 3);
 	}
 
@@ -56,14 +53,14 @@ class live2D
 	{
 		$live2dUserInfo = get_option('live_2d_settings_user_token');
 		wp_enqueue_style('wp-color-picker');
-		wp_enqueue_style('live2d_admin', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu.css'); //css
-		wp_register_script('wp-color-picker-alpha', plugin_dir_url(dirname(__FILE__)) . '/assets/wp-color-picker-alpha.min.js', array('wp-color-picker'));
+		wp_enqueue_style('live2d_admin', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu.css', array(), LIVE2D_VERSION); //css
+		wp_register_script('wp-color-picker-alpha', plugin_dir_url(dirname(__FILE__)) . '/assets/wp-color-picker-alpha.min.js', array('wp-color-picker'), LIVE2D_VERSION, true);
 		wp_add_inline_script(
 			'wp-color-picker-alpha',
 			'jQuery( function() { jQuery( ".color-picker" ).wpColorPicker(); } );'
 		);
 		wp_enqueue_script('wp-color-picker-alpha');
-		wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu-admin.min.js');
+		wp_enqueue_script('admin_js', plugin_dir_url(dirname(__FILE__)) . '/assets/waifu-admin.min.js', array('jquery'), LIVE2D_VERSION, true);
 		// admin 端传给 JS 的 settings 原样下发: live2d-admin.ts 需要 apiType 的
 		// 四态字符串 ('local'|'remote'|'custom-remote'|'custom-local') 驱动表单动态切换。
 		// 前端 live2dweb (wordpress-live2d.php) 则单独压成 bool 供运行时使用。
@@ -76,13 +73,14 @@ class live2D
 				'certserialnumber' => isset($live2dUserInfo["certserialnumber"]) ? intval($live2dUserInfo["certserialnumber"]) : 0,
 			),
 			'homeUrl' => get_home_url(),
-			'modelDirUrl' => plugin_dir_url(dirname(__FILE__)) . 'model/',
+			'modelDirUrl' => live2d_ModelFiles::root_url(),
 			'settings' => get_option('live_2d_settings_option_name'),
 			'nonce' => wp_create_nonce('live2d_shop_action'),
 		));
 		// admin_js 是 ES module(import/export),需要 type="module" 否则浏览器 SyntaxError;
 		// 同时 inline 调用必须等 module 加载完成后才能看见 window.live2dSettings.
 		live2d_mark_script_as_module('admin_js');
+		do_action('live2d_enqueue_admin_assets');
 		wp_add_inline_script(
 			'admin_js',
 			'(function(){
@@ -95,11 +93,13 @@ class live2D
 						console.warn("live2dSettings 加载超时,Tab 切换可能不可用。");
 					}
 				};
-				if (window.jQuery) { jQuery(function(){ tryRun(40); }); } else { tryRun(40); }
+				if (document.readyState === "complete") { tryRun(40); }
+				else { window.addEventListener("load", function(){ tryRun(40); }, {once:true}); }
 			})();'
 		);
 ?>
 		<div class="wrap">
+			<?php live2d_Extensions::notice(); ?>
 			<h2 class="nav-tab-wrapper">
 				<a id="login_btn" href="#login" class="nav-tab"><?php esc_html_e('登陆', 'live-2d') ?></a>
 				<a id="settings_btn" href="#settings" class="nav-tab"><?php esc_html_e('基础设置', 'live-2d') ?></a>
@@ -192,6 +192,7 @@ class live2D
 		// 加载登录异常
 		$waifu_login = new live2D_Login();
 		$waifu_login->live_2d_login_init();
+		do_action('live2d_register_extension_settings');
 	}
 }
 ?>

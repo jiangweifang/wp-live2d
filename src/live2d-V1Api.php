@@ -16,7 +16,7 @@
  *
  * 数据来源:
  *   1) live2d_SDK::GetV1Catalog() —— 模型条目元数据(name/skins/texturesJson)
- *   2) DOWNLOAD_DIR/{modelName}/index.json —— 由 V1 zip 解压而来的官方 manifest
+ *   2) LIVE2D_DOWNLOAD_DIR/{modelName}/index.json —— 由 V1 zip 解压而来的官方 manifest
  *   3) {plugin_root}/assets/v1/{modelName}.textures.json —— 多套贴图清单(可选)
  *
  * 鉴权:全部 public(__return_true)。访客只能看到管理员通过 Shop 下载到本地
@@ -149,7 +149,7 @@ class live2d_V1Api
 			$relDir = $modelName;
 		}
 
-		$absDir = DOWNLOAD_DIR . $relDir . '/';
+		$absDir = LIVE2D_DOWNLOAD_DIR . $relDir . '/';
 		$indexJsonPath = $absDir . 'index.json';
 		if (!file_exists($indexJsonPath)) {
 			return new WP_REST_Response(array(
@@ -312,7 +312,7 @@ class live2d_V1Api
 	{
 		$result = array();
 		foreach (live2d_SDK::GetV1Catalog() as $item) {
-			$dir = DOWNLOAD_DIR . sanitize_file_name($item['name']);
+			$dir = LIVE2D_DOWNLOAD_DIR . sanitize_file_name($item['name']);
 			if (is_dir($dir)) {
 				$result[] = $item['name'];
 			}
@@ -393,6 +393,7 @@ class live2d_V1Api
 		$raw = trim($raw);
 		$data = json_decode($raw, true);
 		if (!is_array($data)) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Operational failure reporting, not debug output; credentials are never logged.
 			error_log('live2d_V1Api:[json_decode 失败] path=' . $path . ' err=' . json_last_error_msg());
 			return null;
 		}
@@ -478,7 +479,7 @@ class live2d_V1Api
 	{
 		// dirname(__DIR__) 指向插件根; plugin_dir_url 在符号链接 / mu-plugins 等
 		// 边界场景下也能拿到正确的 URL,与 live2d_Shop 中保持一致。
-		return rtrim(plugin_dir_url(dirname(__FILE__)) . 'model', '/');
+		return rtrim(live2d_ModelFiles::root_url(), '/');
 	}
 }
 

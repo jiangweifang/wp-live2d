@@ -4,3 +4,7 @@
 assets/*.map
 model/*.*
 /.vs
+node_modules/
+/DataProtection/
+/tests/.frontend-security-work/
+/tests/

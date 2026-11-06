@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node", "vite/client"],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowJs": false,
+    "baseUrl": ".",
+    "paths": {
+      "live2d-shared": ["src/shared.ts"],
+      "live2d-admin-shared": ["src/admin-shared.ts"]
+    }
+  },
+  "include": ["src/Wordpress/**/*.ts", "src/lib/**/*.ts", "src/*.ts"]
+}

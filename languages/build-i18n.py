@@ -21,15 +21,19 @@ from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent
 LANG_DIR = ROOT / "languages"
-TEXT_DOMAIN = "live-2d"
+TEXT_DOMAIN = sys.argv[2] if len(sys.argv) > 2 else "live-2d"
 
 # PHP files to scan for gettext calls.
 SCAN_FILES = [
-    ROOT / "wordpress-live2d.php",
+    *ROOT.glob("wordpress-live2d*.php"),
     *(ROOT / "src").glob("*.php"),
 ]
+version_match = re.search(r"^\s*\*\s*Version:\s*(\S+)", SCAN_FILES[0].read_text(encoding="utf-8"), re.MULTILINE)
+if not version_match:
+    raise RuntimeError("Plugin version header is missing.")
+PLUGIN_VERSION = version_match.group(1)
 
 # Functions whose 1st arg is the singular msgid in the live-2d domain.
 GETTEXT_FUNCS = (
@@ -147,7 +151,7 @@ def write_pot(strings: "OrderedDict[str, list[str]]", path: Path) -> None:
         "#, fuzzy",
         'msgid ""',
         'msgstr ""',
-        '"Project-Id-Version: Live 2D 2.1.3\\n"',
+        f'"Project-Id-Version: Live 2D {PLUGIN_VERSION}\\n"',
         '"Report-Msgid-Bugs-To: \\n"',
         f'"POT-Creation-Date: {now}\\n"',
         '"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n"',
@@ -185,7 +189,7 @@ def write_po(
         "#",
         'msgid ""',
         'msgstr ""',
-        '"Project-Id-Version: Live 2D 2.1.3\\n"',
+        f'"Project-Id-Version: Live 2D {PLUGIN_VERSION}\\n"',
         '"Report-Msgid-Bugs-To: \\n"',
         f'"POT-Creation-Date: {now}\\n"',
         f'"PO-Revision-Date: {now}\\n"',
@@ -283,7 +287,7 @@ def build_mo_for_locale(
     # The metadata entry; gettext header.
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M+0000")
     metadata = (
-        f"Project-Id-Version: Live 2D 2.1.3\n"
+        f"Project-Id-Version: Live 2D {PLUGIN_VERSION}\n"
         f"PO-Revision-Date: {now}\n"
         f"Language-Team: \n"
         f"Language: {locale}\n"

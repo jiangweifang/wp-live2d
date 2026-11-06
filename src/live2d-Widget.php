@@ -16,11 +16,10 @@ class Live2D_Widget extends WP_Widget
 
     public function widget($args, $instance)
     {
-        extract($args);
         $title = apply_filters('widget_title', empty($instance['title']) ? '' : $instance['title']);
-        echo $before_widget;
+        echo wp_kses_post($args['before_widget']);
         if ($title)
-            echo $before_title . $title . $after_title;
+            echo wp_kses_post($args['before_title']) . esc_html($title) . wp_kses_post($args['after_title']);
 ?>
         <div id="live2d-widget" class="waifu">
             <div class="waifu-tips"></div>
@@ -41,21 +40,24 @@ class Live2D_Widget extends WP_Widget
               // 经典 inline <script> 会在 module 之前同步执行, 那时 window.initLive2dWeb
               // 还未被赋值. inline module 与 src module 共用 defer 队列, 按文档顺序执行. ?>
         <script type="module">
-            if (typeof window.initLive2dWeb === 'function') {
-                if (document.readyState === 'complete') {
+            const initialize = () => {
+                if (typeof window.initLive2dWeb === 'function') {
                     window.initLive2dWeb();
-                } else {
-                    window.addEventListener('load', window.initLive2dWeb);
                 }
+            };
+            if (document.readyState === 'complete') {
+                initialize();
+            } else {
+                window.addEventListener('load', initialize, { once: true });
             }
         </script>
     <?php
-        echo $after_widget;
+        echo wp_kses_post($args['after_widget']);
     }
 
     public function update($new_instance, $old_instance)
     {
-        return $new_instance;
+        return array('title' => sanitize_text_field($new_instance['title'] ?? ''));
     }
 
     public function form($instance)
@@ -66,8 +68,8 @@ class Live2D_Widget extends WP_Widget
         }
     ?>
         <p>
-            <label for="<?php echo $this->get_field_id('title'); ?>"><?php esc_attr_e('Title:', 'live-2d'); ?>
-                <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" />
+            <label for="<?php echo esc_attr($this->get_field_id('title')); ?>"><?php esc_html_e('Title:', 'live-2d'); ?>
+                <input class="widefat" id="<?php echo esc_attr($this->get_field_id('title')); ?>" name="<?php echo esc_attr($this->get_field_name('title')); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
             </label>
         </p>
 <?php

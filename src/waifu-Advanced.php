@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
 include_once(dirname(__FILE__)  . '/live2d-Utils.php');
 class live2D_Advanced {
 	
@@ -172,7 +175,7 @@ class live2D_Advanced {
 			$sanitary_values['seasons_msg'] = $input['seasons_msg'];
 		}
 
-		return $sanitary_values;
+		return current_user_can('unfiltered_html') ? $sanitary_values : map_deep($sanitary_values, 'wp_kses_post');
 	}
 
 	//内容被复制触发提醒（支持多句随机）
@@ -223,7 +226,7 @@ class live2D_Advanced {
 	//鼠标触发提示（根据 CSS 选择器，支持多句随机）
 	public function mouseover_msg_callback() {	
 		live2D_Utils::loopMsg('mouseover_msg','Selector');
-		echo '<p>'.__('鼠标悬停的元素位置（按 <a href="https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp" target="_blank">jQuery 选择器</a> 格式填写）。','live-2d').'</p>';
+		echo '<p>' . wp_kses_post(__('鼠标悬停的元素位置（按 <a href="https://www.w3school.com.cn/jquery/jquery_ref_selectors.asp" target="_blank">jQuery 选择器</a> 格式填写）。','live-2d')) . '</p>';
 	}
 	
 	public function click_selector_callback(){

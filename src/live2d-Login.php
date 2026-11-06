@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
 include_once(dirname(__FILE__)  . '/live2d-SDK.php');
 class live2D_Login {
 	
@@ -45,11 +48,14 @@ class live2D_Login {
 	public function live_2d_login_sanitize($input) {
 		$sanitary_values = array();
         $live2dSDK = new live2d_SDK();
-        if ( isset($input['key']) && $input["key"] != '' ) {
+        if (is_array($input) && isset($input['key']) && is_string($input['key']) && trim($input['key']) !== '') {
             try{
                 $sanitary_values['key'] = $input['key'];
                 $sign = $live2dSDK -> GetToken($input['key']);
                 $signInfo = $live2dSDK -> JwtDecode($sign, $input['key']);
+                if (!is_array($signInfo) || ($signInfo['aud'] ?? '') !== get_home_url()) {
+                    throw new RuntimeException('Live2D account is not authorized for this site.');
+                }
                 $sanitary_values['sign'] = $sign;
                 $sanitary_values["userName"] = $signInfo["email"];
                 $sanitary_values["role"] = intval($signInfo["role"]);
@@ -59,9 +65,11 @@ class live2D_Login {
                 $sanitary_values["hosts"] = $signInfo["aud"];
             } catch(Exception $e){
                 add_settings_error('live_2d_sdk_error',500, __('保存失败, 登录信息无法解析', 'live-2d'));
+                return get_option('live_2d_settings_user_token', array());
             }
         }else{
             add_settings_error('live_2d_sdk_error',500, __('保存失败, 登录信息为空', 'live-2d'));
+            return get_option('live_2d_settings_user_token', array());
         }
         return $sanitary_values;
 	}
@@ -82,7 +90,8 @@ class live2D_Login {
         $homeUrl = get_home_url();
         if(empty($userInfo['userName'])){
             ?>
-            <buttom id="btnLogin" class="button button-primary"><?php esc_html_e('登录', 'live-2d'); ?></buttom> 
+            <a href="https://www.live2dweb.com/Sites" target="_blank" rel="noopener noreferrer" class="button button-primary"><?php esc_html_e('获取账号 Key', 'live-2d'); ?></a>
+            <p><?php esc_html_e('请在下方保存 Key 完成登录。为保护站点安全，不再接受未经管理员授权的外部自动登录回调。', 'live-2d'); ?></p>
             <?php
         }else{
             $signout_url = wp_nonce_url(
@@ -116,14 +125,6 @@ class live2D_Login {
                 ); ?></p>
                 <?php
             }
-            if(intval($userInfo["userLevel"]) < 1){
-                ?>
-                <p><?php echo wp_kses(
-                    __('您是未付费用户, 请<a href="https://www.live2dweb.com/Order/Pay" target="_blank">点击此处</a>付费后使用更多功能', 'live-2d'),
-                    array('a' => array('href' => array(), 'target' => array()))
-                ); ?></p>
-                <?php
-            }
         }
     }
 
@@ -131,13 +132,13 @@ class live2D_Login {
         ?>
             <p><?php
                 $check_url = esc_url( get_home_url() . '/?rest_route=/live2d/v1/' );
-                /* translators: %s: REST endpoint URL */
                 printf(
                     wp_kses(
+                        /* translators: %1$s: REST endpoint URL. */
                         __( '如果您发现登录没有反应，或者出现了错误，请先检查 <a href="%1$s">%1$s</a> 是否可以被访问', 'live-2d' ),
                         array( 'a' => array( 'href' => array() ) )
                     ),
-                    $check_url
+                    esc_url($check_url)
                 );
             ?></p>
         <?php
@@ -148,7 +149,7 @@ class live2D_Login {
 	 */
 	public function live_2d_handle_signout() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( __( '没有权限', 'live-2d' ), '', array( 'response' => 403 ) );
+			wp_die( esc_html__( '没有权限', 'live-2d' ), '', array( 'response' => 403 ) );
 		}
 		check_admin_referer( 'live2d_signout' );
 		delete_option( 'live_2d_settings_user_token' );
